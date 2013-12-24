@@ -1,3 +1,9 @@
+findutils (4.4.2-4ubuntu1pexip1) pexip; urgency=low
+
+  * Prepare Pexip packaging
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 24 Dec 2013 16:58:44 +0000
+
 findutils (4.4.2-4ubuntu1) precise; urgency=low
 
   * Merge from Debian testing, remaining changes:
