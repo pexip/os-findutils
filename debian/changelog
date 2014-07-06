@@ -1,12 +1,44 @@
-findutils (4.4.2-4ubuntu1) precise; urgency=low
+findutils (4.4.2-9) unstable; urgency=medium
 
-  * Merge from Debian testing, remaining changes:
-    - Mark findutils and locate Multi-Arch: foreign.
-  * Dropped changes:
-    - Don't depend on dpkg (>= 1.15.4) | install-info: this is specific to
-      upgrades from 8.04 to 10.04, no need for a delta in 12.04.
+  * 22_gl_update_mktime.diff: Update mktime* from gnulib 20140202+stable-2 to
+    fix a FTBFS on x32. (Thanks, Helmut Grohne) Closes: #753896
 
- -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 23 Jan 2012 22:27:17 +0000
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 06 Jul 2014 08:03:56 +0200
+
+findutils (4.4.2-8) unstable; urgency=low
+
+  * Point Vcs-* to GIT repository.
+  * [lintian] Do not use asterisk in latest NEWS entry.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 20 Apr 2014 19:22:45 +0200
+
+findutils (4.4.2-7) unstable; urgency=low
+
+  * Merge from Ubuntu:
+    + Mark findutils and locate Multi-Arch: foreign. Closes: #657088
+    + Preseed gl_cv_func_wcwidth_works for cross builds. Closes: #729847
+  * Use dh v9 compat level.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 14 Dec 2013 18:53:37 +0100
+
+findutils (4.4.2-6) unstable; urgency=low
+
+  * [20_texi_ftbfs.diff] Pull some texi fixes from 4.5.x. Closes: #710849
+  * [21-Fix-time_t-vs-long-int-mismatches.patch] Fix build error on x32
+    (Thanks, Adam Borowski). Also add bison to build-depends.
+    Closes: #711412
+  * Fix building twice in a row by deleting doc/stamp-vti, doc/version.texi,
+    gnulib/lib/getdate.c on clean.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 23 Jun 2013 14:18:02 +0200
+
+findutils (4.4.2-5) unstable; urgency=low
+
+  * Fix config.(sub|guess) update, the relevant files are in build-aux/.
+    Closes: #689620
+  * Add build-arch/build-indep targets.
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 04 Oct 2012 19:16:52 +0200
 
 findutils (4.4.2-4) unstable; urgency=low
 
@@ -32,45 +64,6 @@ findutils (4.4.2-2) unstable; urgency=low
   * Drop dpatch build-dependency.
 
  -- Andreas Metzler <ametzler@debian.org>  Sat, 31 Dec 2011 16:21:15 +0100
-
-findutils (4.4.2-1ubuntu3) natty; urgency=low
-
-  * Mark findutils and locate Multi-Arch: foreign; we only need one of these
-    on a multiarch system.
-
- -- Steve Langasek <steve.langasek@ubuntu.com>  Wed, 09 Feb 2011 14:51:31 -0800
-
-findutils (4.4.2-1ubuntu2) natty; urgency=low
-
-  * No-change upload to rebuild against current toolchain and drop upstream
-    changelog.
-
- -- Martin Pitt <martin.pitt@ubuntu.com>  Fri, 03 Dec 2010 08:53:15 +0100
-
-findutils (4.4.2-1ubuntu1) lucid; urgency=low
-
-  * Don't depend on dpkg (>= 1.15.4) | install-info.
-    The purpose of this dependency, pursuant to a "should" directive in
-    policy, is to ensure that /usr/share/info/dir is properly rebuilt during
-    upgrades.  Unfortunately, this dependency introduces a loop on upgrades
-    from Ubuntu 8.04 LTS that can't be broken without the use of
-    --force-depends:
-      libc6 Depends: findutils (>= 4.4.0-2ubuntu2)
-      findutils Depends: dpkg (>= 1.15.4) | install-info
-      dpkg Pre-Depends: libc6 (>= 2.11)
-    Since it isn't the end of the world if the info directory isn't rebuilt
-    when doing a partial upgrade of just findutils, this is the safest place
-    to break that loop.  We can drop this change after Ubuntu 10.04 LTS is
-    released.
-
- -- Colin Watson <cjwatson@ubuntu.com>  Tue, 09 Mar 2010 13:15:12 +0000
-
-findutils (4.4.2-1build1) lucid; urgency=low
-
-  * rebuild rest of main for armel armv7/thumb2 optimization;
-    UbuntuSpec:mobile-lucid-arm-gcc-v7-thumb2
-
- -- Alexander Sack <asac@ubuntu.com>  Fri, 05 Mar 2010 04:14:53 +0100
 
 findutils (4.4.2-1) unstable; urgency=low
 
