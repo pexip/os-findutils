@@ -10,7 +10,7 @@ Standards-Version: 3.8.1
 Vcs-Svn: svn://svn.debian.org/svn/pkg-findutils/trunk
 Vcs-Browser: http://svn.debian.org/wsvn/pkg-findutils/trunk/
 Homepage: http://savannah.gnu.org/projects/findutils/
-XS-Pexip-Upstream: http://archive.ubuntu.com/ubuntu/ precise
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ jessie
 
 Package: findutils
 Architecture: any
