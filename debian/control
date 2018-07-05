@@ -10,7 +10,7 @@ Standards-Version: 3.9.5
 Vcs-Git: git://anonscm.debian.org/pkg-findutils/pkg-findutils.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-findutils/pkg-findutils.git
 Homepage: http://savannah.gnu.org/projects/findutils/
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ jessie
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
 
 Package: findutils
 Architecture: any
