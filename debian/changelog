@@ -1,3 +1,291 @@
+findutils (4.6.0+git+20161106-2) unstable; urgency=medium
+
+  * 20_find-fix-memory-leak-in-mount-list-handling.patch from upstream GIT
+    master: Fix memory leak in mount list handling. LP: #1364492
+    https://savannah.gnu.org/bugs/?50326
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 18 Feb 2017 16:37:32 +0100
+
+findutils (4.6.0+git+20161106-1) unstable; urgency=low
+
+  * New upstream snapshot 58faf1ac3922e401e6bdd5dc7bb6e879dab5894c.
+  * Drop unneeded code (related to
+    11_Fix-bug-48030-find-exec-does-not-pass-all-arguments.patch) from
+    debian/rules.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 12 Nov 2016 18:54:23 +0100
+
+findutils (4.6.0+git+20160703-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 17 Jul 2016 14:04:12 +0200
+
+findutils (4.6.0+git+20160703-1) experimental; urgency=low
+
+  * New upstream snapshot.
+  * Drop superfluous patches:
+    - 11_Fix-bug-48030-find-exec-does-not-pass-all-arguments.patch
+    - 13_replace_xmalloc_with_xzalloc.diff
+    - 14_testsuiteupdate_typef_error.diff
+
+ -- Andreas Metzler <ametzler@debian.org>  Mon, 04 Jul 2016 13:12:33 +0200
+
+findutils (4.6.0+git+20160517-5) unstable; urgency=low
+
+  * 14_testsuiteupdate_typef_error.diff: Enhance testsuite to detect #827724.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 25 Jun 2016 13:00:33 +0200
+
+findutils (4.6.0+git+20160517-4) unstable; urgency=low
+
+  * 13_replace_xmalloc_with_xzalloc.diff by Maximiliano Curia: Hotfix wrong
+    result on armhf armel and mipsel. Closes: #827724
+
+ -- Andreas Metzler <ametzler@debian.org>  Mon, 20 Jun 2016 19:55:29 +0200
+
+findutils (4.6.0+git+20160517-3) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 19 Jun 2016 12:02:25 +0200
+
+findutils (4.6.0+git+20160517-2) experimental; urgency=medium
+
+  * 10_fix_bsd_hurd_testsuite.diff: link() follows symlinks on BSD on hurd,
+    use ln -P to enforce hardlink to symlink. Closes: #826357
+    (Thanks, Samuel Thibault for bug-report and diagnosis.)
+  * Pull 11_Fix-bug-48030-find-exec-does-not-pass-all-arguments.patch from GIT
+    head, fixing an issue with "find: -exec +" skipping arguments (savannah
+    bug 48030).
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 05 Jun 2016 13:07:33 +0200
+
+findutils (4.6.0+git+20160517-1) experimental; urgency=medium
+
+  * Sort build-dependencies.
+  * Annotate b-d on dejagnu with <!nocheck>. Bump debhelper build-dependency
+    to >= 9.20141010 and add b-d on dpkg-dev (>= 1.17.14).
+  * Update to findutils (85e8c810a29cca8faea6cbd93169cf7051cd65b5) and gnulib
+    (246b3b28808ee5f4664be674dce573af9497fc7a) head.
+    + Fixes "frcode drops last char if no final newline" Closes: #567578
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 28 May 2016 14:26:10 +0200
+
+findutils (4.6.0+git+20160126-2) unstable; urgency=medium
+
+  * Also add libpython3.4-minimal (<< 3.4.4-2) and libpython3.5-minimal
+    (<< 3.5.1-3) to findutils' Breaks.- See #809079.
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 07 Feb 2016 14:47:12 +0100
+
+findutils (4.6.0+git+20160126-1) experimental; urgency=medium
+
+  * Update to findutils and gnulib head.
+    + Includes updated mbrtowc.m4, fixing testsuite error on fr_FR locale.
+      Closes: #812762
+    + Needs bison to build.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 31 Jan 2016 15:22:17 +0100
+
+findutils (4.6.0-2) unstable; urgency=low
+
+  * debian/watch: Scan both alpha.gnu.org and ftp.gnu.org.
+  * Merge master to experimental:
+    + Include stable changelog entries
+    + Fix building twice in a row by deleting doc/stamp-vti, doc/version.texi,
+      on clean. (Not necessary now, but might hit us if we patch the docs.)
+  * Add more breaks with packages using find -perm +xx at runtime.  For
+    debconf switch from Breaks to Conflicts to be on the very safe side.
+    Closes: #704879
+  * Move Vcs-* from git/http to https.
+  * Upload to unstable. Closes: #784168
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 16 Jan 2016 12:57:07 +0100
+
+findutils (4.6.0-1) experimental; urgency=medium
+
+  * New upstream stable release.
+
+ -- Andreas Metzler <ametzler@debian.org>  Tue, 29 Dec 2015 07:37:10 +0100
+
+findutils (4.5.19-1) experimental; urgency=medium
+
+  * New upstream version.
+    + Includes fixes submitted in Closes: #726870
+
+ -- Andreas Metzler <ametzler@debian.org>  Mon, 28 Dec 2015 16:06:14 +0100
+
+findutils (4.5.18-1) experimental; urgency=medium
+
+  * New upstream version.
+    + Drop 10_bashism.diff.
+    + Fixes lintian warning license-problem-gfdl-non-official-text.
+    + oldfind is not installed anymore.
+
+ -- Andreas Metzler <ametzler@debian.org>  Mon, 28 Dec 2015 12:55:21 +0100
+
+findutils (4.5.17-1) experimental; urgency=medium
+
+  * New upstream version.
+  * Enable GPG signature checking in debian/watch, allowing both
+    A15B725964A95EE5 and 88DD9E08C5DDACB9.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 25 Dec 2015 13:12:02 +0100
+
+findutils (4.5.16-1) experimental; urgency=medium
+
+  * New upstream version.
+    + Drop 20_perl5.22.ftbfs.diff.
+
+ -- Andreas Metzler <ametzler@debian.org>  Wed, 23 Dec 2015 19:25:47 +0100
+
+findutils (4.5.15-1) experimental; urgency=medium
+
+  * New upstream version.
+    + Refresh patches.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 18 Dec 2015 19:39:45 +0100
+
+findutils (4.5.14-3) experimental; urgency=medium
+
+  * 20_perl5.22.ftbfs.diff: Fix error on make check with perl 5.22 due to
+    unescaped left brace in regex. Closes: #788712
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 02 Oct 2015 19:04:51 +0200
+
+findutils (4.5.14-2) experimental; urgency=medium
+
+  * Convert to dh (v9).
+  * Support bz2/xz in watchfile.
+  * Build with hardening=+all.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 14 Jun 2015 13:21:04 +0200
+
+findutils (4.5.14-1) experimental; urgency=medium
+
+  * New upstream version.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 20 Jul 2014 08:15:23 +0200
+
+findutils (4.5.13-1) experimental; urgency=low
+
+  * Point Vcs-* to GIT repository.
+  * Add Breaks for sendmail, see Bug#724772.
+  * New upstream version.
+
+ -- Andreas Metzler <ametzler@debian.org>  Wed, 16 Jul 2014 14:59:46 +0200
+
+findutils (4.5.12-1) experimental; urgency=low
+
+  * New upstream version.
+  * Includes upstream bug fixes:
+    + find -execdir leaks file descriptors for the working directory
+      Closes: #650795
+    + exits without error on OOM. Closes: #712792
+  * find -perm +octalmode now exits with an error instead of failing
+    silently. Closes: #704879 Add Breaks for versions of debconf and debhelper
+    which used this feature. I will also try to come up with lintian test.
+  * Drop 20_missing-variable-initialisati.patch completely, and also parts of
+    10_bashism.diff.
+  * Fix config.(sub|guess) update, the relevant files are in build-aux/.
+    Closes: #689620
+  * Point Vcs-* to anonscm.d.o.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 28 Sep 2013 08:46:13 +0200
+
+findutils (4.5.11-2) experimental; urgency=low
+
+  * [20_missing-variable-initialisati.patch] pulled from upstream git
+    fixes a crash in locate. Closes: #704193
+  * Patch from Steve Langasek/Ubuntu - Mark findutils and locate multi-arch:
+    foreign. Closes: #657088
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 20 Apr 2013 11:11:55 +0200
+
+findutils (4.5.11-1) experimental; urgency=low
+
+  * New upstream version.
+    + 10_bashism.diff - Fix new bashisms in testsuite.
+    + Documents differences between oldfind and find in manpages find.1,
+      and oldfind.1. Use this one instead of symlinking find.1.
+      Closes: #626907 (LP: #1026586)
+    + Fixes excessive memory usage when using -printf and %A %C or %T.
+      Closes: #687358
+    + findutils: -ls shows major/minor device number. Closes: #397435
+    + Uses last entry in mtab instead of first one for -printf '%F', i.e. it
+      won't show rootfs for files on / anymore.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 02 Feb 2013 18:31:22 +0100
+
+findutils (4.5.10-2) experimental; urgency=low
+
+  * Use /usr/share/dpkg/buildflags.mk if available. Closes: #653849
+  * Add build-arch/build-indep targets.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 01 Jan 2012 10:10:13 +0100
+
+findutils (4.5.10-1) experimental; urgency=low
+
+  * New upstream version.
+    + find -execdir changes directory correctly again. (This broke in 4.5.9)
+      Closes: #582717
+    + Drop 10_testsuiteonbsd.diff, applied upstream.
+  * Break instead of conflicting with slocate.
+  * [lintian] Point to versioned copy of GPL in debian/copyright.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 14 May 2011 16:10:05 +0200
+
+findutils (4.5.9-1) experimental; urgency=low
+
+  * New upstream version.
+    + Fixes FTBFS on kfreebsd-* and hurd. Closes: #577131
+    + improved -execdir performance. Closes: #489046
+  * [10_testsuiteonbsd.diff] work around different kernel behavior on *BSD,
+    see #578271. Thanks, Sergei Golovan.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 08 May 2010 17:53:49 +0200
+
+findutils (4.5.8-1) experimental; urgency=low
+
+  * libselinux1-dev is only available on Linux, update build-dependency.
+  * New upstream version.
+    Fixes savannah #29460: -printf %Y fails in $CWD-dependent way.
+    Closes: #576772
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 08 Apr 2010 19:03:56 +0200
+
+findutils (4.5.7-1) experimental; urgency=low
+
+  * Use dh_installcron to install locate's cron script.
+  * Stop suggesting slocate, it has been removed from the archive.
+    Closes: #565653
+  * New upstream development release. 
+    + includes patch for SELinux support (option -context and -printf '%Z').
+      Closes: #572809
+    + Correct error message for invalid arg to -ctime and other arguments
+      ("invalid argument" istead of "missing argument"). Closes: #568490
+    + Consistent documentation about (i)path/(i)wholename. Closes: #522389
+  * Add libselinux1-dev to build-depends.
+  * Ship find-maint.info.
+  * [lintian] Drop leading asterisks in NEWS file.
+  * Drop dpatch in favour of 3.0 (quilt).
+  * Update debian/copyright.
+  * Point watchfile to alpha.gnu.org.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 03 Apr 2010 19:32:46 +0200
+
+findutils (4.4.2-10) unstable; urgency=low
+
+  * Build with hardening=+all.
+  * Add one more fix to 20_texi_ftbfs.diff.
+  * 25_stop-using-obsolete-macro.diff: Drop invocation of AM_C_PROTOTYPES macro
+    in configure.ac. Also use some touch-magic to prent unwanted rerun of 
+    auto*. Closes: #803740
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 06 Nov 2015 19:32:10 +0100
+
 findutils (4.4.2-9+b1pexip1) pexip; urgency=low
 
   * Migrate to Jessie
@@ -91,7 +379,7 @@ findutils (4.4.1-1) unstable; urgency=low
     + Updates documentation for find -perm /mode. Closes: #478005
     + Fixes segfault if  -newerXY test was not followed by any argument.
       Closes: #496853
-    
+
   * Standards-Version 3.8.1.
     + Add support for DEB_BUILD_OPTIONS=nocheck.
   * Use filter instead of findstring when checking for

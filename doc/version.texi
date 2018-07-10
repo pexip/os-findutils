@@ -1,4 +1,4 @@
-@set UPDATED 16 May 2009
-@set UPDATED-MONTH May 2009
-@set EDITION 4.4.2
-@set VERSION 4.4.2
+@set UPDATED 28 May 2016
+@set UPDATED-MONTH May 2016
+@set EDITION 4.7.0-git
+@set VERSION 4.7.0-git

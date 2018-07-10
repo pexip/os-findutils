@@ -49,10 +49,10 @@ It does this by:
 1. Checking the number of links to directories and not statting files
 that it knows aren't directories until it encounters a test or action
 that needs the stat info.
-2.  Rearranging the command line, where possible, so that it can do tests
-that don't require a stat before tests that do, in hopes that the
-latter will be skipped because of an OR or AND.  (But it only does
-this where it will leave the output unchanged.)
+2.  Rearranging the command line, where possible, so that it can do
+tests that don't require a stat before tests that do, in hopes that
+the latter will be skipped because of a -o/-a conjunction.  (But it
+only does this where it will leave the output unchanged.)
 
 The locate program and its helper programs are derived (heavily
 modified) from James Woods' public domain fast-find code, which is
@@ -61,6 +61,29 @@ foo' to have the same effect as `find foo -print', the fast-find
 searching has been moved to a separate program, `locate'; the same
 thing has been done in 4.4BSD.  If you use locate, you should run the
 included `updatedb' script from cron periodically (typically nightly).
+
+The latest full release is available at
+ftp://ftp.gnu.org/gnu/findutils.
+
+The latest test release (if any) is available at
+ftp://alpha.gnu.org/gnu/findutils
+
+Discussion of the findutils package and ways to improve it takes place
+on the "bug-findutils" mailing list, which you can join by sending
+mail to bug-findutils-request@gnu.org.  An archive of patches to the
+bug-findutils mailing list is available at
+http://lists.gnu.org/archive/html/bug-findutils/.
+
+Bug reports, suggested patches and enhancement requests for findutils
+should be logged at http://savannah.gnu.org/bugs/?group=findutils.
+
+Changes to the findutils code are sent to the findutils-patches
+mailing list.  To join, please send email to
+findutils-patches@gnu.org.  You are also welcome to send patches to
+that list, but unless you are a list subscriber, you won't be able to
+follow any resulting discussion.  An archive of posts to the
+findutils-patches mailing list is available at
+http://lists.gnu.org/archive/html/findutils-patches/.
 
 Mail suggestions and bug reports for these programs to
 bug-findutils@gnu.org.
