@@ -1,5 +1,5 @@
 /* word_io.c -- word oriented I/O
-   Copyright (C) 2007, 2010-2011, 2016 Free Software Foundation, Inc.
+   Copyright (C) 2007-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* config.h must be included first. */
@@ -28,20 +28,12 @@
 /* gnulib headers. */
 #include "byteswap.h"
 #include "error.h"
-#include "gettext.h"
 #include "quotearg.h"
 
 /* find headers. */
+#include "system.h"
+#include "die.h"
 #include "locatedb.h"
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#define textdomain(Domain)
-#define bindtextdomain(Package, Directory)
-#endif
 
 
 enum { WORDBYTES=4 };
@@ -128,10 +120,10 @@ getword (FILE *fp,
        * Either condition is fatal.
        */
       if (feof (fp))
-	error (EXIT_FAILURE, 0, _("unexpected EOF in %s"), quoted_name);
+	die (EXIT_FAILURE, 0, _("unexpected EOF in %s"), quoted_name);
       else
-	error (EXIT_FAILURE, errno,
-	       _("error reading a word from %s"), quoted_name);
+	die (EXIT_FAILURE, errno,
+	     _("error reading a word from %s"), quoted_name);
       abort ();
     }
   else

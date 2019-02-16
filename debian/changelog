@@ -1,3 +1,155 @@
+findutils (4.6.0+git+20190209-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 16 Feb 2019 13:14:53 +0100
+
+findutils (4.6.0+git+20190209-1) experimental; urgency=medium
+
+  * New upstream snapshot 235f21673cd8e3458795cdadca6e78a3423ab024.
+  * Also set RUN_EXPENSIVE_TESTS := yes, to run expensive tests in addition to
+    very expensive ones.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 15 Feb 2019 13:59:53 +0100
+
+findutils (4.6.0+git+20190105-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 17 Jan 2019 07:24:53 +0100
+
+findutils (4.6.0+git+20190105-1) experimental; urgency=low
+
+  * New upstream snapshot 66174c10c617a1a50fa804c1e2f9c6becd7c90f8.
+    + Improved warning message for "-name some/thing". Closes: #487496
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 05 Jan 2019 18:45:08 +0100
+
+findutils (4.6.0+git+20181212-1) experimental; urgency=low
+
+  * Run "wrap-and-sort --max-line-length=72 --short-indent" and add back
+    autodeleted comments.
+  * New upstream snapshot b23a2693c822c3cc027279c3676a7bbed651f634.
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 20 Dec 2018 14:57:49 +0100
+
+findutils (4.6.0+git+20181018-1) unstable; urgency=low
+
+  * New upstream snapshot 7741d79fa3f564f340ef2c26407dd6d3b1f60d42.
+    + Clarifies documentation regarding size information. Closes: #677963
+  * Switch to debhelper v11.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 21 Oct 2018 13:29:19 +0200
+
+findutils (4.6.0+git+20180808-2) unstable; urgency=low
+
+  * Set Rules-Requires-Root: no.
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Wed, 15 Aug 2018 11:00:21 +0200
+
+findutils (4.6.0+git+20180808-1) experimental; urgency=low
+
+  * New upstream snapshot 5dae49b4fc7fd82583d6be033907f693e9832f83.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 11 Aug 2018 11:30:01 +0200
+
+findutils (4.6.0+git+20180420-1) experimental; urgency=low
+
+  * New upstream snapshot b94be7a07198fca590559d60ff727996a0b52456.
+  * Add README.source to document current bootstrapping process.
+  * Run testsuite with RUN_VERY_EXPENSIVE_TESTS=yes.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 21 Apr 2018 17:44:05 +0200
+
+findutils (4.6.0+git+20171230-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 10 Mar 2018 17:20:38 +0100
+
+findutils (4.6.0+git+20171230-1) experimental; urgency=low
+
+  * New upstream snapshot 040f20b91e47c2b29b2696110ce263d0f53c1e99.
+    + Drop 20_tests-Test-more-printf-format-specifiers.patch.
+  * Point Vcs-* to salsa.
+  * Use dh compat 10. Bump b-d, drop (now implied) b-d on dpkg-dev and
+    autotools-dev.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 10 Feb 2018 18:28:59 +0100
+
+findutils (4.6.0+git+20170828-2) unstable; urgency=low
+
+  * Update 20_tests-Test-more-printf-format-specifiers.patch from upstream GIT
+    master. This version of the patch works with TZ != UTC.
+  * [lintian] Delete trailing whitespace in changelog.
+  * [lintian] Drop "--with autotools_dev" argument from dh invocation, is run
+    by default in recent debhelper.
+  * Modernize watchfile and stop searching on alpha.gnu.org.
+  * Use https URI for upstream homepage.
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 05 Nov 2017 18:16:48 +0100
+
+findutils (4.6.0+git+20170828-1) experimental; urgency=low
+
+  * New upstream snapshot febde26dd0e66dda5d4060fa29b85443ddc6a865.
+    + Avoid buffer-overflow with -printf '%T+' Closes: #873032
+  * 20_tests-Test-more-printf-format-specifiers.patch: Adds coverage for
+    -printf %T* (limited to strftime sequences mandated by POSIX), %M, %t,
+    %y, and %Y. - Let's test this on Debian's buildds.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 02 Sep 2017 15:24:22 +0200
+
+findutils (4.6.0+git+20170729-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Drop ancient upgrading code (<= 4.2.31-1/4.1.7-2, that is pre-squeeze)
+    from maintainerscripts.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 04 Aug 2017 16:31:57 +0200
+
+findutils (4.6.0+git+20170729-1) experimental; urgency=low
+
+  * New upstream snapshot 808d8aa612971a843432aee663a3c3fffd1a2df4.
+    + Drop 20_Lock-tests-Fix-build-failure-on-GNU-Hurd-regression.patch.
+    + Uses correct IEC unit prefixes in the documentation of 'find -size'
+      (kibibyte et al.). Closes: #865736
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 29 Jul 2017 17:42:38 +0200
+
+findutils (4.6.0+git+20170606-3) unstable; urgency=medium
+
+  * 20_Lock-tests-Fix-build-failure-on-GNU-Hurd-regression.patch from upstream
+    gnulib (paths adjusted) to fix FTBFS on GNU/Hurd. (Thanks, Svante Signell
+    for report and ready to use patch) Closes: #867120
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 06 Jul 2017 18:41:24 +0200
+
+findutils (4.6.0+git+20170606-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 24 Jun 2017 14:15:26 +0200
+
+findutils (4.6.0+git+20170606-1) experimental; urgency=low
+
+  * New upstream snapshot 3e4bb112ae70b5e1e08379f43d910803bcef8db0.
+    + Adds xargs -o for running interactive programs.
+      Closes: #725392
+  * Drop versioned Conflicts/Breaks where soon-to-be-oldstable (i.e. Debian
+    8 jessie) has new enough versions.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 16 Jun 2017 15:23:24 +0200
+
+findutils (4.6.0+git+20170413-1) experimental; urgency=low
+
+  * New upstream snapshot 6dfd05ca58e42ada04780f2f74383c6e54bcabba.
+    + Drop 20_find-fix-memory-leak-in-mount-list-handling.patch.
+    + Upgraded gnulib fixes gcc-7 build-error. Closes: #853401
+
+ -- Andreas Metzler <ametzler@debian.org>  Mon, 05 Jun 2017 17:46:40 +0200
+
 findutils (4.6.0+git+20161106-2) unstable; urgency=medium
 
   * 20_find-fix-memory-leak-in-mount-list-handling.patch from upstream GIT
@@ -261,7 +413,7 @@ findutils (4.5.7-1) experimental; urgency=low
   * Use dh_installcron to install locate's cron script.
   * Stop suggesting slocate, it has been removed from the archive.
     Closes: #565653
-  * New upstream development release. 
+  * New upstream development release.
     + includes patch for SELinux support (option -context and -printf '%Z').
       Closes: #572809
     + Correct error message for invalid arg to -ctime and other arguments
@@ -281,7 +433,7 @@ findutils (4.4.2-10) unstable; urgency=low
   * Build with hardening=+all.
   * Add one more fix to 20_texi_ftbfs.diff.
   * 25_stop-using-obsolete-macro.diff: Drop invocation of AM_C_PROTOTYPES macro
-    in configure.ac. Also use some touch-magic to prent unwanted rerun of 
+    in configure.ac. Also use some touch-magic to prent unwanted rerun of
     auto*. Closes: #803740
 
  -- Andreas Metzler <ametzler@debian.org>  Fri, 06 Nov 2015 19:32:10 +0100
@@ -739,7 +891,7 @@ findutils (4.2.26-1) unstable; urgency=low
       example, one character each), earlier versions of xargs would fail
       with 'Argument list too long'. This is because Linux's execve
       implementation requires that the sum of the sizes of all argument
-      string pointers not exceed 128K (the actual limit is 
+      string pointers not exceed 128K (the actual limit is
       ARG_MAX - sizeof (void*)). Hopefully (Closes: #313028).
 
  -- Andreas Metzler <ametzler@debian.org>  Sun, 20 Nov 2005 09:38:42 +0100
@@ -1063,12 +1215,12 @@ findutils (4.1.6-1) unstable; urgency=low
 
   * find/find.c (process_path): fix problem with "-depth" which is tested
     in depth.exp test. (closes: 69782).
-    
+
   * new alpha release.  locate --ignore-case is done.
 
-  
+
   * some patches for ignoring case have been added. (closes: #19563).
-  
+
   * fixed problems with brace expansion in debian/rules (closes: #71827)
 
   * doc/find.texi (Invoking xargs): changed @var{-s} to @samp{-s} (closes:
@@ -1079,9 +1231,9 @@ findutils (4.1.6-1) unstable; urgency=low
   * update to new alpha release.
 
   * testing out 4.1.3, with internationalization.
-    
+
   * added devpts to PRUNEFS in updatedb.conf (closes: #65503).
-    
+
   * fixes bug described as follows:  When 'find' looks for a fstype, it
     parses the /etc/mtab until it finds the good line. But, if there is,
     before the good line, a line whose mountpoint is unreachable, it
@@ -1137,7 +1289,7 @@ findutils (4.1-33) frozen unstable; urgency=low
 
 findutils (4.1-32) frozen unstable; urgency=low
 
-  * added documentation for the environment variables PRUNEPATHS, PRUNEFS, 
+  * added documentation for the environment variables PRUNEPATHS, PRUNEFS,
     and NETPATHS for updatedb in find.texi and updatedb.1.  Added
     documentation for --prunefs in updatedb. (fixes bug #29755).
   * link ChangeLog.gz to changelog.gz, to follow policy manual.
@@ -1164,11 +1316,11 @@ findutils (4.1-29) unstable; urgency=low
   * removed declaration of strdup and free from lib/nextelem.c, which
     meets GNU coding standards and allow compilation on sparc (and fixes
     bug #20840)
-  * corrected explanation of -amin option which described hours instead of 
+  * corrected explanation of -amin option which described hours instead of
     minutes (fixes bug #22995)
   * check status of tempfile commands and exit upon failure (fixes bug
-    #22350) 
-  * added iso9660 to PRUNEFS so that CDs will not be automatically scanned 
+    #22350)
+  * added iso9660 to PRUNEFS so that CDs will not be automatically scanned
     by updatedb (fixes bug #24548)
   * added "-s /bin/sh" to all instances of command su, which allows
     updatedb to be easily used by users which have a different shell.
@@ -1199,9 +1351,9 @@ findutils (4.1-26) unstable; urgency=low
   * remove declarations of various string functions which allows
     compilation under sparc.  Removing the declarations almost
     matches the GNU Coding Standards.(fixes: bug #16948)
-	    
+
  -- Kevin Dalley <kevind@rahul.net>  Sun,  8 Feb 1998 22:43:13 -0800
-	
+
 findutils (4.1-25) unstable; urgency=low
 
   * change auto to autofs in PRUNEFS variable in updatedb.conf
@@ -1210,7 +1362,7 @@ findutils (4.1-25) unstable; urgency=low
 
 findutils (4.1-24) unstable; urgency=low
 
-  * added auto to PRUNEFS, so that automounted fs are automatically pruned 
+  * added auto to PRUNEFS, so that automounted fs are automatically pruned
 
  -- Kevin Dalley <kevin@aimnet.com>  Sat, 27 Sep 1997 01:14:52 -0700
 
@@ -1219,14 +1371,14 @@ findutils (4.1-23) unstable; urgency=low
   * This release is built with libc6 release
   * add "#define _GNU_SOURCE" to pred.c
   * zip man pages, which fixes bug #10272: findutils manpages are not
-    compressed. 
+    compressed.
 
  -- Kevin Dalley <kevin@aimnet.com>  Sun,  6 Jul 1997 14:12:56 -0700
 
 findutils (4.1-22) frozen unstable; urgency=low
 
   * add smbfs to PRUNEFS in updatedb.conf, which is bug #8668, findutils:
-    Updatedb should not scan smbfs mounts 
+    Updatedb should not scan smbfs mounts
 
  -- Kevin Dalley <kevin@aimnet.com>  Sun, 27 Apr 1997 00:20:23 -0700
 
@@ -1310,7 +1462,7 @@ findutils (4.1-13) stable unstable; urgency=HIGH
   * fixes bug which prevents locate from running in previous
     installations, which is /var/lib/locate directory being owned by
     root.
-    
+
   * remove recursive chown and chmod from debian/rules.  set
     /var/lib/locate to nobody:nogroup in postinst, just in case it was set
     previously by another installation.
@@ -1323,7 +1475,7 @@ findutils (4.1-12) unstable; urgency=low
   summary incorrect
   * moved files debian.* to debian/*
   * converted to Standards-Version: 2.1.1.0
-    
+
  -- Kevin Dalley <kevin@aimnet.com>  Wed, 23 Oct 1996 21:06:15 -0700
 
 Mon May 27 01:07:52 1996  Kevin Dalley  <kevin@aplysia.iway.aimnet.com (Kevin Dalley)>

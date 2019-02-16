@@ -8,13 +8,20 @@ See the file NEWS for a list of major changes in the current release.
 
 See the file INSTALL for compilation and installation instructions.
 
+If there is no file INSTALL, you must be looking at the checked-out
+source code instead of at an unpacked source tarball ("release").  In
+that case, you should first please read and follow the instructions in
+the file README-hacking.  Those instructions explain how to generate
+the auto-generated files needed to build findutils, and this includes
+generating the INSTALL file.
+
 To verify the GPG signature of the release, you will need the public
 key of the findutils maintainer.  You can download this from
 ftp://ftp.gnu.org/gnu/gnu-keyring.gpg.  Alternatively, you could query
 a PGP keyserver, but you will need to use one that can cope with
 subkeys containing photos.  Many older key servers cannot do this.  I
 use subkeys.pgp.net.  I think that one works.  See also the
-"Downloading" section of http://www.gnu.org/software/findutils/.
+"Downloading" section of https://www.gnu.org/software/findutils/.
 
 Special configure options:
 
@@ -23,18 +30,6 @@ Special configure options:
 /usr/afsws/include.  configure doesn't add AFS support
 automatically because it adds considerably to find's size, and the
 AFS libraries need -lucb on Solaris, which breaks find.
-
---enable-id-cache
-  Make tables of used UIDs and GIDs at startup instead of using
-getpwuid or getgrgid when needed.  Speeds up -nouser and -nogroup
-unless you are running NIS or Hesiod, which make password and group
-calls very expensive.
-
---enable-debug
-  Produce output on the standard error output indicating what find is
-doing.  This information includes details about how the command line
-has been parsed and what files have been stat()ed.  This output is
-normally interesting only to the maintainer, and so is off by default.
 
 DEFAULT_ARG_SIZE=<value>
   If this environment variable is defined to a numeric expression
@@ -72,10 +67,10 @@ Discussion of the findutils package and ways to improve it takes place
 on the "bug-findutils" mailing list, which you can join by sending
 mail to bug-findutils-request@gnu.org.  An archive of patches to the
 bug-findutils mailing list is available at
-http://lists.gnu.org/archive/html/bug-findutils/.
+https://lists.gnu.org/r/bug-findutils/.
 
 Bug reports, suggested patches and enhancement requests for findutils
-should be logged at http://savannah.gnu.org/bugs/?group=findutils.
+should be logged at https://savannah.gnu.org/bugs/?group=findutils.
 
 Changes to the findutils code are sent to the findutils-patches
 mailing list.  To join, please send email to
@@ -83,7 +78,18 @@ findutils-patches@gnu.org.  You are also welcome to send patches to
 that list, but unless you are a list subscriber, you won't be able to
 follow any resulting discussion.  An archive of posts to the
 findutils-patches mailing list is available at
-http://lists.gnu.org/archive/html/findutils-patches/.
+https://lists.gnu.org/r/findutils-patches/.
 
 Mail suggestions and bug reports for these programs to
 bug-findutils@gnu.org.
+
+========================================================================
+
+Copyright (C) 1996-2019 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts.  A copy of the license is included in the "GNU Free
+Documentation License" file as part of this distribution.

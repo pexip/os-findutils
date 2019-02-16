@@ -1,6 +1,5 @@
 /* fstype.c -- determine type of file systems that files are on
-   Copyright (C) 1990-1994, 2000, 2004, 2010-2011, 2016 Free Software
-   Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
@@ -12,7 +11,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* Written by David MacKenzie <djm@gnu.org>.
@@ -52,21 +51,16 @@
 #include "xalloc.h"
 #include "xstrtol.h"
 #include "mountlist.h"
-#include "error.h"
-#include "gettext.h"
 
 /* find headers. */
 #include "defs.h"
+#include "die.h"
 #include "extendbuf.h"
+#include "system.h"
 
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
-
-static char *file_system_type_uncached (const struct stat *statp, const char *path);
+static char *file_system_type_uncached (const struct stat *statp,
+                                        const char *path,
+                                        bool *fstype_known);
 
 
 static void
@@ -75,14 +69,7 @@ free_file_system_list (struct mount_entry *p)
   while (p)
     {
       struct mount_entry *pnext = p->me_next;
-
-      free (p->me_devname);
-      free (p->me_mountdir);
-
-      if (p->me_type_malloced)
-	free (p->me_type);
-      p->me_next = NULL;
-      free (p);
+      free_mount_entry (p);
       p = pnext;
     }
 }
@@ -91,17 +78,17 @@ free_file_system_list (struct mount_entry *p)
 
 
 #ifdef AFS
-#include <netinet/in.h>
-#include <afs/venus.h>
-#if __STDC__
+# include <netinet/in.h>
+# include <afs/venus.h>
+# if __STDC__
 /* On SunOS 4, afs/vice.h defines this to rely on a pre-ANSI cpp.  */
-#undef _VICEIOCTL
-#define _VICEIOCTL(id)  ((unsigned int ) _IOW('V', id, struct ViceIoctl))
-#endif
-#ifndef _IOW
+#  undef _VICEIOCTL
+#  define _VICEIOCTL(id)  ((unsigned int ) _IOW('V', id, struct ViceIoctl))
+# endif
+# ifndef _IOW
 /* AFS on Solaris 2.3 doesn't get this definition.  */
-#include <sys/ioccom.h>
-#endif
+#  include <sys/ioccom.h>
+# endif
 
 static int
 in_afs (char *path)
@@ -120,8 +107,30 @@ in_afs (char *path)
 }
 #endif /* AFS */
 
-/* Nonzero if the current file system's type is known.  */
-static int fstype_known = 0;
+/* Read the mount list into a static cache, and return it.
+   This is a wrapper around gnulib's read_file_system_list ()
+   to avoid unnecessary reading of the mount list.  */
+static struct mount_entry *
+get_file_system_list (bool need_fs_type)
+{
+  /* Local cache for the mount list.  */
+  static struct mount_entry *mount_list = NULL;
+
+  /* Remember if the list contains the ME_TYPE members.  */
+  static bool has_fstype = false;
+
+  if (mount_list && ! has_fstype && need_fs_type)
+    {
+      free_file_system_list (mount_list);
+      mount_list = NULL;
+    }
+  if (! mount_list)
+    {
+      mount_list = read_file_system_list(need_fs_type);
+      has_fstype = need_fs_type;
+    }
+  return mount_list;
+}
 
 /* Return a static string naming the type of file system that the file PATH,
    described by STATP, is on.
@@ -131,6 +140,9 @@ static int fstype_known = 0;
 char *
 filesystem_type (const struct stat *statp, const char *path)
 {
+  /* Nonzero if the current file system's type is known.  */
+  static bool fstype_known = false;
+
   static char *current_fstype = NULL;
   static dev_t current_dev;
 
@@ -141,8 +153,37 @@ filesystem_type (const struct stat *statp, const char *path)
       free (current_fstype);
     }
   current_dev = statp->st_dev;
-  current_fstype = file_system_type_uncached (statp, path);
+  current_fstype = file_system_type_uncached (statp, path, &fstype_known);
   return current_fstype;
+}
+
+bool
+is_used_fs_type(const char *name)
+{
+  if (0 == strcmp("afs", name))
+    {
+      /* I guess AFS may not appear in /etc/mtab (or equivalent) but still be in use,
+	 so assume we always need to check for AFS.  */
+      return true;
+    }
+  else
+    {
+      const struct mount_entry *entries = get_file_system_list(false);
+      if (entries)
+	{
+	  const struct mount_entry *entry;
+	  for (entry = entries; entry; entry = entry->me_next)
+	    {
+	      if (0 == strcmp(name, entry->me_type))
+		return true;
+	    }
+	}
+      else
+	{
+	  return true;
+	}
+    }
+  return false;
 }
 
 static int
@@ -166,30 +207,14 @@ set_fstype_devno (struct mount_entry *p)
   return 0;			/* not needed */
 }
 
-static struct mount_entry *
-must_read_fs_list (bool need_fs_type)
-{
-  struct mount_entry *entries = read_file_system_list (need_fs_type);
-  if (NULL == entries)
-    {
-      /* We cannot determine for sure which file we were trying to
-       * use because gnulib has abstracted all that stuff away.
-       * Hence we cannot issue a specific error message here.
-       */
-      error (EXIT_FAILURE, 0, _("Cannot read mounted file system list"));
-    }
-  return entries;
-}
-
-
-
 /* Return a newly allocated string naming the type of file system that the
    file PATH, described by STATP, is on.
    RELPATH is the file name relative to the current directory.
    Return "unknown" if its file system type is unknown.  */
 
 static char *
-file_system_type_uncached (const struct stat *statp, const char *path)
+file_system_type_uncached (const struct stat *statp, const char *path,
+                           bool *fstype_known)
 {
   struct mount_entry *entries, *entry, *best;
   char *type;
@@ -199,13 +224,21 @@ file_system_type_uncached (const struct stat *statp, const char *path)
 #ifdef AFS
   if (in_afs (path))
     {
-      fstype_known = 1;
+      *fstype_known = true;
       return xstrdup ("afs");
     }
 #endif
 
   best = NULL;
-  entries = must_read_fs_list (true);
+  entries = get_file_system_list (true);
+  if (NULL == entries)
+    {
+      /* We cannot determine for sure which file we were trying to
+       * use because gnulib has abstracted all that stuff away.
+       * Hence we cannot issue a specific error message here.
+       */
+      die (EXIT_FAILURE, 0, _("Cannot read mounted file system list"));
+    }
   for (type=NULL, entry=entries; entry; entry=entry->me_next)
     {
 #ifdef MNTTYPE_IGNORE
@@ -230,50 +263,11 @@ file_system_type_uncached (const struct stat *statp, const char *path)
     {
       type = xstrdup (best->me_type);
     }
-  free_file_system_list (entries);
 
   /* Don't cache unknown values. */
-  fstype_known = (type != NULL);
+  *fstype_known = (type != NULL);
 
   return type ? type : xstrdup (_("unknown"));
-}
-
-
-char *
-get_mounted_filesystems (void)
-{
-  char *result = NULL;
-  size_t alloc_size = 0u;
-  size_t used = 0u;
-  struct mount_entry *entries, *entry;
-  void *p;
-
-  entries = must_read_fs_list (false);
-  for (entry=entries; entry; entry=entry->me_next)
-    {
-      size_t len;
-
-#ifdef MNTTYPE_IGNORE
-      if (!strcmp (entry->me_type, MNTTYPE_IGNORE))
-	continue;
-#endif
-
-      len = strlen (entry->me_mountdir) + 1;
-      p = extendbuf (result, used+len, &alloc_size);
-      if (p)
-	{
-	  result = p;
-	  strcpy (&result[used], entry->me_mountdir);
-	  used += len;		/* len already includes one for the \0 */
-	}
-      else
-	{
-	  break;
-	}
-    }
-
-  free_file_system_list (entries);
-  return result;
 }
 
 
@@ -285,7 +279,7 @@ get_mounted_devices (size_t *n)
   struct mount_entry *entries, *entry;
   dev_t *result = NULL;
 
-  /* Use read_file_system_list () rather than must_read_fs_list()
+  /* Ignore read_file_system_list () not returning a valid list
    * because on some system this is always called at startup,
    * and find should only exit fatally if it needs to use the
    * result of this operation.   If we can't get the fs list

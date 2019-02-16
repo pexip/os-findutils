@@ -1,12 +1,12 @@
-This is find-maint.info, produced by makeinfo version 6.3 from
+This is find-maint.info, produced by makeinfo version 6.5 from
 find-maint.texi.
 
 This manual explains how GNU findutils is maintained, how changes should
 be made and tested, and what resources exist to help developers.
 
-   This is edition 4.7.0-git, for findutils version 4.7.0-git.
+   This is edition 4.6.0.225-235f, for findutils version 4.6.0.225-235f.
 
-   Copyright (C) 2007-2008, 2010-2016 Free Software Foundation, Inc.
+   Copyright (C) 2007-2019 Free Software Foundation, Inc.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -28,9 +28,9 @@ Maintaining GNU Findutils
 This manual explains how GNU findutils is maintained, how changes should
 be made and tested, and what resources exist to help developers.
 
-   This is edition 4.7.0-git, for findutils version 4.7.0-git.
+   This is edition 4.6.0.225-235f, for findutils version 4.6.0.225-235f.
 
-   Copyright (C) 2007-2008, 2010-2016 Free Software Foundation, Inc.
+   Copyright (C) 2007-2019 Free Software Foundation, Inc.
 
    Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -244,8 +244,8 @@ relating to problems with the program's execution environment should be
 diagnosed with a user-oriented error message.  An assertion failure
 should always denote a bug in the program.
 
-   Don't use 'assert' to catch not-fuly-implemented features of your
-code.  Finish the implementation, disable the code, or leave the
+   Avoid using 'assert' to mark not-fully-implemented features of your
+code as such.  Finish the implementation, disable the code, or leave the
 unfinished version on a local branch.
 
    Several programs in the findutils suite perform self-checks.  See for
@@ -327,10 +327,10 @@ needs to be fixed.  It's all to easy to miss some out when trying to fix
 the bug.  Equally, it's quite possible that when pasting the code into
 some function, the pasted code was not quite adapted correctly to its
 new environment.  To pick a contrived example, perhaps it modifies a
-global variable which it that code shouldn't be touching in its new
-home.  Worse, perhaps it makes some unstated assumption about the nature
-of the input arguments which is in fact not true for the context of the
-now duplicated code.
+global variable which it (that [original] code) shouldn't be touching in
+its new home.  Worse, perhaps it makes some unstated assumption about
+the nature of the input arguments which is in fact not true for the
+context of the now duplicated code.
 
    A good example of the use of refactoring in findutils is the
 'collect_arg' function in 'find/parser.c'.  A less clear-cut but larger
@@ -405,8 +405,8 @@ deleted from the one directory you are interested in, but if 'find' is
 searching 15000 directories, such a message becomes less helpful.
 
    Bear in mind also that it is possible for the directory 'find' is
-currently searching could be moved to another point in the filesystem,
-and that the directory in which 'find' was started could be deleted.
+searching to be concurrently moved elsewhere in the file system, and
+that the directory in which 'find' was started could be deleted.
 
    Henry Spencer's sixth commandment is also apposite here:
      If a function be advertised to return an error code in the event of
@@ -456,7 +456,7 @@ File: find-maint.info,  Node: Using the GNU Portability Library,  Next: Document
 6 Using the GNU Portability Library
 ***********************************
 
-The Gnulib library (<http://www.gnu.org/software/gnulib/>) makes a
+The Gnulib library (<https://www.gnu.org/software/gnulib/>) makes a
 variety of systems look more like a GNU/Linux system and also applies a
 bunch of automatic bug fixes and workarounds.  Some of these also apply
 to GNU/Linux systems too.  For example, the Gnulib regex implementation
@@ -529,6 +529,24 @@ Wait for the patch to be applied
 local diffs to be patched into gnulib beneath the 'gnulib-local'.
 Normally however, there is no need for this, since gnulib updates are
 very prompt.
+
+6.3 How to update Gnulib to latest
+==================================
+
+With a non-dirty working tree, the command 'make
+update-gnulib-to-latest' (or the shorter alias 'make gnulib-sync'
+allows, well, to update the gnulib submodule.  In detail, that is:
+  1. Fetching the latest upstream gnulib reference.
+  2. Copying the files which should stay in sync like 'bootstrap' from
+     gnulib into the findutils working tree.
+  3. And finally showing the 'git status' for the gnulib submodule and
+     the above copied files.
+   After that, the maintainer compares if all is correct, if the
+findutils build and run correct, and finally commits with the new gnulib
+version, e.g.  via 'git gui'.
+
+   The 'gnulib-sync' target can be run any time - after a 'configure'
+run -, and only rejects to run if the working tree is dirty.
 
 
 File: find-maint.info,  Node: Documentation,  Next: Testing,  Prev: Using the GNU Portability Library,  Up: Top
@@ -633,7 +651,7 @@ File: find-maint.info,  Node: Bugs,  Next: Distributions,  Prev: Testing,  Up: T
 ******
 
 Bugs are logged in the Savannah bug tracker
-<http://savannah.gnu.org/bugs/?group=findutils>.  The tracker offers
+<https://savannah.gnu.org/bugs/?group=findutils>.  The tracker offers
 several fields but their use is largely obvious.  The life-cycle of a
 bug is like this:
 
@@ -701,9 +719,9 @@ File: find-maint.info,  Node: Internationalisation,  Next: Security,  Prev: Dist
 
 Translation is essentially automated from the maintainer's point of
 view.  The TP mails the maintainer when a new PO file is available, and
-we just download it and check it in.  We copy the '.po' files into the
-git repository.  For more information, please see
-<http://translationproject.org/domain/findutils.html>.
+we just download it and check it in.  The 'bootstrap' script copies
+'.po' files into the working tree.  For more information, please see
+<https://translationproject.org/domain/findutils.html>.
 
 
 File: find-maint.info,  Node: Security,  Next: Making Releases,  Prev: Internationalisation,  Up: Top
@@ -751,7 +769,7 @@ available.  Here is an example alert:-
      GNU findutils is a set of programs which search for files on Unix-like
      systems.  It is maintained by the GNU Project of the Free Software
      Foundation.  For more information, see
-     <http://www.gnu.org/software/findutils>.
+     <https://www.gnu.org/software/findutils>.
 
 
      II. DESCRIPTION
@@ -831,21 +849,21 @@ available.  Here is an example alert:-
      	echo "Failed to create old-format locate database; skipping the sanity checks" >&2
          fi
      fi
-
+     
      make_overrun_db() @{
          # Start with a valid database
          cat "$@{vanilla_db@}"
          # Make the final entry really long
          dd if=/dev/zero  bs=1 count=1500 2>/dev/null | tr '\000' 'x'
      @}
-
-
-
+     
+     
+     
      ulimit -c 0
-
+     
      usage() @{ echo "usage: $0 binary [binary...]" >&2; exit $1; @}
      [ $# -eq 0 ] && usage 1
-
+     
      bad=""
      good=""
      ugly=""
@@ -914,7 +932,7 @@ available.  Here is an example alert:-
      --- locate/locate.c	22 Apr 2007 16:57:42 -0000	1.58.2.2
      +++ locate/locate.c	28 May 2007 10:18:16 -0000
      @@@@ -124,9 +124,9 @@@@ extern int errno;
-
+     
       #include "locatedb.h"
       #include <getline.h>
      -#include "../gnulib/lib/xalloc.h"
@@ -929,7 +947,7 @@ available.  Here is an example alert:-
      @@@@ -468,10 +468,36 @@@@ visit_justprint_unquoted(struct process_
         return VISIT_CONTINUE;
       @}
-
+     
      +static void
      +toolong (struct process_data *procdata)
      +@{
@@ -962,14 +980,14 @@ available.  Here is an example alert:-
      -  register char *s;
      +  register size_t i;
         (void) context;
-
+     
         /* Get the offset in the path where this path info starts.  */
      @@@@ -479,20 +505,35 @@@@ visit_old_format(struct process_data *pr
           procdata->count += getw (procdata->fp) - LOCATEDB_OLD_OFFSET;
         else
           procdata->count += procdata->c - LOCATEDB_OLD_OFFSET;
      +  assert(procdata->count > 0);
-
+     
      -  /* Overlay the old path with the remainder of the new.  */
      -  for (s = procdata->original_filename + procdata->count;
      +  /* Overlay the old path with the remainder of the new.  Read
@@ -1009,7 +1027,7 @@ available.  Here is an example alert:-
      +   */
      +  extend (procdata, i, 1u);
      +  procdata->original_filename[i] = 0;
-
+     
         procdata->munged_filename = procdata->original_filename;
 
 
@@ -1032,7 +1050,7 @@ signature, of course, but that has been omitted from the example.
    Once a fixed release is available, announce the new release using the
 normal channels.  Any CVE number assigned for the problem should be
 included in the 'ChangeLog' and 'NEWS' entries.  See
-<http://cve.mitre.org/> for an explanation of CVE numbers.
+<https://cve.mitre.org/> for an explanation of CVE numbers.
 
 
 File: find-maint.info,  Node: Making Releases,  Next: GNU Free Documentation License,  Prev: Security,  Up: Top
@@ -1049,26 +1067,27 @@ being here is a terse description of the main steps:
      the tests pass.  Verify this with 'make distcheck'.
   3. Bugs; make sure all Savannah bug entries fixed in this release are
      fixed.
-  4. NEWS; make sure that the NEWS and configure.in file are updated
-     with the new release number (and checked in).
-  5. Build the release tarball; do this with 'make distcheck'.  Copy the
-     tarball somewhere safe.
-  6. Tag the release; findutils releases are tagged like this for
+  4. NEWS; make sure that the NEWS file is updated with the new release
+     number (and checked in).
+  5. Tag the release; findutils releases are tagged like this for
      example: v4.5.5.  Previously a different format was in use:
      FINDUTILS_4_3_8-1.  You can create a tag with the a command like
      this: 'git tag -s -m "Findutils release v4.5.7" v4.5.7'.
+  6. Build the release tarball; do this with 'make distcheck'.  Copy the
+     tarball somewhere safe.
   7. Prepare the upload and upload it.  *Note Automated FTP Uploads:
      (maintain)Automated FTP Uploads, for detailed upload instructions.
   8. Make a release announcement; include an extract from the NEWS file
      which explains what's changed.  Announcements for test releases
      should just go to <bug-findutils@gnu.org>.  Announcements for
      stable releases should go to <info-gnu@gnu.org> as well.
-  9. Bump the release numbers in git; edit the 'configure.in' and 'NEWS'
-     files to advance the release numbers.  For example, if you have
-     just released '4.6.2', bump the release number to '4.6.3-git'.  The
-     point of the '-git' suffix here is that a findutils binary built
-     from git will bear a release number indicating it's not built from
-     the "official" source release.
+  9. Post-release administrativa: add a new dummy release header in
+     NEWS:
+
+     '* Major changes in release ?.?.?, YYYY-MM-DD'
+
+     and update the 'old_NEWS_hash' in 'cfg.mk' with 'make
+     update-NEWS-hash'.  Commit both changes.
   10. Close bugs; any bugs recorded on Savannah which were fixed in this
      release should now be marked as closed.  Update the 'Fixed Release'
      field of these bugs appropriately and make sure the 'Assigned to'
@@ -1083,7 +1102,7 @@ Appendix A GNU Free Documentation License
                      Version 1.3, 3 November 2008
 
      Copyright (C) 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
-     <http://fsf.org/>
+     <https://fsf.org/>
 
      Everyone is permitted to copy and distribute verbatim copies
      of this license document, but changing it is not allowed.
@@ -1480,7 +1499,7 @@ Appendix A GNU Free Documentation License
      the GNU Free Documentation License from time to time.  Such new
      versions will be similar in spirit to the present version, but may
      differ in detail to address new problems or concerns.  See
-     <http://www.gnu.org/copyleft/>.
+     <https://www.gnu.org/copyleft/>.
 
      Each version of the License is given a distinguishing version
      number.  If the Document specifies that a particular numbered
@@ -1559,25 +1578,25 @@ their use in free software.
 
 
 Tag Table:
-Node: Top873
-Node: Introduction1951
-Node: Maintaining GNU Programs2688
-Node: Design Issues3488
-Node: Coding Conventions7428
-Node: Make the Compiler Find the Bugs9396
-Node: Factor Out Repeated Code12940
-Node: Debugging is For Users Too15006
-Node: Don't Trust the File System Contents15737
-Node: The File System Is Being Modified17019
-Node: Tools18415
-Node: Using the GNU Portability Library19616
-Node: Documentation23254
-Node: Testing26538
-Node: Bugs26879
-Node: Distributions28621
-Node: Internationalisation29654
-Node: Security30123
-Node: Making Releases41483
-Node: GNU Free Documentation License43597
+Node: Top872
+Node: Introduction1949
+Node: Maintaining GNU Programs2686
+Node: Design Issues3486
+Node: Coding Conventions7426
+Node: Make the Compiler Find the Bugs9394
+Node: Factor Out Repeated Code12948
+Node: Debugging is For Users Too15027
+Node: Don't Trust the File System Contents15758
+Node: The File System Is Being Modified17040
+Node: Tools18430
+Node: Using the GNU Portability Library19631
+Node: Documentation24092
+Node: Testing27376
+Node: Bugs27717
+Node: Distributions29460
+Node: Internationalisation30493
+Node: Security30979
+Node: Making Releases42396
+Node: GNU Free Documentation License44337
 
 End Tag Table

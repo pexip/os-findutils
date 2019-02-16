@@ -3,6 +3,8 @@
 export DEB_CFLAGS_MAINT_APPEND := -Wall
 export DEB_CXXFLAGS_MAINT_APPEND := -Wall
 export DEB_BUILD_MAINT_OPTIONS := hardening=+all
+export RUN_VERY_EXPENSIVE_TESTS := yes
+export RUN_EXPENSIVE_TESTS := yes
 
 override_dh_auto_configure:
 	dh_auto_configure --verbose -- \
@@ -27,4 +29,4 @@ override_dh_auto_install:
 		$(CURDIR)/debian/locate/usr/share/man/man1/updatedb.findutils.1
 
 %:
-	dh $@ --with autotools_dev
+	dh $@

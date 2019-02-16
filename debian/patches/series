@@ -1,2 +1,1 @@
 10_fix_bsd_hurd_testsuite.diff
-20_find-fix-memory-leak-in-mount-list-handling.patch

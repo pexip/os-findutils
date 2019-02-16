@@ -2,7 +2,7 @@
 /* regextype.c -- Decode the name of a regular expression syntax into am
                   option name.
 
-   Copyright 2005, 2010-2011, 2016 Free Software Foundation, Inc.
+   Copyright (C) 2005-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* Written by James Youngman, <jay@gnu.org>. */
 
@@ -28,20 +28,14 @@
 #include <string.h>
 
 /* gnulib headers. */
-#include "error.h"
-#include "gettext.h"
 #include "quote.h"
 #include "regex.h"
 #include "regextype.h"
 #include "xalloc.h"
 
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
+/* findutils headers */
+#include "system.h"
+#include "die.h"
 
 
 struct tagRegexTypeMap
@@ -54,17 +48,17 @@ struct tagRegexTypeMap
 struct tagRegexTypeMap regex_map[] =
   {
    { "findutils-default",     CONTEXT_FINDUTILS, RE_SYNTAX_EMACS|RE_DOT_NEWLINE  },
-   { "awk",                   CONTEXT_ALL,       RE_SYNTAX_AWK                   },
-   { "egrep",                 CONTEXT_ALL,       RE_SYNTAX_EGREP                 },
    { "ed",                    CONTEXT_GENERIC,   RE_SYNTAX_ED                    },
    { "emacs",                 CONTEXT_ALL,       RE_SYNTAX_EMACS                 },
    { "gnu-awk",               CONTEXT_ALL,       RE_SYNTAX_GNU_AWK               },
    { "grep",                  CONTEXT_ALL,       RE_SYNTAX_GREP                  },
    { "posix-awk",             CONTEXT_ALL,       RE_SYNTAX_POSIX_AWK             },
+   { "awk",                   CONTEXT_ALL,       RE_SYNTAX_AWK                   },
    { "posix-basic",           CONTEXT_ALL,       RE_SYNTAX_POSIX_BASIC           },
    { "posix-egrep",           CONTEXT_ALL,       RE_SYNTAX_POSIX_EGREP           },
+   { "egrep",                 CONTEXT_ALL,       RE_SYNTAX_EGREP                 },
    { "posix-extended",        CONTEXT_ALL,       RE_SYNTAX_POSIX_EXTENDED        },
-   { "posix-minimal-basic",   CONTEXT_GENERIC,   RE_SYNTAX_POSIX_MINIMAL_BASIC    },
+   { "posix-minimal-basic",   CONTEXT_GENERIC,   RE_SYNTAX_POSIX_MINIMAL_BASIC   },
    { "sed",                   CONTEXT_GENERIC,   RE_SYNTAX_SED                   },
    /*    ,{ "posix-common",   CONTEXT_GENERIC,  _RE_SYNTAX_POSIX_COMMON   } */
   };
@@ -100,10 +94,10 @@ get_regex_type (const char *s)
       p += sprintf (p, "%s", quote (regex_map[i].name));
     }
 
-  error (EXIT_FAILURE, 0,
-	 _("Unknown regular expression type %s; valid types are %s."),
-	 quote (s),
-	 buf);
+  die (EXIT_FAILURE, 0,
+       _("Unknown regular expression type %s; valid types are %s."),
+       quote (s),
+       buf);
   /*NOTREACHED*/
   return -1;
 }
@@ -136,18 +130,26 @@ unsigned int get_regex_type_context (unsigned int ix)
 }
 
 int
-get_regex_type_synonym (unsigned int ix)
+get_regex_type_synonym (unsigned int ix, unsigned int context)
 {
   unsigned i;
   int flags;
 
   if (ix >= N_REGEX_MAP_ENTRIES)
     return -1;
-
   flags = regex_map[ix].option_val;
+  /* Terminate the loop before we get to IX, so that we always
+     consistently choose the same entry as a synonym (rather than
+     stating that x and y are synonyms of each other). */
   for (i=0u; i<ix; ++i)
     {
-      if (flags == regex_map[i].option_val)
+      if ((regex_map[i].context & context) == 0)
+	{
+	  /* It is pointless to state that "x is a synonym of y" if we
+	     are not in fact going to include y. */
+	  continue;
+	}
+      else if (flags == regex_map[i].option_val)
 	{
 	  return i;
 	}

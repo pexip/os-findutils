@@ -1,5 +1,5 @@
 /* fdleak.h -- detect file descriptor leaks
-   Copyright (C) 2010-2011, 2016 Free Software Foundation, Inc.
+   Copyright (C) 2010-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,11 +12,15 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#ifndef FDLEAK_H
+# define FDLEAK_H
 
 void remember_non_cloexec_fds (void);
 void forget_non_cloexec_fds (void);
 void complain_about_leaky_fds (void);
 
 int open_cloexec(const char *path, int flags, ...);
+
+#endif

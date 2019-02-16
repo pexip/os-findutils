@@ -1,6 +1,5 @@
 /* listfile.c -- display a long listing of a file
-   Copyright (C) 1991, 1993, 2000, 2004-2005, 2007-2008, 2010-2011, 2016
-   Free Software Foundation, Inc.
+   Copyright (C) 1991-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* config.h must be included first. */
 #include <config.h>
@@ -23,7 +22,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
-#include <locale.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,36 +40,26 @@
 #include "idcache.h"
 #include "pathmax.h"
 #include "stat-size.h"
-#include "gettext.h"
 
 /* find headers. */
+#include "system.h"
+#include "die.h"
 #include "listfile.h"
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
 #ifdef MAJOR_IN_MKDEV
-#include <sys/mkdev.h>
-#define HAVE_MAJOR
-#endif
-#ifdef MAJOR_IN_SYSMACROS
-#include <sys/sysmacros.h>
-#define HAVE_MAJOR
-#endif
-
-#ifdef major                    /* Might be defined in sys/types.h.  */
-#define HAVE_MAJOR
-#endif
-#ifndef HAVE_MAJOR
-#define major(dev)  (((dev) >> 8) & 0xff)
-#define minor(dev)  ((dev) & 0xff)
-#endif
-#undef HAVE_MAJOR
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
+# include <sys/mkdev.h>
 #else
-# define _(Text) Text
+# ifdef MAJOR_IN_SYSMACROS
+#  include <sys/sysmacros.h>
+# else
+#  ifndef major                    /* Might be defined in sys/types.h.  */
+#   define major(dev)  (((dev) >> 8) & 0xff)
+#   define minor(dev)  ((dev) & 0xff)
+#  endif
+# endif
 #endif
+
 
 static bool print_name (register const char *p, FILE *stream, int literal_control_chars);
 
@@ -463,7 +451,7 @@ list_file (const char *name,
     }
   if (!output_good)
     {
-      error (EXIT_FAILURE, errno, _("Failed to write output (at stage %d)"), failed_at);
+      die (EXIT_FAILURE, errno, _("Failed to write output (at stage %d)"), failed_at);
     }
 }
 

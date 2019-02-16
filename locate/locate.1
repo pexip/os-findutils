@@ -13,6 +13,7 @@ locate \- list files in databases that match a pattern
 [\-l N | \-\-limit=N]
 [\-S | \-\-statistics]
 [\-r | \-\-regex ]
+[\-\-regextype R]
 [\-\-max-database-age D]
 [\-P | \-H | \-\-nofollow]
 [\-L | \-\-follow]
@@ -168,14 +169,21 @@ The pattern specified on the command line is understood to be a
 regular expression, as opposed to a glob pattern.  The Regular
 expressions work in the same was as in
 .B emacs
-and
-.BR find ,
-except for the fact that "." will match a newline.
+except for the fact that "." will match a newline.  GNU
+.B find
+uses the same regular expressions.
 Filenames whose full paths match the specified regular expression are
 printed (or, in the case of the \-c option, counted).  If you wish to
 anchor your regular expression at the ends of the full path name, then
 as is usual with regular expressions, you should use the characters ^
 and $ to signify this.
+.TP
+.I "\-\-regextype R"
+Use regular expression dialect R.  Supported dialects
+include `findutils-default', `posix-awk', `posix-basic',
+`posix-egrep', `posix-extended', `posix-minimal-basic', `awk', `ed',
+`egrep', `emacs', `gnu-awk', `grep' and `sed'.  See the Texinfo
+documentation for a detailed explanation of these dialects.
 .TP
 .I "\-s, \-\-stdio"
 Accepted but does nothing, for compatibility with BSD
@@ -262,6 +270,14 @@ LL.
 4.0   | Introduced the LOCATE02 database format
 3.7   | Locate can search multiple databases
 .TE
+
+.SH COPYRIGHT
+Copyright \(co 1994-2019 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+.br
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
 .SH "BUGS"
 .P
 The locate database correctly handles filenames containing newlines,
@@ -274,7 +290,7 @@ may need to return filenames containing newlines, consider using its
 option.
 .P
 The best way to report a bug is to use the form at
-http://savannah.gnu.org/bugs/?group=findutils.
+https://savannah.gnu.org/bugs/?group=findutils.
 The reason for this is that you will then be able to track progress in
 fixing the problem.   Other comments about \fBlocate\fP(1) and about
 the findutils package in general can be sent to the

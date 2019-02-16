@@ -1,6 +1,6 @@
 /* regextype.h -- Decode the name of a regular expression syntax.
 
-   Copyright 2005, 2010-2011, 2015-2016 Free Software Foundation, Inc.
+   Copyright (C) 2005-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,10 +13,12 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* Written by James Youngman <jay@gnu.org>.
  */
+#ifndef REGEXTPE_H
+# define REGEXTPE_H
 
 /* Translate a regular expression type name into an option mask.
  * This could convert "grep" into RE_SYNTAX_GREP, for example.
@@ -44,13 +46,16 @@ const char * get_regex_type_name(unsigned int ix);
  */
 int get_regex_type_flags(unsigned int ix);
 
-/* If regular expression type IX (which is a regular expression type index) has
- * one or more synonyms, return the index of one of them.  Otherwise, return -1.
+/* If regular expression type IX (which is a regular expression type
+ * index) has one or more synonyms which is interesting in context
+ * CONTEXT, return the index of one of them.  Otherwise, return -1.
  */
-int get_regex_type_synonym(unsigned int ix);
+int get_regex_type_synonym(unsigned int ix, unsigned int context);
 
 /* Returns one of CONTEXT_FINDUTILS, CONTEXT_GENERIC or CONTEXT_ALL.
  * This identifies whether this regular expression type index is relevant for,
  * respectively, findutils, general callers, or all callers.
  */
 unsigned int get_regex_type_context(unsigned int ix);
+
+#endif

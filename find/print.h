@@ -1,5 +1,5 @@
 /* print.h -- declarations for symbols in print.c.
-   Copyright (C) 2011-2016 Free Software Foundation, Inc.
+   Copyright (C) 2011-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,9 +12,12 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include "defs.h"
+#ifndef PRINT_H
+# define PRINT_H
+
+# include "defs.h"
 
 struct format_val;
 struct parser_table;
@@ -30,3 +33,5 @@ bool
 insert_fprintf (struct format_val *vec,
 		const struct parser_table *entry,
 		char *format);
+
+#endif /* PRINT_H */
