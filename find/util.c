@@ -1,6 +1,5 @@
 /* util.c -- functions for initializing new tree elements, and other things.
-   Copyright (C) 1990-1994, 2000, 2003-2005, 2008-2011, 2016 Free
-   Software Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* config.h must always come first. */
@@ -33,7 +32,6 @@
 /* gnulib headers. */
 #include "error.h"
 #include "fdleak.h"
-#include "gettext.h"
 #include "progname.h"
 #include "quotearg.h"
 #include "save-cwd.h"
@@ -42,16 +40,10 @@
 
 /* find headers. */
 #include "defs.h"
+#include "die.h"
 #include "dircallback.h"
 #include "bugreports.h"
-
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
+#include "system.h"
 
 
 struct debug_option_assoc
@@ -63,13 +55,15 @@ struct debug_option_assoc
 static struct debug_option_assoc debugassoc[] =
   {
     { "exec", DebugExec, "Show diagnostic information relating to -exec, -execdir, -ok and -okdir" },
-    { "help", DebugHelp, "Explain the various -D options" },
     { "opt",  DebugExpressionTree|DebugTreeOpt, "Show diagnostic information relating to optimisation" },
     { "rates", DebugSuccessRates, "Indicate how often each predicate succeeded" },
     { "search",DebugSearch, "Navigate the directory tree verbosely" },
     { "stat", DebugStat, "Trace calls to stat(2) and lstat(2)" },
     { "time", DebugTime, "Show diagnostic information relating to time-of-day and timestamp comparisons" },
-    { "tree", DebugExpressionTree, "Display the expression tree" }
+    { "tree", DebugExpressionTree, "Display the expression tree" },
+
+    { "all", DebugAll, "Set all of the debug flags (but help)" },
+    { "help", DebugHelp, "Explain the various -D options" },
   };
 #define N_DEBUGASSOC (sizeof(debugassoc)/sizeof(debugassoc[0]))
 
@@ -493,10 +487,10 @@ record_initial_cwd (void)
   initial_wd = xmalloc (sizeof (*initial_wd));
   if (0 != save_cwd (initial_wd))
     {
-      error (EXIT_FAILURE, errno,
-	     _("Failed to save initial working directory%s%s"),
-	     (initial_wd->desc < 0 && initial_wd->name) ? ": " : "",
-	     (initial_wd->desc < 0 && initial_wd->name) ? initial_wd->name : "");
+      die (EXIT_FAILURE, errno,
+	   _("Failed to save initial working directory%s%s"),
+	   (initial_wd->desc < 0 && initial_wd->name) ? ": " : "",
+	   (initial_wd->desc < 0 && initial_wd->name) ? initial_wd->name : "");
     }
 }
 
@@ -886,8 +880,8 @@ process_optimisation_option (const char *arg)
 {
   if (0 == arg[0])
     {
-      error (EXIT_FAILURE, 0,
-	     _("The -O option must be immediately followed by a decimal integer"));
+      die (EXIT_FAILURE, 0,
+	   _("The -O option must be immediately followed by a decimal integer"));
     }
   else
     {
@@ -896,8 +890,8 @@ process_optimisation_option (const char *arg)
 
       if (!isdigit ( (unsigned char) arg[0] ))
 	{
-	  error (EXIT_FAILURE, 0,
-		 _("Please specify a decimal number immediately after -O"));
+	  die (EXIT_FAILURE, 0,
+	       _("Please specify a decimal number immediately after -O"));
 	}
       else
 	{
@@ -907,29 +901,29 @@ process_optimisation_option (const char *arg)
 	  opt_level = strtoul (arg, &end, 10);
 	  if ( (0==opt_level) && (end==arg) )
 	    {
-	      error (EXIT_FAILURE, 0,
-		     _("Please specify a decimal number immediately after -O"));
+	      die (EXIT_FAILURE, 0,
+		   _("Please specify a decimal number immediately after -O"));
 	    }
 	  else if (*end)
 	    {
 	      /* unwanted trailing characters. */
-	      error (EXIT_FAILURE, 0, _("Invalid optimisation level %s"), arg);
+	      die (EXIT_FAILURE, 0, _("Invalid optimisation level %s"), arg);
 	    }
 	  else if ( (ULONG_MAX==opt_level) && errno)
 	    {
-	      error (EXIT_FAILURE, errno,
-		     _("Invalid optimisation level %s"), arg);
+	      die (EXIT_FAILURE, errno,
+		   _("Invalid optimisation level %s"), arg);
 	    }
 	  else if (opt_level > USHRT_MAX)
 	    {
 	      /* tricky to test, as on some platforms USHORT_MAX and ULONG_MAX
 	       * can have the same value, though this is unusual.
 	       */
-	      error (EXIT_FAILURE, 0,
-		     _("Optimisation level %lu is too high.  "
-		       "If you want to find files very quickly, "
-		       "consider using GNU locate."),
-		     opt_level);
+	      die (EXIT_FAILURE, 0,
+		   _("Optimisation level %lu is too high.  "
+		     "If you want to find files very quickly, "
+		     "consider using GNU locate."),
+		   opt_level);
 	    }
 	  else
 	    {
@@ -970,6 +964,11 @@ process_leading_options (int argc, char *argv[])
 	}
       else if (0 == strcmp ("-D", argv[i]))
 	{
+	  if (argc <= i+1)
+	    {
+	      error (0, 0, _("Missing argument after the -D option."));
+	      usage (EXIT_FAILURE);
+	    }
 	  process_debug_options (argv[i+1]);
 	  ++i;			/* skip the argument too. */
 	}
@@ -1069,8 +1068,10 @@ set_option_defaults (struct options *p)
 
   if (getenv ("FIND_BLOCK_SIZE"))
     {
-      error (EXIT_FAILURE, 0,
-	     _("The environment variable FIND_BLOCK_SIZE is not supported, the only thing that affects the block size is the POSIXLY_CORRECT environment variable"));
+      die (EXIT_FAILURE, 0,
+	   _("The environment variable FIND_BLOCK_SIZE is not supported, "
+	     "the only thing that affects the block size is the "
+	     "POSIXLY_CORRECT environment variable"));
     }
 
 #if LEAF_OPTIMISATION

@@ -1,7 +1,7 @@
 # -*- autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1996-2016 Free Software Foundation, Inc.
+# Copyright (C) 1996-2019 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,12 +14,17 @@
 # GNU General Public License for more details.
 
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 dnl Written by James Youngman.
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([GNU findutils], 4.7.0-git, [bug-findutils@gnu.org])
+# Make inter-release version strings look like, e.g., v4.6-131-gda920ee, which
+# indicates that it is built from the 131st delta (in _some_ repository)
+# following the v4.6 tag, and that da920ee is a prefix of the commit SHA1.
+AC_INIT([GNU findutils],
+        m4_esyscmd([build-aux/git-version-gen .tarball-version]),
+        [bug-findutils@gnu.org])
 
 dnl Set the bug-report URL
 dnl
@@ -38,15 +43,13 @@ dnl content in the updatedb script.
 AC_SUBST([PACKAGE_BUGREPORT_URL],[$bugreport_url])
 
 AC_CONFIG_AUX_DIR(build-aux)
-AM_INIT_AUTOMAKE([no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([no-dist-gzip dist-xz color-tests])
+AM_SILENT_RULES([yes]) # make --enable-silent-rules the default.
 
 AC_CONFIG_SRCDIR([find/pred.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_HOST
 AC_CONFIG_MACRO_DIR(gl/m4)
-
-dnl Set of available languages.
-ALL_LINGUAS="be bg cs ca da de el eo es et fi fr ga gl hr hu id it ja ko lg lt ms nb nl pl pt pt_BR ro ru sk sl sr sv tr uk vi zh_CN zh_TW"
 
 AC_SUBST(AUXDIR,$ac_aux_dir)
 dnl check for --with-fts
@@ -108,6 +111,10 @@ AC_ARG_ENABLE(compiler-warnings,
   dnl Enable various GCC warnings.
   gl_MANYWARN_ALL_GCC([warnings])
 
+  # Ensure VLAs are not used.
+  # Note -Wvla is implicitly added by gl_MANYWARN_ALL_GCC
+  AC_DEFINE([GNULIB_NO_VLA], [1], [Define to 1 to disable use of VLAs])
+
   # Set up the list of the pointless, undesired warnings.
   findutils_nw=
   findutils_nw="$findutils_nw -Wsystem-headers"	 # Don't let system headers trigger warnings
@@ -117,9 +124,6 @@ AC_ARG_ENABLE(compiler-warnings,
   findutils_nw="$findutils_nw -Wsign-conversion" # Likewise.
   findutils_nw="$findutils_nw -Wc++-compat"      # malloc returns void* and a cast would be ugly.
   findutils_nw="$findutils_nw -Wswitch-default"  # A switch on an enum value needs no default.
-  # gettext.h and gnulib use variable length arrays and we don't want warnings for that.
-  findutils_gnulib_noise_warnings=
-  findutils_gnulib_noise_warnings="$findutils_gnulib_noise_warnings -Wvla"
 
   # Warnings we might enable in the future, but not yet (because they generate a
   # lot of noise).
@@ -128,7 +132,6 @@ AC_ARG_ENABLE(compiler-warnings,
   findutils_marginal="$findutils_marginal -Wpadded"
   findutils_marginal="$findutils_marginal -Wformat-nonliteral"
   findutils_marginal="$findutils_marginal -Wunreachable-code"
-  findutils_marginal="$findutils_marginal -Wunused-parameter"
   # -Wdouble-promotion generates many warnings when printing values with fprintf.
   findutils_marginal="$findutils_marginal -Wdouble-promotion"
   findutils_marginal="$findutils_marginal -Woverlength-strings"
@@ -144,7 +147,7 @@ AC_ARG_ENABLE(compiler-warnings,
   # Enable all GCC warnings not in our list of excluded warnings.
   gl_MANYWARN_COMPLEMENT(
 	[warnings], [$warnings],
-	[$findutils_nw $findutils_marginal $findutils_tmp_nowarning $findutils_gnulib_noise_warnings])
+	[$findutils_nw $findutils_marginal $findutils_tmp_nowarning])
   for w in $warnings
   do
     gl_WARN_ADD([$w])
@@ -155,6 +158,8 @@ AC_ARG_ENABLE(compiler-warnings,
   # tricky as they're comparisons between a type we choose and a type the implementation
   # chooses without stating whether or not it is signed (e.g. time_t).
   WARN_CFLAGS="$WARN_CFLAGS  -Wno-sign-compare"
+  # Likewise for -Wunused-parameter: it is implied by -Wunused and -Wextra.
+  gl_WARN_ADD([-Wno-unused-parameter])
   ])
 
 dnl For --enable-compiler-warnings-are-errors, any GCC compiler
@@ -170,13 +175,6 @@ AC_ARG_ENABLE(compiler-warnings-are-errors,
     if test -n "$GCC"; then
       CFLAGS="$CFLAGS -Werror"
       AC_MSG_RESULT([yes])
-      # Turn off warnings that would fire for code in gnulib, which we still want to be able
-      # to compile without error.
-      unwanted="vla"
-      AC_MSG_NOTICE([Turning off otherwise-fatal warnings in order to compile gnulib successfully: $unwanted])
-      for w in $unwanted; do
-        WARN_CFLAGS="${WARN_CFLAGS} -Wno-${w}"
-      done
     else
       AC_MSG_RESULT([no, because $CC is not GCC])
     fi
@@ -267,7 +265,7 @@ dnl #11710) (Sun Sep  4 20:15:11 2005: gl_INCLUDED_REGEX no longer seems
 dnl to be available in gnulib CVS)
 gl_REGEX
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.69])
 
 jy_SORTZ
 
@@ -316,7 +314,7 @@ locate/testsuite/Makefile
 m4/Makefile
 po/Makefile.in
 po/Makefile
-tests/Makefile
+gnulib-tests/Makefile
 xargs/Makefile
 xargs/testsuite/Makefile
 ])

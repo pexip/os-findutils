@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2016 Free Software Foundation, Inc.
+# Copyright (C) 2002-2019 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this file.  If not, see <http://www.gnu.org/licenses/>.
+# along with this file.  If not, see <https://www.gnu.org/licenses/>.
 #
 # As a special exception to the GNU General Public License,
 # this file may be distributed as part of a program that
@@ -27,7 +27,133 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --local-dir=gnulib-local --lib=libgnulib --source-base=gl/lib --m4-base=gl/m4 --doc-base=doc --tests-base=tests --aux-dir=build-aux --with-tests --no-conditional-dependencies --no-libtool --macro-prefix=gl alloca areadlinkat argmatch assert byteswap c-strcasestr c-strstr canonicalize cloexec closein closeout ctype d-ino d-type dirent-safer dirname errno error faccessat fchdir fcntl fdl fdopendir fflush fileblocks filemode fnmatch-gnu fopen-safer fts gcc-attributes gendocs getdelim getline getopt-gnu gettext gettimeofday gitlog-to-changelog gpl-3.0 hash human idcache inline inttypes isblank locale lstat maintainer-makefile malloc-gnu manywarnings math mbrtowc mbscasestr mbsstr mbswidth mktime modechange modf mountlist open parse-datetime pathmax perror progname quotearg readlink realloc-gnu regex rpmatch safe-read save-cwd savedir selinux-at snprintf stat stat-macros stat-size stat-time stdarg stdbool stddef stdint stdio stdlib stpcpy strcasestr strdup-posix strftime string strndup strtoull strtoumax sys_stat sys_time sys_wait timespec uname unlinkat update-copyright verify version-etc version-etc-fsf warnings wchar wcwidth xalloc xalloc-die xgetcwd xstrtod xstrtol xstrtoumax yesno
+# gnulib-tool --import --local-dir=gnulib-local \
+#  --lib=libgnulib \
+#  --source-base=gl/lib \
+#  --m4-base=gl/m4 \
+#  --doc-base=doc \
+#  --tests-base=gnulib-tests \
+#  --aux-dir=build-aux \
+#  --with-tests \
+#  --no-conditional-dependencies \
+#  --no-libtool \
+#  --macro-prefix=gl \
+#  alloca \
+#  areadlinkat \
+#  argmatch \
+#  assert \
+#  byteswap \
+#  c-strcasestr \
+#  c-strstr \
+#  canonicalize \
+#  cloexec \
+#  closein \
+#  closeout \
+#  ctype \
+#  d-ino \
+#  d-type \
+#  dirent-safer \
+#  dirname \
+#  dup2 \
+#  errno \
+#  error \
+#  faccessat \
+#  fchdir \
+#  fcntl \
+#  fdl \
+#  fdopendir \
+#  fflush \
+#  fileblocks \
+#  filemode \
+#  fnmatch-gnu \
+#  fopen-safer \
+#  fts \
+#  gcc-attributes \
+#  gendocs \
+#  getdelim \
+#  getline \
+#  getopt-gnu \
+#  gettext \
+#  gettimeofday \
+#  git-version-gen \
+#  gitlog-to-changelog \
+#  gnupload \
+#  gpl-3.0 \
+#  hash \
+#  human \
+#  idcache \
+#  inline \
+#  intprops \
+#  inttypes \
+#  isblank \
+#  locale \
+#  lstat \
+#  maintainer-makefile \
+#  malloc-gnu \
+#  manywarnings \
+#  math \
+#  mbrtowc \
+#  mbscasestr \
+#  mbsstr \
+#  mbswidth \
+#  mktime \
+#  modechange \
+#  modf \
+#  mountlist \
+#  open \
+#  parse-datetime \
+#  pathmax \
+#  perror \
+#  progname \
+#  quotearg \
+#  readlink \
+#  realloc-gnu \
+#  regex \
+#  rpmatch \
+#  safe-read \
+#  save-cwd \
+#  savedir \
+#  selinux-at \
+#  snprintf \
+#  stat \
+#  stat-macros \
+#  stat-size \
+#  stat-time \
+#  stdarg \
+#  stdbool \
+#  stddef \
+#  stdint \
+#  stdio \
+#  stdlib \
+#  stpcpy \
+#  strcasestr \
+#  strdup-posix \
+#  strftime \
+#  string \
+#  strndup \
+#  strtoull \
+#  strtoumax \
+#  sys_stat \
+#  sys_time \
+#  sys_wait \
+#  timespec \
+#  uname \
+#  unlinkat \
+#  update-copyright \
+#  verify \
+#  version-etc \
+#  version-etc-fsf \
+#  warnings \
+#  wchar \
+#  wcwidth \
+#  xalloc \
+#  xalloc-die \
+#  xgetcwd \
+#  xstrtod \
+#  xstrtol \
+#  xstrtoumax \
+#  year2038 \
+#  yesno
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([gnulib-local])
@@ -48,6 +174,7 @@ gl_MODULES([
   d-type
   dirent-safer
   dirname
+  dup2
   errno
   error
   faccessat
@@ -68,12 +195,15 @@ gl_MODULES([
   getopt-gnu
   gettext
   gettimeofday
+  git-version-gen
   gitlog-to-changelog
+  gnupload
   gpl-3.0
   hash
   human
   idcache
   inline
+  intprops
   inttypes
   isblank
   locale
@@ -142,6 +272,7 @@ gl_MODULES([
   xstrtod
   xstrtol
   xstrtoumax
+  year2038
   yesno
 ])
 gl_AVOID([])
@@ -149,7 +280,7 @@ gl_SOURCE_BASE([gl/lib])
 gl_M4_BASE([gl/m4])
 gl_PO_BASE([])
 gl_DOC_BASE([doc])
-gl_TESTS_BASE([tests])
+gl_TESTS_BASE([gnulib-tests])
 gl_WITH_TESTS
 gl_LIB([libgnulib])
 gl_MAKEFILE_NAME([])

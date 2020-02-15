@@ -1,5 +1,5 @@
 /* bugreports.h -- explain how to report bugs
-   Copyright (C) 2016 Free Software Foundation, Inc.
+   Copyright (C) 2016-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,13 +12,13 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* Written by James Youngman <jay@gnu.org>.
  */
 #if !defined BUGREPORTS_H
 # define BUGREPORTS_H
-#include <stdio.h>
+# include <stdio.h>
 
 /* Interpreetation of the return code is as for fprintf. */
 int explain_how_to_report_bugs (FILE *f, const char *program_name);

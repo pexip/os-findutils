@@ -1,6 +1,5 @@
 /* exec.c -- Implementation of -exec, -execdir, -ok, -okdir.
-   Copyright (C) 1990-1994, 2000, 2003-2010, 2016 Free Software
-   Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* config.h must be included first. */
@@ -31,21 +30,15 @@
 #include "cloexec.h"
 #include "dirname.h"
 #include "error.h"
-#include "gettext.h"
 #include "save-cwd.h"
 #include "xalloc.h"
 
 /* findutils headers */
 #include "buildcmd.h"
 #include "defs.h"
+#include "die.h"
 #include "fdleak.h"
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
+#include "system.h"
 
 
 /* Initialize exec->wd_for_exec.
@@ -125,9 +118,9 @@ impl_pred_exec (const char *pathname,
       */
       if (!record_exec_dir (execp))
         {
-          error (EXIT_FAILURE, errno,
-                 _("Failed to save working directory in order to "
-                   "run a command on %s"),
+          die (EXIT_FAILURE, errno,
+               _("Failed to save working directory in order to "
+                 "run a command on %s"),
                  safely_quote_err_filename (0, pathname));
           /*NOTREACHED*/
         }
@@ -307,7 +300,7 @@ launch (struct buildcmd_control *ctl, void *usercontext, int argc, char **argv)
 
   child_pid = fork ();
   if (child_pid == -1)
-    error (EXIT_FAILURE, errno, _("cannot fork"));
+    die (EXIT_FAILURE, errno, _("cannot fork"));
   if (child_pid == 0)
     {
       /* We are the child. */

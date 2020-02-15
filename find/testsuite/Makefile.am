@@ -1,4 +1,4 @@
-# Copyright (C) 2001, 2003-2016 Free Software Foundation, Inc.
+# Copyright (C) 2001-2019 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 # The 2001 copyright line above was added in 2015 based on James
 # Youngman's best estimate of the original publication date of this
@@ -119,6 +119,7 @@ find.posix/prune-stat.xo \
 find.posix/sizetype.xo \
 find.posix/sv-bug-15235.xo \
 find.posix/sv-bug-19613.xo \
+find.posix/sv-bug-54171.xo \
 find.posix/typesize.xo
 
 
@@ -245,33 +246,18 @@ find.posix/sv-bug-15235.exp \
 find.posix/sv-bug-19605.exp \
 find.posix/sv-bug-19613.exp \
 find.posix/sv-bug-19617.exp \
+find.posix/sv-bug-54171.exp \
 find.posix/typesize.exp \
 find.posix/user-empty.exp \
 find.posix/user-missing.exp
 
-EXTRA_DIST_GOLDEN = \
-	test_escapechars.golden
-
-test_shell_progs = \
-sv-bug-32043.sh \
-test_escapechars.sh \
-test_escape_c.sh \
-test_inode.sh \
-test_type-list.sh \
-sv-34079.sh \
-sv-34976-execdir-fd-leak.sh \
-sv-48030-exec-plus-bug.sh \
-sv-48180-refuse-noop.sh
-
-EXTRA_DIST = $(EXTRA_DIST_EXP) $(EXTRA_DIST_XO) $(EXTRA_DIST_GOLDEN) \
-	$(test_shell_progs) binary_locations.sh checklists.py
+EXTRA_DIST = $(EXTRA_DIST_EXP) $(EXTRA_DIST_XO) \
+	checklists.py
 
 CLEANFILES = *.log *.sum site.exp site.bak configured-testfiles.txt
 
 #DIST_SUBDIRS = config
 
-
-TESTS = $(test_shell_progs)
 TEST_EXTENSIONS = .sh .py
 
 check-local: checklists
