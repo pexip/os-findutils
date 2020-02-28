@@ -1,63 +1,64 @@
 # Pesan bahasa indonesia untuk findutils
-# Copyright (C) 2001, 2010, 2016 Free Software Foundation, Inc.
+# Copyright (C) 2001 Free Software Foundation, Inc.
 # This file is distributed under the same license as the findutils package.
 # Tedi Heriyanto <tedi_h@gmx.net>, 1999, 2002.
-# Arif E. Nugroho <arif_endro@yahoo.com>, 2008.
+# Arif E. Nugroho <arif_endro@yahoo.com>, 2008, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: findutils 4.4.0\n"
+"Project-Id-Version: findutils 4.4.2\n"
 "Report-Msgid-Bugs-To: bug-findutils@gnu.org\n"
-"POT-Creation-Date: 2016-11-02 23:33+0100\n"
-"PO-Revision-Date: 2008-11-09 12:30+0700\n"
+"POT-Creation-Date: 2019-02-15 12:24+0000\n"
+"PO-Revision-Date: 2009-06-21 08:00+0700\n"
 "Last-Translator: Arif E. Nugroho <arif_endro@yahoo.com>\n"
 "Language-Team: Indonesian <translation-team-id@lists.sourceforge.net>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: find/exec.c:129
+#: find/exec.c:122
 #, fuzzy, c-format
+#| msgid "Failed to safely change directory into %s"
 msgid "Failed to save working directory in order to run a command on %s"
-msgstr "gagal untuk kembali ke direktori kerja inisial"
+msgstr "Gagal untuk secara aman mengubah direktori kedalam %s"
 
-#: find/exec.c:249
+#: find/exec.c:242
 #, c-format
 msgid "Cannot close standard input"
 msgstr "Tidak dapat menutup standar masukan"
 
-#: find/exec.c:278
+#: find/exec.c:271
 #, fuzzy, c-format
+#| msgid "Failed to change directory"
 msgid "Failed to change directory%s%s"
 msgstr "Gagal untuk berpindah direktori"
 
-#: find/exec.c:310 xargs/xargs.c:1264
-#, c-format
+#: find/exec.c:303 xargs/xargs.c:1270
 msgid "cannot fork"
 msgstr "tidak dapat mem-fork"
 
-#: find/exec.c:341
+#: find/exec.c:334
 #, c-format
 msgid "error waiting for %s"
 msgstr "Kesalahan waiting untuk %s"
 
-#: find/exec.c:350
+#: find/exec.c:343
 #, c-format
 msgid "%s terminated by signal %d"
 msgstr "%s di-terminate oleh sinyal %d"
 
-#: find/fstype.c:179
-#, c-format
+#: find/fstype.c:240
 msgid "Cannot read mounted file system list"
 msgstr ""
 
-#: find/fstype.c:238
+#: find/fstype.c:270
 msgid "unknown"
 msgstr "tidak diketahui"
 
-#: find/ftsfind.c:237 find/oldfind.c:1136
+#: find/ftsfind.c:228 find/oldfind.c:1115
 #, c-format
 msgid ""
 "Symbolic link %s is part of a loop in the directory hierarchy; we have "
@@ -66,7 +67,7 @@ msgstr ""
 "Link simbolik %s adalah bagian dari sebuah loop dalam hierarki direktori; "
 "kita telah mengunjungi direktori yang telah ditunjuk."
 
-#: find/ftsfind.c:251
+#: find/ftsfind.c:242
 #, c-format
 msgid ""
 "File system loop detected; %s is part of the same file system loop as %s."
@@ -74,53 +75,55 @@ msgstr ""
 "Sistem berkas loop terdeteksi; %s adalah bagian dari sistem berkas loop yang "
 "sama seperti %s."
 
-#: find/ftsfind.c:436 find/util.c:260
+#: find/ftsfind.c:438 find/util.c:254
 #, fuzzy, c-format
+#| msgid "Warning: file %s appears to have mode 0000"
 msgid "WARNING: file %s appears to have mode 0000"
 msgstr "Peringatan: berkas %s kelihatannya memiliki mode 0000"
 
-#: find/ftsfind.c:551
+#: find/ftsfind.c:553
 #, c-format
 msgid "cannot search %s"
 msgstr "tidak dapat mencari %s"
 
-#: find/ftsfind.c:601
+#: find/ftsfind.c:603
 #, fuzzy, c-format
+#| msgid "failed to return to initial working directory"
 msgid "failed to restore working directory after searching %s"
 msgstr "gagal untuk kembali ke direktori kerja inisial"
 
-#: find/ftsfind.c:671 find/oldfind.c:202
-#, c-format
+#: find/ftsfind.c:673 find/oldfind.c:179
 msgid "Failed to initialize shared-file hash table"
 msgstr ""
 
-#: find/ftsfind.c:687 find/oldfind.c:218 locate/frcode.c:231
-#: locate/locate.c:1594 xargs/xargs.c:424
-#, fuzzy, c-format
+#: find/ftsfind.c:689 find/oldfind.c:195 locate/frcode.c:222
+#: locate/locate.c:1566 xargs/xargs.c:424
+#, fuzzy
+#| msgid "sanity check of the fnmatch() library function failed."
 msgid "The atexit library function failed"
 msgstr "pemeriksaan keadaan dari fungsi perpustakaan fnmatch() gagal."
 
-#: find/oldfind.c:261
-#, c-format
+#: find/oldfind.c:238
 msgid "cannot stat current directory"
 msgstr "tidak dapat memperoleh statistik direktori saat ini"
 
-#: find/oldfind.c:352
-#, c-format
+#: find/oldfind.c:331
 msgid "Cannot read list of mounted devices."
 msgstr ""
 
-#: find/oldfind.c:441
+#: find/oldfind.c:420
 #, fuzzy, c-format
+#| msgid "Warning: file system %s has recently been unmounted."
 msgid "WARNING: file system %s has recently been unmounted."
 msgstr "Peringatan: sistem berkas %s baru saja telah diunmount."
 
-#: find/oldfind.c:451
+#: find/oldfind.c:430
 #, fuzzy, c-format
+#| msgid "Warning: file system %s has recently been mounted."
 msgid "WARNING: file system %s has recently been mounted."
 msgstr "Peringatan: sistem berkas %s barus seja telah dimount."
 
-#: find/oldfind.c:548
+#: find/oldfind.c:527
 #, c-format
 msgid ""
 "%s%s changed during execution of %s (old device number %ld, new device "
@@ -129,7 +132,7 @@ msgstr ""
 "%s%s berubah selama eksekusi dari %s (nomor perangkat lama %ld, nomor "
 "perangkat baru %ld, tipe sistem berkas adalah %s) [ref %ld]"
 
-#: find/oldfind.c:585
+#: find/oldfind.c:564
 #, c-format
 msgid ""
 "%s%s changed during execution of %s (old inode number %<PRIuMAX>, new inode "
@@ -138,17 +141,18 @@ msgstr ""
 "%s%s berubah selama eksekusi dari %s (nomor inode lama %<PRIuMAX>, nomor "
 "inode baru %<PRIuMAX>, tipe sistem berkas adalah %s) [ref %ld]"
 
-#: find/oldfind.c:750
-#, fuzzy, c-format
+#: find/oldfind.c:729
+#, fuzzy
+#| msgid "failed to return to initial working directory"
 msgid "failed to return to parent directory"
 msgstr "gagal untuk kembali ke direktori kerja inisial"
 
-#: find/oldfind.c:1036
+#: find/oldfind.c:1015
 #, c-format
 msgid "Failed to safely change directory into %s"
 msgstr "Gagal untuk secara aman mengubah direktori kedalam %s"
 
-#: find/oldfind.c:1155
+#: find/oldfind.c:1134
 #, c-format
 msgid ""
 "Filesystem loop detected; %s has the same device number and inode as a "
@@ -165,13 +169,18 @@ msgstr[1] ""
 "sebagai sebuah direktori yang memiliki %d tingkat lebih tinggi dalam "
 "hierarki sistem berkas"
 
-#: find/oldfind.c:1407
+#: find/oldfind.c:1386
 #, c-format
 msgid "warning: not following the symbolic link %s"
 msgstr "peringatan: tidak mengikuti link simbolik %s"
 
-#: find/oldfind.c:1480
+#: find/oldfind.c:1458
 #, fuzzy, c-format
+#| msgid ""
+#| "WARNING: Hard link count is wrong for %s (saw only st_nlink=%d but we "
+#| "already saw %d subdirectories): this may be a bug in your file system "
+#| "driver.  Automatically turning on find's -noleaf option.  Earlier results "
+#| "may have failed to include directories that should have been searched."
 msgid ""
 "WARNING: Hard link count is wrong for %s (saw only st_nlink=%<PRIuMAX> but "
 "we already saw %<PRIuMAX> subdirectories): this may be a bug in your file "
@@ -181,12 +190,16 @@ msgid ""
 msgstr ""
 "PERINGATAN: Jumlah hard link salah untuk %s (hanya terlihat st_nlink=%d "
 "tetapi kita telah melihaat %d subdirektori): ini mungkin sebuah bug dalam "
-"driver sistem berkas. Secara otomatis mengaktifkan opsi -noleaf. Hasil "
+"driver sistem berkas. Secara otomatis mengaktifkan pilihan -noleaf. Hasil "
 "sebelumnya mungkin gagal untuk memasukan direktori yang seharusnya telah "
 "dicari."
 
-#: find/parser.c:458
-#, fuzzy, c-format
+#: find/parser.c:450
+#, fuzzy
+#| msgid ""
+#| "The -delete action atomatically turns on -depth, but -prune does nothing "
+#| "when -depth is in effect.  If you want to carry on anyway, just "
+#| "explicitly use the -depth option."
 msgid ""
 "The -delete action automatically turns on -depth, but -prune does nothing "
 "when -depth is in effect.  If you want to carry on anyway, just explicitly "
@@ -194,9 +207,9 @@ msgid ""
 msgstr ""
 "aksi -delete secara otomatis mengaktifkan -depth, tetapi -prune tidak "
 "melakukan apapun ketika -depth dalam efek. Jika anda ingin tetap "
-"melanjutkan, hanya secara eksplisit gunakan opsi -depth."
+"melanjutkan, hanya secara eksplisit gunakan pilihan -depth."
 
-#: find/parser.c:617
+#: find/parser.c:609
 #, c-format
 msgid ""
 "warning: you have specified the %s option after a non-option argument %s, "
@@ -204,21 +217,21 @@ msgid ""
 "as those specified after it).  Please specify options before other "
 "arguments.\n"
 msgstr ""
-"peringatan: anda telah menspesifikasikan opsi %s seteleh argumen bukan opsi "
-"%s, tetapi opsi bukan posisional (%s mempengaruhi pemeriksaan yang "
-"dispesifikasikan sebelumnya juga untuk yang dispesifikasikan sesudahnya). "
-"Mohon spesifikasikan opsi sebelum argumen yang lain.\n"
+"peringatan: anda telah menspesifikasikan pilihan %s seteleh argumen bukan "
+"pilihan %s, tetapi pilihan bukan posisional (%s mempengaruhi pemeriksaan "
+"yang dispesifikasikan sebelumnya juga untuk yang dispesifikasikan "
+"sesudahnya). Mohon spesifikasikan pilihan sebelum argumen yang lain.\n"
 
-#: find/parser.c:924
+#: find/parser.c:913
 #, c-format
 msgid ""
 "warning: the -d option is deprecated; please use -depth instead, because the "
 "latter is a POSIX-compliant feature."
 msgstr ""
-"peringatan: opsi -d sudah ditinggalkan; lebih baik gunakan -depth, karena "
+"peringatan: pilihan -d sudah ditinggalkan; lebih baik gunakan -depth, karena "
 "ini adalah featur dari POSIX-komplian."
 
-#: find/parser.c:1197
+#: find/parser.c:1156
 #, c-format
 msgid ""
 "%s is not the name of an existing group and it does not look like a numeric "
@@ -227,78 +240,68 @@ msgstr ""
 "%s bukan nama dari grup yang sudah ada dan ini tidak seperti sebuah numerik "
 "grup ID karena ini memiliki akhiran %s yang tidak terduga"
 
-#: find/parser.c:1212
+#: find/parser.c:1171
 #, c-format
 msgid "%s is not the name of an existing group"
 msgstr "%s bukan nama dari grup yang sudah ada"
 
-#: find/parser.c:1218
-#, c-format
+#: find/parser.c:1177
 msgid "argument to -group is empty, but should be a group name"
 msgstr "argumen ke -grup adalah kosong, tetapi seharusnya sebuah nama grup"
 
-#: find/parser.c:1291
-#, c-format
+#: find/parser.c:1250
 msgid "sanity check of the fnmatch() library function failed."
 msgstr "pemeriksaan keadaan dari fungsi perpustakaan fnmatch() gagal."
 
-#: find/parser.c:1305
+#: find/parser.c:1265
 #, c-format
 msgid ""
-"warning: Unix filenames usually don't contain slashes (though pathnames "
-"do).  That means that '%s %s' will probably evaluate to false all the time "
-"on this system.  You might find the '-wholename' test more useful, or "
-"perhaps '-samefile'.  Alternatively, if you are using GNU grep, you could "
-"use 'find ... -print0 | grep -FzZ %s'."
+"warning: %s matches against basenames only, but the given pattern contains a "
+"directory separator (%s), thus the expression will evaluate to false all the "
+"time.  Did you mean %s?"
 msgstr ""
-"peringatan: Nama berkas unix biasanya tidak berisi slashes (walaupun nama "
-"jalur biasanya memakai). Itu berarti '%s %s' mungkin akan dievaluasikan ke  "
-"salah untuk setiap saat di sistem ini. Anda mungkin menemukan pemeriksaan '-"
-"wholename' lebih berguna, atau mungkin '-samefile'. Alternatifnya, jika anda "
-"menggunakan GNU grep, anda dapat menggunakan 'find ... -print0 | grep -FzZ "
-"%s'."
 
-#: find/parser.c:1431
+#: find/parser.c:1388
 #, c-format
 msgid "Expected a positive decimal integer argument to %s, but got %s"
 msgstr ""
 "Diduga sebuah argumen desimal integer positif ke %s, tetapi diperoleh %s"
 
-#: find/parser.c:1596
+#: find/parser.c:1553
 #, c-format
 msgid "This system does not provide a way to find the birth time of a file."
 msgstr ""
 "Sistem ini tidak menyediakan sebuah cara untuk menemukan waktu pembuatan "
 "dari sebuah berkas."
 
-#: find/parser.c:1617
-#, fuzzy, c-format
+#: find/parser.c:1574
+#, c-format
 msgid "The %s test needs an argument"
-msgstr "%s: opsi `%s' membutuhkan sebuah argumen\n"
+msgstr "Tes %s membutuhkan sebuah argumen"
 
-#: find/parser.c:1654
+#: find/parser.c:1611
 #, c-format
 msgid "I cannot figure out how to interpret %s as a date or time"
 msgstr ""
 "Saya tidak dapat menemukan bagaimana menginterprestasikan %s sebagai sebuah "
 "tanggal atau waktu"
 
-#: find/parser.c:1671
+#: find/parser.c:1628
 #, c-format
 msgid "Cannot obtain birth time of file %s"
 msgstr "Tidak dapat memperoleh waktu pembuatan dari berkas %s"
 
-#: find/parser.c:1815
+#: find/parser.c:1772
 #, c-format
 msgid "warning: -%s %s will not match anything because it ends with /."
 msgstr ""
 
-#: find/parser.c:1910
+#: find/parser.c:1867
 #, c-format
 msgid "invalid mode %s"
 msgstr "mode %s tidak valid"
 
-#: find/parser.c:1928
+#: find/parser.c:1885
 #, c-format
 msgid ""
 "warning: you have specified a mode pattern %s (which is equivalent to /000). "
@@ -310,116 +313,122 @@ msgstr ""
 "dengan -perm -000; yang artinya, ketika ini digunakan untuk mencocokan bukan "
 "berkas, sekarang ini cocok kesemua berkas."
 
-#: find/parser.c:2101
+#: find/parser.c:2058
 #, fuzzy, c-format
+#| msgid "Invalid regular expression"
 msgid "failed to compile regular expression '%s': %s"
 msgstr "ekspresi reguler tidak valid"
 
-#: find/parser.c:2130
-#, c-format
+#: find/parser.c:2087
 msgid "invalid null argument to -size"
 msgstr "Null argument tidak valid untuk -size"
 
-#: find/parser.c:2180
+#: find/parser.c:2137
 #, c-format
 msgid "invalid -size type `%c'"
 msgstr "Type `%c' -size tidak valid"
 
-#: find/parser.c:2190
+#: find/parser.c:2147
 #, fuzzy, c-format
+#| msgid "Invalid argument `%s%c' to -size"
 msgid "Invalid argument `%s%s' to -size"
 msgstr "argumen `%s%c' tidak valid untuk -size"
 
-#: find/parser.c:2372
+#: find/parser.c:2329
 msgid ""
 "The -show-control-chars option takes a single argument which must be "
 "'literal' or 'safe'"
 msgstr ""
-"Opsi -show-control-chars mengambil sebuah argumen tunggal yang harus berupa "
-"'literal' atau 'safe'"
+"Pilihan -show-control-chars mengambil sebuah argumen tunggal yang harus "
+"berupa 'literal' atau 'safe'"
 
-#: find/parser.c:2486
+#: find/parser.c:2443
 #, c-format
 msgid "Invalid argument %s to -used"
 msgstr "argumen %s tidak valid untuk -used"
 
-#: find/parser.c:2527
-#, fuzzy, c-format
+#: find/parser.c:2484
+#, c-format
 msgid "%s is not the name of a known user"
-msgstr "%s bukan nama dari grup yang sudah ada"
+msgstr "%s bukan nama dari nama yang dikenal"
 
-#: find/parser.c:2534
-#, fuzzy, c-format
+#: find/parser.c:2491
 msgid "The argument to -user should not be empty"
-msgstr "Argumen untuk opsi --max-database-age tidak boleh kosong"
+msgstr "Argumen untuk pilihan -user seharusnya tidak boleh kosong"
 
-#: find/parser.c:2559
+#: find/parser.c:2516
 #, c-format
 msgid "Features enabled: "
 msgstr "Featur aktif: "
 
-#: find/parser.c:2628
-#, c-format
+#: find/parser.c:2585
 msgid "invalid predicate -context: SELinux is not enabled."
 msgstr ""
 
-#: find/parser.c:2692
+#: find/parser.c:2649
 #, fuzzy, c-format
+#| msgid "Arguments to -type should contain only one letter"
 msgid "Arguments to %s should contain at least one letter"
 msgstr "Argumen ke -type seharusnya hanya berisi satu kata"
 
-#: find/parser.c:2757
+#: find/parser.c:2714
 #, c-format
 msgid ""
 "%s %c is not supported because symbolic links are not supported on the "
 "platform find was compiled on."
 msgstr ""
 
-#: find/parser.c:2769
+#: find/parser.c:2726
 #, c-format
 msgid ""
 "%s %c is not supported because FIFOs are not supported on the platform find "
 "was compiled on."
 msgstr ""
 
-#: find/parser.c:2781
+#: find/parser.c:2738
 #, c-format
 msgid ""
 "%s %c is not supported because named sockets are not supported on the "
 "platform find was compiled on."
 msgstr ""
 
-#: find/parser.c:2797
+#: find/parser.c:2754
 #, c-format
 msgid ""
 "%s %c is not supported because Solaris doors are not supported on the "
 "platform find was compiled on."
 msgstr ""
 
-#: find/parser.c:2805
+#: find/parser.c:2762
 #, fuzzy, c-format
+#| msgid "Unknown argument to -type: %c"
 msgid "Unknown argument to %s: %c"
 msgstr "Argumen ke -type: %c tidak diketahui"
 
-#: find/parser.c:2813
+#: find/parser.c:2770
 #, c-format
 msgid "Duplicate file type '%c' in the argument list to %s."
 msgstr ""
 
-#: find/parser.c:2829
+#: find/parser.c:2786
 #, c-format
 msgid "Must separate multiple arguments to %s using: ','"
 msgstr ""
 
-#: find/parser.c:2838
+#: find/parser.c:2795
 #, c-format
 msgid ""
 "Last file type in list argument to %s is missing, i.e., list is ending on: "
 "','"
 msgstr ""
 
-#: find/parser.c:2897
+#: find/parser.c:2854
 #, fuzzy, c-format
+#| msgid ""
+#| "The current directory is included in the PATH environment variable, which "
+#| "is insecure in combination with the %s action of find.  Please remove the "
+#| "current directory from your $PATH (that is, remove \".\" or leading or "
+#| "trailing colons)"
 msgid ""
 "The current directory is included in the PATH environment variable, which is "
 "insecure in combination with the %s action of find.  Please remove the "
@@ -430,7 +439,7 @@ msgstr ""
 "aman dalam kombinasi dengan %s aksi untuk find. Mohon hapus direktori "
 "sekarang dari $PATH anda (hapus \".\" atau diawali atau diakhir kolon)"
 
-#: find/parser.c:2909
+#: find/parser.c:2866
 #, c-format
 msgid ""
 "The relative path %s is included in the PATH environment variable, which is "
@@ -441,8 +450,7 @@ msgstr ""
 "aman dalam kombinasi dengan %s aksi dari find. Mohon hapus masukan itu dari "
 "$PATH"
 
-#: find/parser.c:3018
-#, c-format
+#: find/parser.c:2975
 msgid ""
 "You may not use {} within the utility name for -execdir and -okdir, because "
 "this is a potential security problem."
@@ -450,48 +458,48 @@ msgstr ""
 "Anda tidak boleh menggunakan {} didalam nama utilitas untuk -execdir dan -"
 "okdir, karena ini ada potensial untuk masalah keamanan."
 
-#: find/parser.c:3044
+#: find/parser.c:3001
 #, c-format
 msgid "Only one instance of {} is supported with -exec%s ... +"
 msgstr "Hanya satu instance dari {} yang didukung dengan -exec%s ... +"
 
-#: find/parser.c:3054
+#: find/parser.c:3011
 #, c-format
 msgid "In %s the %s must appear by itself, but you specified %s"
 msgstr ""
 
-#: find/parser.c:3074
-#, c-format
+#: find/parser.c:3030
 msgid "The environment is too large for exec()."
 msgstr "Lingkungan terlalu besar untuk exec()."
 
-#: find/parser.c:3243
+#: find/parser.c:3199
 #, fuzzy, c-format
+#| msgid "arithmetic overflow when trying to calculate the end of today"
 msgid "arithmetic overflow while converting %s days to a number of seconds"
 msgstr ""
 "aritmetik overflow ketika mencoba untuk mengkalkulasi akhir dari hari ini"
 
-#: find/parser.c:3267
-#, c-format
+#: find/parser.c:3223
 msgid "arithmetic overflow when trying to calculate the end of today"
 msgstr ""
 "aritmetik overflow ketika mencoba untuk mengkalkulasi akhir dari hari ini"
 
-#: find/parser.c:3426
+#: find/parser.c:3382
 msgid "standard error"
 msgstr "standar error"
 
-#: find/parser.c:3431
+#: find/parser.c:3387
 msgid "standard output"
 msgstr "standar keluaran"
 
-#: find/pred.c:330
+#: find/pred.c:328
 #, c-format
 msgid "cannot delete %s"
 msgstr "tidak dapat menghapus %s"
 
 #: find/pred.c:720
 #, fuzzy, c-format
+#| msgid "Warning: cannot determine birth time of file %s"
 msgid "WARNING: cannot determine birth time of file %s"
 msgstr "Peringatan: tidak dapat menentukan waktu pembuatan dari berkas %s"
 
@@ -501,52 +509,52 @@ msgid "< %s ... %s > ? "
 msgstr "< %s ... %s > ? "
 
 #: find/pred.c:770
-#, fuzzy, c-format
+#, fuzzy
+#| msgid "Failed to write to standard output"
 msgid "Failed to write prompt for -ok"
 msgstr "Gagal untuk menulis ke standar keluaran"
 
-#: find/pred.c:1239 find/print.c:1235
+#: find/pred.c:1239 find/print.c:1237
 #, c-format
 msgid "getfilecon failed: %s"
 msgstr ""
 
-#: find/print.c:341
+#: find/print.c:334
 #, c-format
 msgid "warning: escape `\\' followed by nothing at all"
 msgstr ""
 
-#: find/print.c:360
+#: find/print.c:353
 #, c-format
 msgid "warning: unrecognized escape `\\%c'"
 msgstr "peringatan: escape `\\%c' tidak dikenal"
 
-#: find/print.c:380 find/print.c:1257
+#: find/print.c:373 find/print.c:1259
 #, c-format
 msgid "error: %s at end of format string"
 msgstr "error: %s diakhir dari format string"
 
-#: find/print.c:404
+#: find/print.c:397
 #, c-format
 msgid "error: the format directive `%%%c' is reserved for future use"
 msgstr "error: format direktif `%%%c' direserve untuk penggunaan masa datang"
 
-#: find/print.c:412
+#: find/print.c:405
 #, c-format
 msgid ""
 "warning: format directive `%%%c' should be followed by another character"
 msgstr ""
 
-#: find/print.c:420
+#: find/print.c:413
 #, c-format
 msgid "warning: unrecognized format directive `%%%c'"
 msgstr "peringatan: format direktif `%%%c' tidak dikenal"
 
-#: find/tree.c:123 find/tree.c:128 find/tree.c:218 find/tree.c:257
-#, c-format
+#: find/tree.c:115 find/tree.c:120 find/tree.c:212 find/tree.c:251
 msgid "invalid expression"
 msgstr "ekspresi tidak valid"
 
-#: find/tree.c:134
+#: find/tree.c:126
 #, c-format
 msgid ""
 "invalid expression; you have used a binary operator '%s' with nothing before "
@@ -555,37 +563,37 @@ msgstr ""
 "ekspresi tidak valid; anda telah menggunakan sebuah operator binari '%s' "
 "dengan tidak ada sebelumnya."
 
-#: find/tree.c:145
+#: find/tree.c:137
 #, c-format
 msgid "expected an expression between '%s' and ')'"
 msgstr "diduga sebuah akspresi diantara '%s' dan ')'"
 
-#: find/tree.c:155
+#: find/tree.c:147
 #, c-format
 msgid "expected an expression after '%s'"
 msgstr "diduga sebuah ekspresi setelah '%s'"
 
-#: find/tree.c:160
-#, c-format
+#: find/tree.c:152
 msgid "invalid expression; you have too many ')'"
 msgstr "ekspresi tidak valid; anda memiliki terlalu banyak ')'"
 
-#: find/tree.c:183
-#, c-format
+#: find/tree.c:175
+#, fuzzy, c-format
+#| msgid ""
+#| "invalid expression; expected to find a ')' but didn't see one.  Perhaps "
+#| "you need an extra predicate after '%s'"
 msgid ""
-"invalid expression; expected to find a ')' but didn't see one.  Perhaps you "
+"invalid expression; expected to find a ')' but didn't see one. Perhaps you "
 "need an extra predicate after '%s'"
 msgstr ""
 "ekspresi tidak valid; diduga untuk menemukan sebuah ')' tetapi tidak melihat "
 "satu. Mungkin anda butuh sebuah predikate lebih setelah '%s'"
 
-#: find/tree.c:191
-#, c-format
+#: find/tree.c:184
 msgid "invalid expression; empty parentheses are not allowed."
 msgstr "ekspresi tidak valid; tanda kurung kosong tidak diperbolehkan."
 
-#: find/tree.c:197
-#, c-format
+#: find/tree.c:190
 msgid ""
 "invalid expression; I was expecting to find a ')' somewhere but did not see "
 "one."
@@ -593,85 +601,89 @@ msgstr ""
 "ekspresi tidak valid; Saya menduga untuk menemukan sebuah ')' disuatu tempat "
 "tetapi tidak melihat satu pun."
 
-#: find/tree.c:203 find/tree.c:827
-#, c-format
+#: find/tree.c:197 find/tree.c:821
 msgid "oops -- invalid expression type!"
 msgstr "oops -- tipe ekspresi tidak valid!"
 
-#: find/tree.c:275
+#: find/tree.c:269
 #, c-format
 msgid "oops -- invalid expression type (%d)!"
 msgstr "oops -- tipe ekspresi tidak valid (%d)!"
 
-#: find/tree.c:1105
+#: find/tree.c:1098
 #, c-format
 msgid ""
 "warning: there is no entry in the predicate evaluation cost table for "
 "predicate %s; please report this as a bug"
 msgstr ""
 
-#: find/tree.c:1279
-#, c-format
-msgid "paths must precede expression: %s"
+#: find/tree.c:1272
+#, fuzzy, c-format
+#| msgid "paths must precede expression: %s"
+msgid "paths must precede expression: `%s'"
 msgstr "jalur harus mendahului ekspresi: %s"
 
-#: find/tree.c:1288
+#: find/tree.c:1274
+#, c-format
+msgid "possible unquoted pattern after predicate `%s'?"
+msgstr ""
+
+#: find/tree.c:1284
 #, c-format
 msgid "unknown predicate `%s'"
 msgstr "predikat `%s' tidak diketahui"
 
-#: find/tree.c:1309
+#: find/tree.c:1304
 #, c-format
 msgid "invalid predicate `%s'"
 msgstr "predikat `%s' tidak valid"
 
-#: find/tree.c:1314
+#: find/tree.c:1308
 #, c-format
 msgid "invalid argument `%s' to `%s'"
 msgstr "argumen `%s' tidak valid untuk `%s'"
 
-#: find/tree.c:1322
+#: find/tree.c:1315
 #, c-format
 msgid "missing argument to `%s'"
 msgstr "argumen hilang untuk `%s'"
 
-#: find/tree.c:1399
-#, c-format
+#: find/tree.c:1391
 msgid "you have too many ')'"
 msgstr "anda memiliki terlalu banyak ')'"
 
-#: find/tree.c:1405
+#: find/tree.c:1397
 #, c-format
 msgid "unexpected extra predicate '%s'"
 msgstr "ekstra predikat `%s' tidak diduga"
 
-#: find/tree.c:1407
-#, c-format
+#: find/tree.c:1399
 msgid "unexpected extra predicate"
 msgstr "ekstra predikat tidak diduga"
 
-#: find/tree.c:1528
-#, c-format
+#: find/tree.c:1520
 msgid "oops -- invalid default insertion of and!"
 msgstr "oops -- penyisipan and baku tidak valid!"
 
-#: find/util.c:145
+#: find/util.c:139
 #, fuzzy
+#| msgid "Valid arguments are:"
 msgid "Valid arguments for -D:\n"
 msgstr "Argumen yang valid adalah:"
 
-#: find/util.c:169 locate/frcode.c:151 locate/locate.c:1391 xargs/xargs.c:1644
+#: find/util.c:163 locate/frcode.c:142 locate/locate.c:1363 xargs/xargs.c:1650
 #, c-format
 msgid "Try '%s --help' for more information.\n"
 msgstr ""
 
-#: find/util.c:175
+#: find/util.c:169
 #, fuzzy, c-format
+#| msgid "Usage: %s [-H] [-L] [-P] [-Olevel] [-D "
 msgid ""
 "Usage: %s [-H] [-L] [-P] [-Olevel] [-D debugopts] [path...] [expression]\n"
 msgstr "Penggunaan: %s [-H] [-L] [-P] [-Otingkat] [-D "
 
-#: find/util.c:179
+#: find/util.c:173
 msgid ""
 "\n"
 "default path is the current directory; default expression is -print\n"
@@ -681,7 +693,7 @@ msgstr ""
 "Path default adalah direktori saat ini; ekspresi default adalah -print\n"
 "ekspresi boleh terdiri dari: opertors, options, tests, dan actions:\n"
 
-#: find/util.c:182
+#: find/util.c:176
 msgid ""
 "operators (decreasing precedence; -and is implicit where no others are "
 "given):\n"
@@ -691,7 +703,7 @@ msgstr ""
 "operator (urutan menurun; -and adalah implisit bila tidak ada yang lain):\n"
 "      ( EXPR ) ! EXPR -not EXPR EXPR1 -a EXPR2 EXPR1 -and EXPR2\n"
 
-#: find/util.c:186
+#: find/util.c:180
 msgid ""
 "positional options (always true): -daystart -follow -regextype\n"
 "\n"
@@ -699,13 +711,13 @@ msgid ""
 "      -depth --help -maxdepth LEVELS -mindepth LEVELS -mount -noleaf\n"
 "      --version -xdev -ignore_readdir_race -noignore_readdir_race\n"
 msgstr ""
-"opsi posisi (selalu benar): -daystart -follow -regextype\n"
+"pilihan posisi (selalu benar): -daystart -follow -regextype\n"
 "\n"
-"opsi normal (selalu benar, dispesifikasikan sebelum opsi lain):\n"
+"pilihan normal (selalu benar, dispesifikasikan sebelum pilihan lain):\n"
 "      -depth --help -maxdepth TINGKAT -mindept TINGKAT -mount -noleaf\n"
 "      --version -xdev -ignore_readdir_rage -noignore_readdir_race\n"
 
-#: find/util.c:191
+#: find/util.c:185
 msgid ""
 "tests (N can be +N or -N or N): -amin N -anewer FILE -atime N -cmin N\n"
 "      -cnewer FILE -ctime N -empty -false -fstype TYPE -gid N -group NAME\n"
@@ -719,8 +731,13 @@ msgstr ""
 "      -ilname POLA -iname POLA -inum N -iwholename POLA -iregex POLA\n"
 "      -links N -lname POLA -mmin N -mtime N -name POLA -newer BERKAS"
 
-#: find/util.c:196
+#: find/util.c:190
 #, fuzzy
+#| msgid ""
+#| "      -nouser -nogroup -path PATTERN -perm [+-]MODE -regex PATTERN\n"
+#| "      -readable -writable -executable\n"
+#| "      -wholename PATTERN -size N[bcwkMG] -true -type [bcdpflsD] -uid N\n"
+#| "      -used N -user NAME -xtype [bcdpfls]\n"
 msgid ""
 "\n"
 "      -nouser -nogroup -path PATTERN -perm [-/]MODE -regex PATTERN\n"
@@ -733,12 +750,17 @@ msgstr ""
 "      -wholename POLA -size N[bcwkMG] -true -type [bcdpflsD] -uid N\n"
 "      -used N -user NAME -xtype [bcdpfls]\n"
 
-#: find/util.c:201
+#: find/util.c:195
 msgid "      -context CONTEXT\n"
 msgstr ""
 
-#: find/util.c:203
+#: find/util.c:197
 #, fuzzy
+#| msgid ""
+#| "actions: -delete -print0 -printf FORMAT -fprintf FILE FORMAT -print \n"
+#| "      -fprint0 FILE -fprint FILE -ls -fls FILE -prune -quit\n"
+#| "      -exec COMMAND ; -exec COMMAND {} + -ok COMMAND ;\n"
+#| "      -execdir COMMAND ; -execdir COMMAND {} + -okdir COMMAND ;\n"
 msgid ""
 "\n"
 "actions: -delete -print0 -printf FORMAT -fprintf FILE FORMAT -print \n"
@@ -752,49 +774,49 @@ msgstr ""
 "      -exec PERINTAH; -exec PERINTAH {} + -ok PERINTAH ;\n"
 "      -execdir PERINTAH ; -execdir PERINTAH {} + -okdir PERINTAH ;\n"
 
-#: find/util.c:211
+#: find/util.c:205
 msgid ""
 "\n"
 "Use '-D help' for a description of the options, or see find(1)\n"
 "\n"
 msgstr ""
 
-#: find/util.c:497
+#: find/util.c:491
 #, fuzzy, c-format
+#| msgid "failed to return to initial working directory"
 msgid "Failed to save initial working directory%s%s"
-msgstr "tidak dapat merekam direktori kerja sekarang"
+msgstr "gagal untuk kembali ke direktori kerja inisial"
 
-#: find/util.c:516
+#: find/util.c:510
 #, fuzzy, c-format
+#| msgid "failed to return to initial working directory"
 msgid "Failed to restore initial working directory%s%s"
-msgstr "tidak dapat merekam direktori kerja sekarang"
+msgstr "gagal untuk kembali ke direktori kerja inisial"
 
-#: find/util.c:866
+#: find/util.c:860
 #, c-format
 msgid "Ignoring unrecognised debug flag %s"
 msgstr "Mengabaikan tanda debug %s tidak dikenal"
 
-#: find/util.c:873
+#: find/util.c:867
 #, c-format
 msgid "Empty argument to the -D option."
-msgstr "Argumen kosong ke opsi -D."
+msgstr "Argumen kosong ke pilihan -D."
 
-#: find/util.c:890
-#, c-format
+#: find/util.c:884
 msgid "The -O option must be immediately followed by a decimal integer"
-msgstr "Opsi -D harus secara langsung diikuti oleh sebuah integer desimal"
+msgstr "Pilihan -D harus secara langsung diikuti oleh sebuah integer desimal"
 
-#: find/util.c:900 find/util.c:911
-#, c-format
+#: find/util.c:894 find/util.c:905
 msgid "Please specify a decimal number immediately after -O"
 msgstr "Mohon spesifikasikan sebuah nomor desimal setelah -O"
 
-#: find/util.c:916 find/util.c:921
+#: find/util.c:910 find/util.c:915
 #, c-format
 msgid "Invalid optimisation level %s"
 msgstr "Tingkat optimisasi %s tidak valid"
 
-#: find/util.c:929
+#: find/util.c:923
 #, c-format
 msgid ""
 "Optimisation level %lu is too high.  If you want to find files very quickly, "
@@ -803,8 +825,13 @@ msgstr ""
 "Tingkat optimisasi %lu terlalu tinggi. Jika anda ingin menemukan berkas "
 "secara cepat, pertimbangkan menggunakan GNU locate."
 
-#: find/util.c:1073
-#, c-format
+#: find/util.c:969
+#, fuzzy, c-format
+#| msgid "Empty argument to the -D option."
+msgid "Missing argument after the -D option."
+msgstr "Argumen kosong ke pilihan -D."
+
+#: find/util.c:1072
 msgid ""
 "The environment variable FIND_BLOCK_SIZE is not supported, the only thing "
 "that affects the block size is the POSIXLY_CORRECT environment variable"
@@ -812,8 +839,14 @@ msgstr ""
 "Variabel lingkungan FIND_BLOCK_SIZE tidak didukung, sesuatu yang hanya "
 "mempengaruhi ukuran blok adalah variabel lingkungan FIND_BLOCK_SIZE"
 
-#: lib/bugreports.c:33
+#: lib/bugreports.c:28
 #, fuzzy, c-format
+#| msgid ""
+#| "Report (and track progress on fixing) bugs via the findutils bug-"
+#| "reporting\n"
+#| "page at http://savannah.gnu.org/ or, if you have no web access, by "
+#| "sending\n"
+#| "email to <bug-findutils@gnu.org>."
 msgid ""
 "Please see also the documentation at %s.\n"
 "You can report (and track progress on fixing) bugs in the \"%s\"\n"
@@ -825,166 +858,164 @@ msgstr ""
 "halaman pelaporan bugs di http://savannah.gnu.org/ atau, jika anda tidak \n"
 "akses web, dengan mengirimkan email ke <bug-findutils@gnu.org>."
 
-#: lib/buildcmd.c:154
-#, c-format
+#: lib/buildcmd.c:144
 msgid "command too long"
 msgstr "perintah terlalu panjang"
 
-#: lib/buildcmd.c:294
-#, c-format
+#: lib/buildcmd.c:284
 msgid "can't call exec() due to argument size restrictions"
 msgstr ""
 
-#: lib/buildcmd.c:359
-#, fuzzy, c-format
+#: lib/buildcmd.c:349
+#, fuzzy
+#| msgid "can not fit single argument within argument list size limit"
 msgid "cannot fit single argument within argument list size limit"
 msgstr "tidak dapat memuat argumen dalam batasan daftar argumen"
 
-#: lib/buildcmd.c:365
-#, c-format
+#: lib/buildcmd.c:355
 msgid "argument list too long"
 msgstr "daftar argumen terlalu panjang"
 
-#: lib/buildcmd.c:622
+#: lib/buildcmd.c:612
 #, c-format
 msgid "Environment variable %s is not set to a valid decimal number"
 msgstr ""
 
-#: lib/fdleak.c:384
+#: lib/fdleak.c:380
 #, c-format
 msgid ""
 "File descriptor %d will leak; please report this as a bug, remembering to "
 "include a detailed description of the simplest way to reproduce this problem."
 msgstr ""
 
-#: lib/findutils-version.c:55
+#: lib/findutils-version.c:49
 msgid "Eric B. Decker"
 msgstr "Eric B. Decker"
 
-#: lib/findutils-version.c:56
+#: lib/findutils-version.c:50
 msgid "James Youngman"
 msgstr "James Youngman"
 
-#: lib/findutils-version.c:57
+#: lib/findutils-version.c:51
 msgid "Kevin Dalley"
 msgstr "Kevin Dalley"
 
-#: lib/listfile.c:466
+#: lib/listfile.c:454
 #, fuzzy, c-format
+#| msgid "Failed to write to standard output"
 msgid "Failed to write output (at stage %d)"
 msgstr "Gagal untuk menulis ke standar keluaran"
 
-#: lib/regextype.c:104
+#: lib/regextype.c:98
 #, c-format
 msgid "Unknown regular expression type %s; valid types are %s."
 msgstr "Tipe ekspresi regular %s tidak diketahui; tipe yang valid adalah %s."
 
-#: lib/safe-atoi.c:75
+#: lib/safe-atoi.c:68
 #, fuzzy, c-format
+#| msgid "unexpected EOF in %s"
 msgid "Unexpected suffix %s on %s"
 msgstr "tidak terduga EOF dalam %s"
 
-#: lib/safe-atoi.c:81
+#: lib/safe-atoi.c:74
 #, fuzzy, c-format
+#| msgid "expected an expression after '%s'"
 msgid "Expected an integer: %s"
 msgstr "diduga sebuah ekspresi setelah '%s'"
 
-#: locate/frcode.c:156
+#: locate/frcode.c:147
 #, c-format
 msgid "Usage: %s [-0 | --null] [--version] [--help]\n"
 msgstr "Penggunaan: %s [-0 | --null] [--version] [--help]\n"
 
-#: locate/frcode.c:178
-#, c-format
+#: locate/frcode.c:169
 msgid "You need to specify a security level as a decimal integer."
 msgstr ""
 "Anda perlu menspesifikasikan sebuah tingkat keamanan sebagai sebuah desimal "
 "integer."
 
-#: locate/frcode.c:186
+#: locate/frcode.c:177
 #, c-format
 msgid "Security level %s is outside the convertible range."
 msgstr "Tingkat keamanan %s diluar dari jangkauan covertible."
 
-#: locate/frcode.c:194
+#: locate/frcode.c:185
 #, c-format
 msgid "Security level %s has unexpected suffix %s."
 msgstr "Tingkat keamanan %s memiliki akhiran tidak diduga %s."
 
-#: locate/frcode.c:208
-#, c-format
+#: locate/frcode.c:199
 msgid "write error"
 msgstr "error menulis"
 
-#: locate/frcode.c:255
+#: locate/frcode.c:246
 #, c-format
 msgid "slocate security level %ld is unsupported."
 msgstr "tingkat keamanan slocate %ld tidak didukung."
 
-#: locate/frcode.c:274
+#: locate/frcode.c:265
 #, fuzzy, c-format
+#| msgid "Unknown argument to -type: %c"
 msgid "no argument expected."
 msgstr "Argumen ke -type: %c tidak diketahui"
 
-#: locate/frcode.c:291
-#, c-format
+#: locate/frcode.c:282
 msgid "Failed to write to standard output"
 msgstr "Gagal untuk menulis ke standar keluaran"
 
-#: locate/frcode.c:300
+#: locate/frcode.c:291
 #, c-format
 msgid "The input file should end with the delimiter"
 msgstr ""
 
-#: locate/locate.c:133
+#: locate/locate.c:110
 msgid "days"
 msgstr "hari"
 
-#: locate/locate.c:181
-#, c-format
+#: locate/locate.c:158
 msgid "The argument for option --max-database-age must not be empty"
-msgstr "Argumen untuk opsi --max-database-age tidak boleh kosong"
+msgstr "Argumen untuk pilihan --max-database-age tidak boleh kosong"
 
-#: locate/locate.c:197 locate/locate.c:204
+#: locate/locate.c:174 locate/locate.c:181
 #, c-format
 msgid "Invalid argument %s for option --max-database-age"
-msgstr "argumen %s tidak valid untuk opsi --max-database-age"
+msgstr "argumen %s tidak valid untuk pilihan --max-database-age"
 
-#: locate/locate.c:454
+#: locate/locate.c:431
 #, c-format
 msgid "locate database %s contains a filename longer than locate can handle"
 msgstr ""
 "basis data locate %s berisi sebuah nama berkas lebih panjang dari yang dapat "
 "ditangani oleh locate"
 
-#: locate/locate.c:565 locate/locate.c:584
+#: locate/locate.c:542 locate/locate.c:561
 #, c-format
 msgid "locate database %s is corrupt or invalid"
 msgstr "basis data locate %s terkorupsi atau tidak valid"
 
-#: locate/locate.c:869
+#: locate/locate.c:846
 #, c-format
 msgid "Database was last modified at %s.%09ld"
 msgstr ""
 
-#: locate/locate.c:877
+#: locate/locate.c:854
 #, c-format
 msgid "Locate database size: %s byte\n"
 msgid_plural "Locate database size: %s bytes\n"
 msgstr[0] "Ukuran basis data locate: %s byte\n"
 msgstr[1] "Ukuran basis data locate: %s byte\n"
 
-#: locate/locate.c:883
+#: locate/locate.c:860
 #, c-format
 msgid "Matching Filenames: %s\n"
 msgstr "Nama berkas cocok: %s\n"
 
-#: locate/locate.c:884
+#: locate/locate.c:861
 #, c-format
 msgid "All Filenames: %s\n"
 msgstr "Seluruh nama berkas: %s\n"
 
-#: locate/locate.c:890
+#: locate/locate.c:867
 #, c-format
 msgid ""
 "File names have a cumulative length of %s bytes.\n"
@@ -1001,7 +1032,7 @@ msgstr ""
 "\t%s berisi karakter baris-baru, \n"
 "\tdan %s berisi karakter dengan high bit set.\n"
 
-#: locate/locate.c:904
+#: locate/locate.c:881
 #, c-format
 msgid ""
 "Some filenames may have been filtered out, so we cannot compute the "
@@ -1010,17 +1041,17 @@ msgstr ""
 "Beberapa nama berkas mungkin telah difilter keluar, jadi kita tidak dapat "
 "menghitup rasio kompresi.\n"
 
-#: locate/locate.c:917
+#: locate/locate.c:894
 #, c-format
 msgid "Compression ratio %4.2f%% (higher is better)\n"
 msgstr "Rasio kompresi %4.2f%% (lebih tinggi lebih baik)\n"
 
-#: locate/locate.c:924
+#: locate/locate.c:901
 #, c-format
 msgid "Compression ratio is undefined\n"
 msgstr "Rasio kompresi tidak didefinisikan\n"
 
-#: locate/locate.c:979
+#: locate/locate.c:956
 #, c-format
 msgid ""
 "locate database %s looks like an slocate database but it seems to have "
@@ -1030,16 +1061,7 @@ msgstr ""
 "memiliki tingkat keamanan %c, yang mana GNU findutils saat ini belum "
 "mendukungnya"
 
-#: locate/locate.c:1092
-#, c-format
-msgid ""
-"%s is an slocate database.  Support for these is new, expect problems for "
-"now."
-msgstr ""
-"%s adalah sebuah basis data slocate. Dukungan untuk ini adalah baru, diduga "
-"akan ada masalah untuk sekarang."
-
-#: locate/locate.c:1106
+#: locate/locate.c:1078
 #, c-format
 msgid ""
 "%s is an slocate database of unsupported security level %d; skipping it."
@@ -1047,47 +1069,57 @@ msgstr ""
 "%s adalah sebuah basis data slocate yang tidak mendukung tingkat keamanan "
 "%d; melewatkannya."
 
-#: locate/locate.c:1123
+#: locate/locate.c:1095
 #, c-format
 msgid ""
 "You specified the -E option, but that option cannot be used with slocate-"
 "format databases with a non-zero security level.  No results will be "
 "generated for this database.\n"
 msgstr ""
-"Anda menspesifikasikan opsi -E, tetapi opsi tersebut tidak dapat digunakan "
-"dengan format basis data slocate dengan sebuah tingkat keamanan yang tidak "
-"nol. Tidak akan ada hasil yang dibuat untuk basis data ini.\n"
+"Anda menspesifikasikan pilihan -E, tetapi pilihan tersebut tidak dapat "
+"digunakan dengan format basis data slocate dengan sebuah tingkat keamanan "
+"yang tidak nol. Tidak akan ada hasil yang dibuat untuk basis data ini.\n"
 
-#: locate/locate.c:1134
+#: locate/locate.c:1106
 #, c-format
 msgid "%s is an slocate database.  Turning on the '-e' option."
-msgstr "%s adalah sebuah basis data slocate. Mengaktifkan opsi '-e'."
+msgstr "%s adalah sebuah basis data slocate. Mengaktifkan pilihan '-e'."
 
-#: locate/locate.c:1172
+#: locate/locate.c:1144
 #, c-format
 msgid "Old-format locate database %s is too short to be valid"
 msgstr "Format lama basis data locate %s terlalu pendek untuk menjadi valid"
 
-#: locate/locate.c:1324
+#: locate/locate.c:1296
 #, c-format
 msgid "Database %s is in the %s format.\n"
 msgstr "Basis data %s berada dalam format %s.\n"
 
-#: locate/locate.c:1351
+#: locate/locate.c:1323
 msgid "The database has little-endian machine-word encoding.\n"
 msgstr "Basis data memiliki pengkodean bahasa mesin little-endian.\n"
 
-#: locate/locate.c:1353
+#: locate/locate.c:1325
 msgid "The database has big-endian machine-word encoding.\n"
 msgstr "basis data memiliki pengkodean bahasa mesin big-endian.\n"
 
-#: locate/locate.c:1366
+#: locate/locate.c:1338
 #, c-format
 msgid "The database machine-word encoding order is not obvious.\n"
 msgstr "Pengkodean basis data pengurutan bahasa mesin tidak jelas.\n"
 
-#: locate/locate.c:1395
+#: locate/locate.c:1367
 #, fuzzy, c-format
+#| msgid ""
+#| "Usage: %s [-d path | --database=path] [-e | -E | --[non-]existing]\n"
+#| "      [-i | --ignore-case] [-w | --wholename] [-b | --basename] \n"
+#| "      [--limit=N | -l N] [-S | --statistics] [-0 | --null] [-c | --"
+#| "count]\n"
+#| "      [-P | -H | --nofollow] [-L | --follow] [-m | --mmap ] [ -s | --"
+#| "stdio ]\n"
+#| "      [-A | --all] [-p | --print] [-r | --regex ] [--regextype=TYPE]\n"
+#| "      [--max-database-age D] [--version] [--help]\n"
+#| "      pattern...\n"
 msgid ""
 "Usage: %s [-d path | --database=path] [-e | -E | --[non-]existing]\n"
 "      [-i | --ignore-case] [-w | --wholename] [-b | --basename] \n"
@@ -1106,67 +1138,69 @@ msgstr ""
 "      [--max-database-age D] [--version] [--help]\n"
 "      pola...\n"
 
-#: locate/locate.c:1461
+#: locate/locate.c:1433
 msgid "failed to drop group privileges"
 msgstr "gagal untuk mendrop kewenangan grup"
 
-#: locate/locate.c:1479
+#: locate/locate.c:1451
 msgid "failed to drop setuid privileges"
 msgstr "gagal untuk mendrop kewenangan setuid"
 
-#: locate/locate.c:1493
+#: locate/locate.c:1465
 msgid "Failed to fully drop privileges"
 msgstr "gagal untuk secara lengkap mendrop kewenangan"
 
-#: locate/locate.c:1511
+#: locate/locate.c:1483
 msgid "failed to drop setgid privileges"
 msgstr "gagal untuk mendrop kewenangan setgid"
 
-#: locate/locate.c:1748
+#: locate/locate.c:1720
 #, c-format
 msgid "pattern argument expected"
 msgstr ""
 
-#: locate/locate.c:1789
+#: locate/locate.c:1761
 #, c-format
 msgid "warning: the locate database can only be read from stdin once."
 msgstr "peringatan: basis data locate hanya dapat dibaca dari stdin sekali."
 
-#: locate/locate.c:1862
+#: locate/locate.c:1834
 #, c-format
 msgid "time system call failed"
 msgstr "time pemanggilan sistem gagal"
 
-#: locate/locate.c:1873
-#, c-format
-msgid "warning: database %s is more than %d %s old (actual age is %.1f %s)"
+#: locate/locate.c:1845
+#, fuzzy, c-format
+#| msgid "warning: database %s is more than %d %s old (actual age is %.1f %s)"
+msgid "warning: database %s is more than %u %s old (actual age is %.1f %s)"
 msgstr ""
 "peringatan: basis data %s berumur lebih dari %d %s (umur aktual adalah %.1f "
 "%s)"
 
-#: locate/word_io.c:85
+#: locate/word_io.c:77
 #, fuzzy, c-format
+#| msgid "Warning: locate database %s was built with a different byte order"
 msgid "WARNING: locate database %s was built with a different byte order"
 msgstr ""
 "Peringatan: basis data locate %s telah dibuat dengan pengurutan byte yang "
 "berbeda"
 
-#: locate/word_io.c:131
+#: locate/word_io.c:123
 #, c-format
 msgid "unexpected EOF in %s"
 msgstr "tidak terduga EOF dalam %s"
 
-#: locate/word_io.c:134
+#: locate/word_io.c:126
 #, c-format
 msgid "error reading a word from %s"
 msgstr "error pembacaan sebuah kata dari %s"
 
-#: xargs/xargs.c:257
+#: xargs/xargs.c:252
 #, c-format
 msgid "Invalid escape sequence %s in input delimiter specification."
 msgstr "Escape sequence %s tidak valid dalam spesifikasi pembatas masukan."
 
-#: xargs/xargs.c:275
+#: xargs/xargs.c:270
 #, c-format
 msgid ""
 "Invalid escape sequence %s in input delimiter specification; character "
@@ -1175,7 +1209,7 @@ msgstr ""
 "Escape sequence %s tidak valid dalam spesifikasi pembatas masukan; nilai "
 "karakter tidak boleh melebihi %lx."
 
-#: xargs/xargs.c:281
+#: xargs/xargs.c:277
 #, c-format
 msgid ""
 "Invalid escape sequence %s in input delimiter specification; character "
@@ -1184,7 +1218,7 @@ msgstr ""
 "Escape sequence %s tidak valid dalam spesifikasi pembatas masukan; nilai "
 "karakter tidak boleh melebihi %lo."
 
-#: xargs/xargs.c:290
+#: xargs/xargs.c:287
 #, c-format
 msgid ""
 "Invalid escape sequence %s in input delimiter specification; trailing "
@@ -1193,7 +1227,7 @@ msgstr ""
 "Escape sequence %s tidak valid dalam spesifikasi pembatas masukan; akhira "
 "karakter %s tidak dikenal."
 
-#: xargs/xargs.c:335
+#: xargs/xargs.c:333
 #, c-format
 msgid ""
 "Invalid input delimiter specification %s: the delimiter must be either a "
@@ -1203,58 +1237,65 @@ msgstr ""
 "karakter tunggal atau sebuah urutan escape dimulai dengan \\."
 
 #: xargs/xargs.c:352
-#, c-format
 msgid "environment is too large for exec"
 msgstr "lingkungan terlalu besar untuk exec"
 
 #: xargs/xargs.c:590
 #, fuzzy, c-format
+#| msgid "Warning: value %ld for -s option is too large, using %ld instead"
 msgid "warning: value %ld for -s option is too large, using %ld instead"
 msgstr ""
-"Peringatan: nilai %ld untuk opsi -s terlalu besar, lebih baik menggunakan %ld"
+"Peringatan: nilai %ld untuk pilihan -s terlalu besar, lebih baik menggunakan "
+"%ld"
 
-#: xargs/xargs.c:637
+#: xargs/xargs.c:641
 #, c-format
 msgid "option --%s may not be set to a value which includes `='"
 msgstr ""
 
-#: xargs/xargs.c:649
-#, c-format
+#: xargs/xargs.c:653
+#, fuzzy, c-format
+#| msgid "Your environment variables take up %lu bytes\n"
 msgid "failed to unset environment variable %s"
-msgstr ""
+msgstr "Variabel lingkungan anda mengambil %lu byte\n"
 
-#: xargs/xargs.c:662
+#: xargs/xargs.c:666
 #, c-format
 msgid "warning: the -E option has no effect if -0 or -d is used.\n"
 msgstr ""
 
-#: xargs/xargs.c:684
+#: xargs/xargs.c:688
 #, c-format
 msgid "Cannot set SIGUSR1 signal handler"
 msgstr ""
 
-#: xargs/xargs.c:690
+#: xargs/xargs.c:694
 #, c-format
 msgid "Cannot set SIGUSR2 signal handler"
 msgstr ""
 
-#: xargs/xargs.c:706
+#: xargs/xargs.c:710
 #, c-format
 msgid "Cannot open input file %s"
 msgstr "Tidak dapat membuka berkas masukan %s"
 
-#: xargs/xargs.c:725
+#: xargs/xargs.c:729
 #, fuzzy, c-format
+#| msgid "Your environment variables take up %lu bytes\n"
 msgid "Your environment variables take up %<PRIuMAX> bytes\n"
 msgstr "Variabel lingkungan anda mengambil %lu byte\n"
 
-#: xargs/xargs.c:728
+#: xargs/xargs.c:732
 #, fuzzy, c-format
+#| msgid "POSIX upper limit on argument length (this system): %lu\n"
 msgid "POSIX upper limit on argument length (this system): %<PRIuMAX>\n"
 msgstr "batas atas POSIX dalam panjang argumen (di sistem ini): %lu\n"
 
-#: xargs/xargs.c:731
+#: xargs/xargs.c:735
 #, fuzzy, c-format
+#| msgid ""
+#| "POSIX smallest allowable upper limit on argument length (all systems): "
+#| "%lu\n"
 msgid ""
 "POSIX smallest allowable upper limit on argument length (all systems): "
 "%<PRIuMAX>\n"
@@ -1262,22 +1303,24 @@ msgstr ""
 "batas atas yang paling kecil yang diperbolehkan POSIX dalam panjang argumen "
 "(di semua sistem): %lu\n"
 
-#: xargs/xargs.c:734
+#: xargs/xargs.c:738
 #, fuzzy, c-format
+#| msgid "Maximum length of command we could actually use: %ld\n"
 msgid "Maximum length of command we could actually use: %<PRIuMAX>\n"
 msgstr "Panjang maksimal dari perintah yang dapat kita gunakan: %ld\n"
 
-#: xargs/xargs.c:737
+#: xargs/xargs.c:741
 #, fuzzy, c-format
+#| msgid "Size of command buffer we are actually using: %lu\n"
 msgid "Size of command buffer we are actually using: %<PRIuMAX>\n"
 msgstr "Ukuran dari buffer perintah yang saat ini kita gunakan: %lu\n"
 
-#: xargs/xargs.c:740
+#: xargs/xargs.c:744
 #, c-format
 msgid "Maximum parallelism (--max-procs must be no greater): %<PRIuMAX>\n"
 msgstr ""
 
-#: xargs/xargs.c:746
+#: xargs/xargs.c:750
 #, c-format
 msgid ""
 "\n"
@@ -1290,7 +1333,7 @@ msgstr ""
 "dicoba untuk membaca masukannya dan menjalankan perintah; jika ini bukan "
 "yang anda inginkan untuk terjadi, mohon ketik tombol akhir-dari-berkas.\n"
 
-#: xargs/xargs.c:754
+#: xargs/xargs.c:758
 #, c-format
 msgid ""
 "Warning: %s will be run at least once.  If you do not want that to happen, "
@@ -1299,139 +1342,145 @@ msgstr ""
 "Peringatan: %s akan dijalankan paling tidak sekali. Jika anda tidak ingin "
 "ini untuk terjadi, tekan tombol interupsi (biasanya CTRL-C).\n"
 
-#: xargs/xargs.c:882 xargs/xargs.c:975
+#: xargs/xargs.c:887 xargs/xargs.c:982
 #, c-format
 msgid ""
 "unmatched %s quote; by default quotes are special to xargs unless you use "
 "the -0 option"
 msgstr ""
 "quote %s tidak cocok; secara baku quote adalah spesial ke xargs kecuali anda "
-"menggunakan opsi -0"
+"menggunakan pilihan -0"
 
-#: xargs/xargs.c:883 xargs/xargs.c:976
+#: xargs/xargs.c:889 xargs/xargs.c:984
 msgid "double"
 msgstr "ganda"
 
-#: xargs/xargs.c:883 xargs/xargs.c:976
+#: xargs/xargs.c:889 xargs/xargs.c:984
 msgid "single"
 msgstr "tunggal"
 
-#: xargs/xargs.c:995
+#: xargs/xargs.c:1003
 #, fuzzy, c-format
+#| msgid ""
+#| "Warning: a NUL character occurred in the input.  It cannot be passed "
+#| "through in the argument list.  Did you mean to use the --null option?"
 msgid ""
 "WARNING: a NUL character occurred in the input.  It cannot be passed through "
 "in the argument list.  Did you mean to use the --null option?"
 msgstr ""
 "Peringatan: sebuah karakter NULL ditemui dalam masukan. Ini tidak dapat "
 "dilewatkan melalui daftar argumen. Apakah yang anda maksu untuk menggunakan "
-"opsi --null?"
+"pilihan --null?"
 
-#: xargs/xargs.c:1005 xargs/xargs.c:1070
-#, c-format
+#: xargs/xargs.c:1013 xargs/xargs.c:1078
 msgid "argument line too long"
 msgstr "baris argumen terlalu panjang"
 
-#: xargs/xargs.c:1089 xargs/xargs.c:1106
-#, fuzzy, c-format
+#: xargs/xargs.c:1097 xargs/xargs.c:1114
+#, fuzzy
+#| msgid "Failed to write to standard output"
 msgid "Failed to write to stderr"
 msgstr "Gagal untuk menulis ke standar keluaran"
 
-#: xargs/xargs.c:1102
-#, c-format
+#: xargs/xargs.c:1110
 msgid "failed to open /dev/tty for reading"
 msgstr ""
 
-#: xargs/xargs.c:1112
-#, fuzzy, c-format
+#: xargs/xargs.c:1120
+#, fuzzy
+#| msgid "Failed to write to standard output"
 msgid "Failed to read from stdin"
 msgstr "Gagal untuk menulis ke standar keluaran"
 
-#: xargs/xargs.c:1149
-#, c-format
-msgid "unable to allocate memory"
-msgstr ""
-
-#: xargs/xargs.c:1164
-#, c-format
+#: xargs/xargs.c:1156
+#, fuzzy, c-format
+#| msgid "Your environment variables take up %lu bytes\n"
 msgid "failed to set environment variable %s"
+msgstr "Variabel lingkungan anda mengambil %lu byte\n"
+
+#: xargs/xargs.c:1207
+msgid "failed to redirect standard input of the child process"
 msgstr ""
 
-#: xargs/xargs.c:1253
-#, c-format
+#: xargs/xargs.c:1259
 msgid "could not create pipe before fork"
 msgstr ""
 
-#: xargs/xargs.c:1324
+#: xargs/xargs.c:1330
 #, c-format
 msgid ""
 "errno-buffer safe_read failed in xargs_do_exec (this is probably a bug, "
 "please report it)"
 msgstr ""
 
-#: xargs/xargs.c:1377
+#: xargs/xargs.c:1383
 #, c-format
 msgid ""
-"read returned unexpected value %zu; this is probably a bug, please report it"
+"read returned unexpected value %<PRIuMAX>; this is probably a bug, please "
+"report it"
 msgstr ""
 
-#: xargs/xargs.c:1470
-#, c-format
+#: xargs/xargs.c:1476
 msgid "error waiting for child process"
 msgstr "kesalahan waiting untuk proses anak"
 
-#: xargs/xargs.c:1503
+#: xargs/xargs.c:1509
 #, fuzzy, c-format
+#| msgid "Warning: Lost track of %d child processes"
 msgid "WARNING: Lost track of %lu child processes"
 msgstr "Peringatan: Hilang jejak dari %d proses anak"
 
-#: xargs/xargs.c:1522
+#: xargs/xargs.c:1528
 #, c-format
 msgid "%s: exited with status 255; aborting"
 msgstr "%s: keluar dengan status 255; batal"
 
-#: xargs/xargs.c:1525
+#: xargs/xargs.c:1531
 #, c-format
 msgid "%s: stopped by signal %d"
 msgstr "%s: dihentikan oleh sinyal %d"
 
-#: xargs/xargs.c:1528
+#: xargs/xargs.c:1534
 #, c-format
 msgid "%s: terminated by signal %d"
 msgstr "%s: di-terminate oleh sinyal %d"
 
-#: xargs/xargs.c:1613
+#: xargs/xargs.c:1619
 #, fuzzy, c-format
+#| msgid "%s: invalid number for -%c option\n"
 msgid "%s: invalid number \"%s\" for -%c option\n"
 msgstr "%s: kesalahan bilangan untuk pilihan -%c\n"
 
-#: xargs/xargs.c:1620
+#: xargs/xargs.c:1626
 #, fuzzy, c-format
+#| msgid "%s: value for -%c option should be >= %ld\n"
 msgid "%s: value %s for -%c option should be >= %ld\n"
-msgstr "%s: nilai untuk opsi -%c seharusnya >= %ld\n"
+msgstr "%s: nilai untuk pilihan -%c seharusnya >= %ld\n"
 
-#: xargs/xargs.c:1629
+#: xargs/xargs.c:1635
 #, fuzzy, c-format
+#| msgid "%s: value for -%c option should be < %ld\n"
 msgid "%s: value %s for -%c option should be <= %ld\n"
-msgstr "%s: nilai untuk opsi -%c seharusnya < %ld\n"
+msgstr "%s: nilai untuk pilihan -%c seharusnya < %ld\n"
 
-#: xargs/xargs.c:1649
+#: xargs/xargs.c:1655
 #, c-format
 msgid "Usage: %s [OPTION]... COMMAND [INITIAL-ARGS]...\n"
 msgstr ""
 
-#: xargs/xargs.c:1654
+#: xargs/xargs.c:1660
 msgid ""
 "Run COMMAND with arguments INITIAL-ARGS and more arguments read from input.\n"
 "\n"
 msgstr ""
 
-#: xargs/xargs.c:1656
+#: xargs/xargs.c:1662
 msgid ""
 "Mandatory and optional arguments to long options are also\n"
 "mandatory or optional for the corresponding short option.\n"
 msgstr ""
 
-#: xargs/xargs.c:1658
+#: xargs/xargs.c:1664
 msgid ""
 "  -0, --null                   items are separated by a null, not "
 "whitespace;\n"
@@ -1440,12 +1489,12 @@ msgid ""
 "                                 logical EOF processing\n"
 msgstr ""
 
-#: xargs/xargs.c:1661
+#: xargs/xargs.c:1667
 msgid ""
 "  -a, --arg-file=FILE          read arguments from FILE, not standard input\n"
 msgstr ""
 
-#: xargs/xargs.c:1662
+#: xargs/xargs.c:1668
 msgid ""
 "  -d, --delimiter=CHARACTER    items in input stream are separated by "
 "CHARACTER,\n"
@@ -1454,7 +1503,7 @@ msgid ""
 "                                 processing and logical EOF processing\n"
 msgstr ""
 
-#: xargs/xargs.c:1665
+#: xargs/xargs.c:1671
 msgid ""
 "  -E END                       set logical EOF string; if END occurs as a "
 "line\n"
@@ -1462,31 +1511,31 @@ msgid ""
 "                                 (ignored if -0 or -d was specified)\n"
 msgstr ""
 
-#: xargs/xargs.c:1668
+#: xargs/xargs.c:1674
 msgid ""
 "  -e, --eof[=END]              equivalent to -E END if END is specified;\n"
 "                                 otherwise, there is no end-of-file string\n"
 msgstr ""
 
-#: xargs/xargs.c:1670
+#: xargs/xargs.c:1676
 msgid "  -I R                         same as --replace=R\n"
 msgstr ""
 
-#: xargs/xargs.c:1671
+#: xargs/xargs.c:1677
 msgid ""
 "  -i, --replace[=R]            replace R in INITIAL-ARGS with names read\n"
 "                                 from standard input; if R is unspecified,\n"
 "                                 assume {}\n"
 msgstr ""
 
-#: xargs/xargs.c:1674
+#: xargs/xargs.c:1680
 msgid ""
 "  -L, --max-lines=MAX-LINES    use at most MAX-LINES non-blank input lines "
 "per\n"
 "                                 command line\n"
 msgstr ""
 
-#: xargs/xargs.c:1676
+#: xargs/xargs.c:1682
 msgid ""
 "  -l[MAX-LINES]                similar to -L but defaults to at most one "
 "non-\n"
@@ -1494,28 +1543,37 @@ msgid ""
 "specified\n"
 msgstr ""
 
-#: xargs/xargs.c:1678
+#: xargs/xargs.c:1684
 msgid ""
 "  -n, --max-args=MAX-ARGS      use at most MAX-ARGS arguments per command "
 "line\n"
 msgstr ""
 
-#: xargs/xargs.c:1679
+#: xargs/xargs.c:1685
+msgid ""
+"  -o, --open-tty               Reopen stdin as /dev/tty in the child "
+"process\n"
+"                                 before executing the command; useful to run "
+"an\n"
+"                                 interactive application.\n"
+msgstr ""
+
+#: xargs/xargs.c:1688
 msgid ""
 "  -P, --max-procs=MAX-PROCS    run at most MAX-PROCS processes at a time\n"
 msgstr ""
 
-#: xargs/xargs.c:1680
+#: xargs/xargs.c:1689
 msgid "  -p, --interactive            prompt before running commands\n"
 msgstr ""
 
-#: xargs/xargs.c:1681
+#: xargs/xargs.c:1690
 msgid ""
 "      --process-slot-var=VAR   set environment variable VAR in child "
 "processes\n"
 msgstr ""
 
-#: xargs/xargs.c:1682
+#: xargs/xargs.c:1691
 msgid ""
 "  -r, --no-run-if-empty        if there are no arguments, then do not run "
 "COMMAND;\n"
@@ -1524,35 +1582,32 @@ msgid ""
 "                                 run at least once\n"
 msgstr ""
 
-#: xargs/xargs.c:1685
+#: xargs/xargs.c:1694
 msgid ""
 "  -s, --max-chars=MAX-CHARS    limit length of command line to MAX-CHARS\n"
 msgstr ""
 
-#: xargs/xargs.c:1686
+#: xargs/xargs.c:1695
 msgid "      --show-limits            show limits on command-line length\n"
 msgstr ""
 
-#: xargs/xargs.c:1687
+#: xargs/xargs.c:1696
 msgid "  -t, --verbose                print commands before executing them\n"
 msgstr ""
 
-#: xargs/xargs.c:1688
+#: xargs/xargs.c:1697
 msgid "  -x, --exit                   exit if the size (see -s) is exceeded\n"
 msgstr ""
 
-#: xargs/xargs.c:1690
+#: xargs/xargs.c:1699
 msgid "      --help                   display this help and exit\n"
 msgstr ""
 
-#: xargs/xargs.c:1691
+#: xargs/xargs.c:1700
 msgid ""
 "      --version                output version information and exit\n"
 "\n"
 msgstr ""
-
-#~ msgid "] [path...] [expression]\n"
-#~ msgstr "] [jalur...] [ekspresi]\n"
 
 #~ msgid "invalid argument %s for %s"
 #~ msgstr "argumen %s untuk %s tidak valid"
@@ -1566,60 +1621,40 @@ msgstr ""
 #~ msgid "Unknown system error"
 #~ msgstr "Kesalahan sistem tidak dikenal"
 
-#, fuzzy
-#~ msgid "%s: option '%s' is ambiguous; possibilities:"
-#~ msgstr "%s: opsi `%s' ambigu\n"
+#~ msgid "%s: option `%s' is ambiguous\n"
+#~ msgstr "%s: pilihan `%s' ambigu\n"
 
-#, fuzzy
-#~ msgid "%s: option '%s' is ambiguous\n"
-#~ msgstr "%s: opsi `-W %s' ambigu\n"
+#~ msgid "%s: option `--%s' doesn't allow an argument\n"
+#~ msgstr "%s: pilihan `--%s' tidak membolehkan sebuah argumen\n"
 
-#, fuzzy
-#~ msgid "%s: option '--%s' doesn't allow an argument\n"
-#~ msgstr "%s: opsi `--%s' tidak membolehkan sebuah argumen\n"
+#~ msgid "%s: option `%c%s' doesn't allow an argument\n"
+#~ msgstr "%s: pilihan `--%c%s' tidak membolehkan sebuah argumen\n"
 
-#, fuzzy
-#~ msgid "%s: option '%c%s' doesn't allow an argument\n"
-#~ msgstr "%s: opsi `--%c%s' tidak membolehkan sebuah argumen\n"
+#~ msgid "%s: option `%s' requires an argument\n"
+#~ msgstr "%s: pilihan `%s' membutuhkan sebuah argumen\n"
 
-#, fuzzy
-#~ msgid "%s: option '--%s' requires an argument\n"
-#~ msgstr "%s: opsi `%s' membutuhkan sebuah argumen\n"
+#~ msgid "%s: unrecognized option `--%s'\n"
+#~ msgstr "%s: pilihan tidak dikenal `--%s'\n"
 
-#, fuzzy
-#~ msgid "%s: unrecognized option '--%s'\n"
-#~ msgstr "%s: opsi tidak dikenal `--%s'\n"
+#~ msgid "%s: unrecognized option `%c%s'\n"
+#~ msgstr "%s: pilihan tidak dikenal `%c%s'\n"
 
-#, fuzzy
-#~ msgid "%s: unrecognized option '%c%s'\n"
-#~ msgstr "%s: opsi tidak dikenal `%c%s'\n"
+#~ msgid "%s: illegal option -- %c\n"
+#~ msgstr "%s: pilihan ilegal -- %c\n"
 
-#, fuzzy
-#~ msgid "%s: invalid option -- '%c'\n"
-#~ msgstr "%s: opsi tidak valid -- %c\n"
+#~ msgid "%s: invalid option -- %c\n"
+#~ msgstr "%s: pilihan tidak valid -- %c\n"
 
-#, fuzzy
-#~ msgid "%s: option requires an argument -- '%c'\n"
-#~ msgstr "%s: opsi membutuhkan sebuah argumen -- %c\n"
+#~ msgid "%s: option requires an argument -- %c\n"
+#~ msgstr "%s: pilihan membutuhkan sebuah argumen -- %c\n"
 
-#, fuzzy
-#~ msgid "%s: option '-W %s' is ambiguous\n"
-#~ msgstr "%s: opsi `-W %s' ambigu\n"
+#~ msgid "%s: option `-W %s' is ambiguous\n"
+#~ msgstr "%s: pilihan `-W %s' ambigu\n"
 
-#, fuzzy
-#~ msgid "%s: option '-W %s' doesn't allow an argument\n"
-#~ msgstr "%s: opsi `-W %s' tidak membolehkan sebuah argumen\n"
+#~ msgid "%s: option `-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: pilihan `-W %s' tidak membolehkan sebuah argumen\n"
 
-#, fuzzy
-#~ msgid "%s: option '-W %s' requires an argument\n"
-#~ msgstr "%s: opsi `%s' membutuhkan sebuah argumen\n"
-
-#, fuzzy
 #~ msgid "unable to record current working directory"
-#~ msgstr "tidak dapat merekam direktori kerja sekarang"
-
-#, fuzzy
-#~ msgid "failed to return to initial working directory"
 #~ msgstr "tidak dapat merekam direktori kerja sekarang"
 
 #~ msgid "`"
@@ -1627,72 +1662,6 @@ msgstr ""
 
 #~ msgid "'"
 #~ msgstr "'"
-
-#~ msgid "^[yY]"
-#~ msgstr "^[yY]"
-
-#~ msgid "^[nN]"
-#~ msgstr "^[nN]"
-
-#~ msgid "memory exhausted"
-#~ msgstr "kehabisan memori"
-
-#, fuzzy
-#~ msgid "invalid %s%s argument '%s'"
-#~ msgstr "tidak valid %s%s argumen `%s'"
-
-#, fuzzy
-#~ msgid "invalid suffix in %s%s argument '%s'"
-#~ msgstr "akhiran tidak valid dalam %s%s argumen `%s'"
-
-#, fuzzy
-#~ msgid "%s%s argument '%s' too large"
-#~ msgstr "%s%s argumen `%s'terlalu besar"
-
-#~ msgid ""
-#~ "Usage: %s [--version | --help]\n"
-#~ "or     %s most_common_bigrams < file-list > locate-database\n"
-#~ msgstr ""
-#~ "Penggunaan: %s [--version | --help]\n"
-#~ "atau        %s most_common_bigrams < daftar-berkas > lokasi-basis-data\n"
-
-#~ msgid ""
-#~ "\n"
-#~ "Report bugs to <bug-findutils@gnu.org>.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Laporkan bug ke <bug-findutils@gnu.org>.\n"
-
-#~ msgid "Mode %s is not valid when POSIXLY_CORRECT is on."
-#~ msgstr "Mode %s adalah tidak valid ketika POSIXLY_CORRECT aktif."
-
-#~ msgid "Built using GNU gnulib version %s\n"
-#~ msgstr "Dibuat menggunakan GNU gnulib versi %s\n"
-
-#~ msgid ""
-#~ "Usage: %s [-0prtx] [--interactive] [--null] [-d|--delimiter=delim]\n"
-#~ "       [-E eof-str] [-e[eof-str]]  [--eof[=eof-str]]\n"
-#~ "       [-L max-lines] [-l[max-lines]] [--max-lines[=max-lines]]\n"
-#~ "       [-I replace-str] [-i[replace-str]] [--replace[=replace-str]]\n"
-#~ "       [-n max-args] [--max-args=max-args]\n"
-#~ "       [-s max-chars] [--max-chars=max-chars]\n"
-#~ "       [-P max-procs]  [--max-procs=max-procs] [--show-limits]\n"
-#~ "       [--verbose] [--exit] [--no-run-if-empty] [--arg-file=file]\n"
-#~ "       [--version] [--help] [command [initial-arguments]]\n"
-#~ msgstr ""
-#~ "Penggunaan: %s [-Oprtx] [--interactive] [--null] [-d|--"
-#~ "delimiter=pembatas]\n"
-#~ "       [-E eof-str] [-e[eof-str]]  [--eof[=eof-str]]\n"
-#~ "       [-L max-lines] [-l[max-lines]] [--max-lines[=max-lines]]\n"
-#~ "       [-I replace-str] [-i[replace-str]] [--replace[=replace-str]]\n"
-#~ "       [-n max-args] [--max-args=max-args]\n"
-#~ "       [-s max-chars] [--max-chars=max-chars]\n"
-#~ "       [-P max-procs]  [--max-procs=max-procs] [--show-limits]\n"
-#~ "       [--verbose] [--exit] [--no-run-if-empty] [--arg-file=berkas]\n"
-#~ "       [--version] [--help] [perintah [argumen-inisial]]\n"
-
-#~ msgid "cannot get current directory"
-#~ msgstr "tidak dapat mengetahui direktori saat ini"
 
 #~ msgid "Success"
 #~ msgstr "Sukses"
@@ -1745,8 +1714,92 @@ msgstr ""
 #~ msgid "No previous regular expression"
 #~ msgstr "Tidak ada ekspresi reguler sebelumnya"
 
-#~ msgid "%s: illegal option -- %c\n"
-#~ msgstr "%s: opsi ilegal -- %c\n"
+#~ msgid "^[yY]"
+#~ msgstr "^[yY]"
+
+#~ msgid "^[nN]"
+#~ msgstr "^[nN]"
+
+#~ msgid "memory exhausted"
+#~ msgstr "kehabisan memori"
+
+#~ msgid "invalid %s%s argument `%s'"
+#~ msgstr "tidak valid %s%s argumen `%s'"
+
+#~ msgid "invalid suffix in %s%s argument `%s'"
+#~ msgstr "akhiran tidak valid dalam %s%s argumen `%s'"
+
+#~ msgid "%s%s argument `%s' too large"
+#~ msgstr "%s%s argumen `%s'terlalu besar"
+
+#~ msgid "cannot get current directory"
+#~ msgstr "tidak dapat mengetahui direktori saat ini"
+
+#~ msgid ""
+#~ "warning: Unix filenames usually don't contain slashes (though pathnames "
+#~ "do).  That means that '%s %s' will probably evaluate to false all the "
+#~ "time on this system.  You might find the '-wholename' test more useful, "
+#~ "or perhaps '-samefile'.  Alternatively, if you are using GNU grep, you "
+#~ "could use 'find ... -print0 | grep -FzZ %s'."
+#~ msgstr ""
+#~ "peringatan: Nama berkas unix biasanya tidak berisi slashes (walaupun nama "
+#~ "jalur biasanya memakai). Itu berarti '%s %s' mungkin akan dievaluasikan "
+#~ "ke  salah untuk setiap saat di sistem ini. Anda mungkin menemukan "
+#~ "pemeriksaan '-wholename' lebih berguna, atau mungkin '-samefile'. "
+#~ "Alternatifnya, jika anda menggunakan GNU grep, anda dapat menggunakan "
+#~ "'find ... -print0 | grep -FzZ %s'."
+
+#~ msgid "Mode %s is not valid when POSIXLY_CORRECT is on."
+#~ msgstr "Mode %s adalah tidak valid ketika POSIXLY_CORRECT aktif."
+
+#~ msgid "] [path...] [expression]\n"
+#~ msgstr "] [jalur...] [ekspresi]\n"
+
+#~ msgid "Built using GNU gnulib version %s\n"
+#~ msgstr "Dibuat menggunakan GNU gnulib versi %s\n"
+
+#~ msgid ""
+#~ "Usage: %s [--version | --help]\n"
+#~ "or     %s most_common_bigrams < file-list > locate-database\n"
+#~ msgstr ""
+#~ "Penggunaan: %s [--version | --help]\n"
+#~ "atau        %s most_common_bigrams < daftar-berkas > lokasi-basis-data\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Report bugs to <bug-findutils@gnu.org>.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Laporkan bug ke <bug-findutils@gnu.org>.\n"
+
+#~ msgid ""
+#~ "%s is an slocate database.  Support for these is new, expect problems for "
+#~ "now."
+#~ msgstr ""
+#~ "%s adalah sebuah basis data slocate. Dukungan untuk ini adalah baru, "
+#~ "diduga akan ada masalah untuk sekarang."
+
+#~ msgid ""
+#~ "Usage: %s [-0prtx] [--interactive] [--null] [-d|--delimiter=delim]\n"
+#~ "       [-E eof-str] [-e[eof-str]]  [--eof[=eof-str]]\n"
+#~ "       [-L max-lines] [-l[max-lines]] [--max-lines[=max-lines]]\n"
+#~ "       [-I replace-str] [-i[replace-str]] [--replace[=replace-str]]\n"
+#~ "       [-n max-args] [--max-args=max-args]\n"
+#~ "       [-s max-chars] [--max-chars=max-chars]\n"
+#~ "       [-P max-procs]  [--max-procs=max-procs] [--show-limits]\n"
+#~ "       [--verbose] [--exit] [--no-run-if-empty] [--arg-file=file]\n"
+#~ "       [--version] [--help] [command [initial-arguments]]\n"
+#~ msgstr ""
+#~ "Penggunaan: %s [-Oprtx] [--interactive] [--null] [-d|--"
+#~ "delimiter=pembatas]\n"
+#~ "       [-E eof-str] [-e[eof-str]]  [--eof[=eof-str]]\n"
+#~ "       [-L max-lines] [-l[max-lines]] [--max-lines[=max-lines]]\n"
+#~ "       [-I replace-str] [-i[replace-str]] [--replace[=replace-str]]\n"
+#~ "       [-n max-args] [--max-args=max-args]\n"
+#~ "       [-s max-chars] [--max-chars=max-chars]\n"
+#~ "       [-P max-procs]  [--max-procs=max-procs] [--show-limits]\n"
+#~ "       [--verbose] [--exit] [--no-run-if-empty] [--arg-file=berkas]\n"
+#~ "       [--version] [--help] [perintah [argumen-inisial]]\n"
 
 #~ msgid "block size"
 #~ msgstr "ukuran blok"

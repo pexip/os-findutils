@@ -1,6 +1,5 @@
 /* frcode -- front-compress a sorted list
-   Copyright (C) 1994, 2005-2007, 2010-2011, 2016 Free Software
-   Foundation, Inc.
+   Copyright (C) 1994-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* Usage: frcode < sorted-list > compressed-list
@@ -80,24 +79,16 @@
 /* gnulib headers. */
 #include "closeout.h"
 #include "error.h"
-#include "gettext.h"
 #include "progname.h"
 #include "xalloc.h"
 
 /* find headers. */
-#include "findutils-version.h"
+#include "system.h"
 #include "bugreports.h"
-#include "locatedb.h"
+#include "die.h"
+#include "findutils-version.h"
 #include "gcc-function-attributes.h"
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#define textdomain(Domain)
-#define bindtextdomain(Package, Directory)
-#endif
+#include "locatedb.h"
 
 
 /* Write out a 16-bit int, high byte first (network byte order).
@@ -174,24 +165,24 @@ get_seclevel (char *s)
   result = strtol (s, &p, 10);
   if ((0==result) && (p == optarg))
     {
-      error (EXIT_FAILURE, 0,
-	     _("You need to specify a security level as a decimal integer."));
+      die (EXIT_FAILURE, 0,
+	   _("You need to specify a security level as a decimal integer."));
       /*NOTREACHED*/
       return -1;
     }
   else if ((LONG_MIN==result || LONG_MAX==result) && errno)
 
     {
-      error (EXIT_FAILURE, 0,
-	     _("Security level %s is outside the convertible range."), s);
+      die (EXIT_FAILURE, 0,
+	   _("Security level %s is outside the convertible range."), s);
       /*NOTREACHED*/
       return -1;
     }
   else if (*p)
     {
       /* Some suffix exists */
-      error (EXIT_FAILURE, 0,
-	     _("Security level %s has unexpected suffix %s."), s, p);
+      die (EXIT_FAILURE, 0,
+	   _("Security level %s has unexpected suffix %s."), s, p);
       /*NOTREACHED*/
       return -1;
     }
@@ -205,7 +196,7 @@ static void
 outerr (void)
 {
   /* Issue the same error message as closeout () would. */
-  error (EXIT_FAILURE, errno, _("write error"));
+  die (EXIT_FAILURE, errno, _("write error"));
 }
 
 int
@@ -228,7 +219,7 @@ main (int argc, char **argv)
 
   if (atexit (close_stdout))
     {
-      error (EXIT_FAILURE, errno, _("The atexit library function failed"));
+      die (EXIT_FAILURE, errno, _("The atexit library function failed"));
     }
 
   pathsize = oldpathsize = 1026; /* Increased as necessary by getline.  */
@@ -251,9 +242,9 @@ main (int argc, char **argv)
 	slocate_seclevel = get_seclevel (optarg);
 	if (slocate_seclevel < 0 || slocate_seclevel > 1)
 	  {
-	    error (EXIT_FAILURE, 0,
-		   _("slocate security level %ld is unsupported."),
-		   slocate_seclevel);
+	    die (EXIT_FAILURE, 0,
+		 _("slocate security level %ld is unsupported."),
+		 slocate_seclevel);
 	  }
 	break;
 
@@ -288,7 +279,7 @@ main (int argc, char **argv)
       if (fwrite (LOCATEDB_MAGIC, 1, sizeof (LOCATEDB_MAGIC), stdout)
 	  != sizeof (LOCATEDB_MAGIC))
 	{
-	  error (EXIT_FAILURE, errno, _("Failed to write to standard output"));
+	  die (EXIT_FAILURE, errno, _("Failed to write to standard output"));
 	}
     }
 

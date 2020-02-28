@@ -1,6 +1,5 @@
 /* print.c -- print/printf-related code.
-   Copyright (C) 1990-1994, 2000-2001, 2003-2012, 2016 Free Software
-   Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* We always include config.h first. */
@@ -24,7 +23,6 @@
 #include <ctype.h>
 #include <errno.h>
 #include <grp.h>
-#include <locale.h>
 #include <math.h>
 #include <pwd.h>
 #include <stdarg.h>
@@ -36,7 +34,6 @@
 #include "dirname.h"
 #include "error.h"
 #include "filemode.h"
-#include "gettext.h"
 #include "human.h"
 #include "printquoted.h"
 #include "stat-size.h"
@@ -45,15 +42,11 @@
 #include "xalloc.h"
 
 /* find-specific headers. */
+#include "system.h"
 #include "defs.h"
+#include "die.h"
 #include "print.h"
 
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
 
 #if defined STDC_HEADERS
 # define ISDIGIT(c) isdigit ((unsigned char)c)
@@ -376,8 +369,8 @@ insert_fprintf (struct format_val *vec,
           if (fmt_editpos[1] == 0)
             {
               /* Trailing %.  We don't like those. */
-              error (EXIT_FAILURE, 0,
-                     _("error: %s at end of format string"), fmt_editpos);
+              die (EXIT_FAILURE, 0,
+                   _("error: %s at end of format string"), fmt_editpos);
             }
 
           if (fmt_editpos[1] == '%') /* %% produces just %. */
@@ -400,9 +393,9 @@ insert_fprintf (struct format_val *vec,
             {
               if (strchr ("{[(", fmt_editpos[0]))
                 {
-                  error (EXIT_FAILURE, 0,
-                         _("error: the format directive `%%%c' is reserved for future use"),
-                         (int)fmt_editpos[0]);
+                  die (EXIT_FAILURE, 0,
+                       _("error: the format directive `%%%c' is reserved for future use"),
+                       (int)fmt_editpos[0]);
                   /*NOTREACHED*/
                 }
 
@@ -446,7 +439,7 @@ scan_for_digit_differences (const char *p, const char *q,
     {
       if (p[i] != q[i])
         {
-          if (!isdigit ((unsigned char)q[i]) || !isdigit ((unsigned char)q[i]))
+          if (!isdigit ((unsigned char)p[i]) || !isdigit ((unsigned char)q[i]))
             return false;
 
           if (!seen)
@@ -611,7 +604,7 @@ format_date (struct timespec ts, int kind)
   char ns_buf[NS_BUF_LEN]; /* -.9999999990 (- sign can happen!)*/
   int  charsprinted, need_ns_suffix;
   struct tm *tm;
-  char fmt[6];
+  char fmt[12];
 
   /* human_readable() assumes we pass a buffer which is at least as
    * long as LONGEST_HUMAN_READABLE.  We use an assertion here to
@@ -631,7 +624,11 @@ format_date (struct timespec ts, int kind)
   /* Format the main part of the time. */
   if (kind == '+')
     {
-      strcpy (fmt, "%F+%T");
+      /* Avoid %F, some Unix versions lack it.  For example:
+         HP Tru64 UNIX V5.1B (Rev. 2650); Wed Feb 17 22:59:59 CST 2016
+         Also, some older HP-UX versions expand %F as the full month (like %B).
+         Reported by Steven M. Schweda <sms@antinode.info> */
+      strcpy (fmt, "%Y-%m-%d+%T");
       need_ns_suffix = 1;
     }
   else
@@ -806,6 +803,7 @@ checked_fprintf (struct format_val *dest, const char *fmt, ...)
 
   va_start (ap, fmt);
   rv = vfprintf (dest->stream, fmt, ap);
+  va_end (ap);
   if (rv < 0)
     nonfatal_nontarget_file_error (errno, dest->filename);
 }
@@ -948,13 +946,8 @@ do_fprintf (struct format_val *dest,
                 checked_fprintf (dest, segment->text, g->gr_name);
                 break;
               }
-            else
-              {
-                /* Do nothing. */
-                /*FALLTHROUGH*/
-              }
           }
-          /*FALLTHROUGH*/ /*...sometimes, so 'G' case.*/
+          FALLTHROUGH; /*...sometimes, so 'G' case.*/
 
         case 'G':               /* GID number */
           /* UNTRUSTED, probably unexploitable */
@@ -965,8 +958,18 @@ do_fprintf (struct format_val *dest,
         case 'h':               /* leading directories part of path */
           /* sanitised */
           {
-            cp = strrchr (pathname, '/');
-            if (cp == NULL)     /* No leading directories. */
+            char *pname = strdup (pathname);
+
+            /* Remove trailing slashes - unless it's the root '/' directory.  */
+            char *s = pname + strlen (pname) -1;
+            for ( ; pname <= s; s--)
+              if (*s != '/')
+                break;
+            if (pname < s && *(s+1) == '/')
+              *(s+1) = '\0';
+
+            s = strrchr (pname, '/');
+            if (s == NULL)     /* No leading directories. */
               {
                 /* If there is no slash in the pathname, we still
                  * print the string because it contains characters
@@ -976,11 +979,10 @@ do_fprintf (struct format_val *dest,
               }
             else
               {
-                char *s = strdup (pathname);
-                s[cp - pathname] = 0;
-                checked_print_quoted (dest, segment->text, s);
-                free (s);
+                *s = '\0';
+                checked_print_quoted (dest, segment->text, pname);
               }
+            free (pname);
           }
           break;
 
@@ -1153,9 +1155,8 @@ do_fprintf (struct format_val *dest,
                 checked_fprintf (dest, segment->text, p->pw_name);
                 break;
               }
-            /* else fallthru */
           }
-          /* FALLTHROUGH*/ /* .. to case U */
+          FALLTHROUGH; /* .. to case U */
 
         case 'U':               /* UID number */
           /* UNTRUSTED, probably unexploitable */
@@ -1174,13 +1175,14 @@ do_fprintf (struct format_val *dest,
             if (S_ISLNK (stat_buf->st_mode))
               {
                 struct stat sbuf;
-                /* If we would normally follow links, do not do so.
-                 * If we would normally not follow links, do so.
+                /* %Y needs to stat the symlink target regardless of
+                 * whether we would normally follow symbolic links or not.
+                 * (Actually we do not even come here when following_links()
+                 *  other than the ENOENT case.)
                  */
-                if ((following_links () ? optionp_stat : optionl_stat)
-                    (state.rel_pathname, &sbuf) != 0)
+                if (fstatat (state.cwd_dir_fd, state.rel_pathname, &sbuf, 0) != 0)
                   {
-                    if ( errno == ENOENT )
+                    if ( (errno == ENOENT) || (errno == ENOTDIR) )
                       {
                         checked_fprintf (dest, segment->text, "N");
                         break;
@@ -1203,8 +1205,8 @@ do_fprintf (struct format_val *dest,
                 checked_fprintf (dest, segment->text,
                                  mode_to_filetype (sbuf.st_mode & S_IFMT));
               }
-#endif /* S_ISLNK */
             else
+#endif /* S_ISLNK */
               {
                 checked_fprintf (dest, segment->text,
                                  mode_to_filetype (stat_buf->st_mode & S_IFMT));
@@ -1254,7 +1256,7 @@ do_fprintf (struct format_val *dest,
 	     simply to ensure that the error message matches the one
 	     in insert_fprintf, easing the translation burden.
 	   */
-	  error (EXIT_FAILURE, 0, _("error: %s at end of format string"), "%");
+	  die (EXIT_FAILURE, 0, _("error: %s at end of format string"), "%");
 	  /*NOTREACHED*/
 	  break;
         }

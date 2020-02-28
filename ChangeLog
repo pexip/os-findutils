@@ -1,3 +1,1759 @@
+2019-02-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: make pred_empty safer and avoid fd leaks
+	There is a small race condition between the previous stat call
+	and openat/fdopendir (which cannot be avoided): if the directory
+	got replaced by another file type, then openat would succeed but the
+	subsequent fdopendir would fail with ENOTDIR.  Detect this earlier
+	by passing the O_DIRECTORY flag.
+	Furthermore, the opened file descriptor was leaked in that case
+	(bug introduced in FINDUTILS_4_3_2-1-80-gb46b0d89 in 2007).
+	Later on, after a readdir error, also the directory stream was leaked
+	(bug introduced by myself in commit 7a6e548690b1).
+
+	* find/pred.c (pred_empty): Add more flags to the openat call,
+	especially O_DIRECTORY; inspired by gnulib's opendirat module.
+	Close the file descriptor when fdopendir failed.
+	Close the directory stream when readdir failed.
+
+2019-01-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: ensure no VLA is used
+	Cause developer builds to fail for any use of a VLA.
+	VLAs (variable length arrays) limit portability.
+
+	* configure.ac (findutils_gnulib_noise_warnings): Remove as the only
+	suppressed warning for gnulib was -Wvla, thus enabling the warning
+	when configured with --enable-compiler-warnings.
+	(compiler-warnings-are-errors): Likewise.
+	(GNULIB_NO_VLA) Define, disabling use of VLAs in gnulib.  This commit
+	is functionally equivalent to coreutils' v8.30-44-gd26dece5d
+
+	Discussed for other GNU packages in:
+	https://lists.gnu.org/r/coreutils/2019-01/msg00058.html
+
+2019-01-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	gnulib: update to the latest
+	Run 'make update-gnulib-to-latest'.
+
+	* gnulib: Update to a version supporting GNULIB_NO_VLA.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: remove last traces of old shell tests
+	* find/testsuite/Makefile.am (test_shell_progs): Remove.
+	(EXTRA_DIST): Remove $(test_shell_progs) and 'binary_locations.sh'.
+	(TESTS): Remove.
+	* find/testsuite/binary_locations.sh: Remove utility script.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: migrate 'type_list' to the new testsuite
+	Make this test a "check-root" test to increase test coverage.
+	This test runs for non-privileged users as well, but skips the tests
+	for block and character devices as mknod(1) will fail with EPERM.
+
+	* find/testsuite/test_type-list.sh: Move to ...
+	* tests/find/type_list.sh: ... this, and apply the above.
+	Simplify, and make more robust.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_root_tests): ... and add it here.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: migrate 'debug-missing-arg' to the new testsuite
+	* find/testsuite/sv-52220.sh: Move to ...
+	* tests/find/debug-missing-arg.sh: ... this, and apply the above.
+	Simplify, and make more robust.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+	tests: migrate 'refuse-noop' to the new testsuite
+	* find/testsuite/sv-48180-refuse-noop.sh: Move to ...
+	* tests/find/refuse-noop.sh: ... this, and apply the above.
+	Simplify, and make more robust.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+	tests: migrate 'exec-plus-last-file' to the new testsuite
+	* find/testsuite/sv-48030-exec-plus-bug.sh: Move to ...
+	* tests/find/exec-plus-last-file.sh: ... this, and apply the above.
+	Simplify, and make more robust.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+	tests: migrate 'execdir-fd-leak' to the new testsuite
+	* find/testsuite/sv-34976-execdir-fd-leak.sh: Move to ...
+	* tests/find/execdir-fd-leak.sh: ... this, and apply the above.
+	Simplify, and make more robust.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+	tests: migrate 'printf_inode' to the new testsuite
+	* find/testsuite/test_inode.sh: Move to ...
+	* tests/find/printf_inode.sh: ... this, and apply the above.  Simplify.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+	tests: migrate 'printf_escape_c' to the new testsuite
+	* find/testsuite/test_escape_c.sh: Move to ...
+	* tests/find/printf_escape_c.sh: ... this, and apply the above.  Simplify.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: migrate test 'printf_escapechars' to the new testsuite
+	For migrating, merge with the basic structure from 'tests/sample-test',
+	i.e., source in 'tests/init.sh', call 'print_ver_', "Exit $fail",  etc.
+	Also remove now-common functions like die() and framework_failure_().
+
+	* find/testsuite/test_escapechars.golden: Remove, as the axpected output
+	is created on the fly by the new test.
+	* find/testsuite/test_escapechars.sh: Move to ...
+	* tests/find/printf_escapechars.sh: ... this, and apply the above.
+	Create the expected output on the fly, and also check for the expected
+	error diagnostic on stderr.
+	* find/testsuite/Makefile.am (EXTRA_DIST_GOLDEN): Remove.
+	(EXTRA_DIST): Remove $(EXTRA_DIST_GOLDEN).
+	(tests_shell_progs): Remove the reference to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: migrate 'name-lbracket-literal' to the new testsuite
+	For migrating, merge with the basic structure from 'tests/sample-test',
+	i.e., source in 'tests/init.sh', call 'print_ver_', "Exit $fail",  etc.
+	Also remove now-common functions like die() and framework_failure_().
+
+	* find/testsuite/sv-bug-32043.sh: Move to ...
+	* tests/find/name-lbracket-literal.sh: ... this, and apply the above.
+	Simplify.
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: migrate 'many-dir-entries-vs-OOM' to the new testsuite
+	For migrating, merge with the basic structure from 'tests/sample-test',
+	i.e., source in 'tests/init.sh', call 'print_ver_', "Exit $fail",  etc.
+	Also remove now-common functions like die() and framework_failure_().
+
+	* find/testsuite/sv-34079.sh: Move to ...
+	* tests/find/many-dir-entries-vs-OOM.sh: ... this, and apply the above.
+	While at it, loosely pull in changes from the related test in the
+	GNU coreutils [1]:
+	Create only 200,000 files, rather than 4 million.  The latter was overkill,
+	and was too likely to fail due to inode exhaustion.  Now that this test
+	doesn't take so long, label it as merely "expensive", rather than
+	"very expensive".
+	Furthermore, simplify the test data creation, and use the ulimit specifically
+	for each program under test (find, oldfind).
+	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
+	to this test ...
+	* tests/local.mk (all_tests): .. and add it here.
+
+	[1]
+	https://git.sv.gnu.org/cgit/coreutils.git/tree/tests/rm/many-dir-entries-vs-OOM.sh?id=4711c49312d5
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: add shell-style test framework
+	Borrow the 'tests' framework from GNU coreutils.  This allows better
+	shell-style tests with more control over stdin, stdout, stderr, signals,
+	preparatory steps, cleanup, return code verification, root-only tests,
+	etc.
+
+	* .gitignore: Add entries for per-test *.log and *.trs files, and the
+	'test-suite.log'.
+	* .x-update-copyright: Exempt 'tests/init.sh' as this comes from gnulib.
+	* Makefile.am: Include 'tests/local.mk'.
+	(EXTRA_DIST): Add 'tests/GNUmakefile'.
+	(SUBDIRS): Move 'gnulib-tests' to the end, i.e., run our own tests first.
+	(ALL_RECURSIVE_TARGETS): Initialize.
+	(update-gnulib-to-latest): Copy 'tests/init.sh' from gnulib.
+	* cfg.mk: Add some syntax-check rules.
+	* init.cfg: Add file.
+	* tests/GNUmakefile: Likewise.
+	* tests/envvar-check: Likewise.
+	* tests/init.sh: Likewise.
+	* tests/lang-default: Likewise.
+	* tests/local.mk: Likewise.
+	* tests/misc/help-version.sh: Likewise.
+	* tests/other-fs-tmpdir: Likewise.
+	* tests/sample-test: Likewise.
+	* tests/.gitignore: Likewise.
+	* NEWS (Changes to the build process): Mention the new test framework.
+
+2019-01-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: add NEWS entry for bug #55272
+	* NEWS (Bug Fixes): Add news entry for the change in commit 66174c10c6.
+
+2019-01-05  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: work around dependency issue of 'make' on the BSDs
+	'make' on all of FreeBSD, NetBSD and OpenBSD fails to understand that
+	'./libfindtools.a' and 'libfindtools.a' are the same, and - unless one
+	builds that target manually - fails with:
+
+	  make[3]: don't know how to make ./libfindtools.a. Stop
+
+	* find/Makefile.am (LDADD): Change './libfindtools.a' to 'libfindtools.a'.
+
+2019-01-05  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: improve warning diagnostic for the -name/-iname with '/' in pattern
+	* find/parser.c (check_name_arg): Add parameter ALT for the alternative
+	option to suggest.  Avoid confusing quoting in the warning by making
+	the message more terse.
+	(parse_iname): Pass "-iwholename" as alternative parameter.
+	(parse_name): Pass "-wholename" as alternative parameter.
+
+	Reported by Andreas Metzler in
+	    https://sv.gnu.org/bugs/?55272
+
+2019-01-05  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typo in comment
+	* find/parser.c (found_parser): s/fid/find/ in a comment.
+
+2019-01-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update copyright year number ranges
+	Run 'make update-copyright'.
+
+	* lib/regexprops.c (copying): Update the year number manually.
+	* All other files: Update copyright years via the above make run.
+
+2019-01-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest', mainly to update the copyright
+	year numbers with:
+
+	> maint: Run 'make update-copyright'
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+
+2018-12-12  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	gnulib: use https URL scheme instead of git
+	This is apparently more secure (against MITM attacks).
+
+	* .gitmodules (gnulib): Change url scheme from "git://" to "https://".
+
+	Discussed at:
+	https://lists.gnu.org/r/bug-gnulib/2018-12/msg00051.html
+
+2018-12-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid non-portable C99 printf size specifiers %z and %j
+	* cfg.mk (sc_prohibit-c99-printf-format): Add SC rule.
+	* find/parser.c (parse_time): Change %ju to PRIuMAX.
+	(insert_num): Likewise.
+	* xargs/xargs.c (xargs_do_exec): Change %zu to PRIuMAX.
+
+	maint: avoid continued strings
+	* lib/bugreports.c (explain_how_to_report_bugs): Avoid continued strings
+	by using multi-part strings, one per line.
+	* cfg.mk (sc_prohibit_continued_string_alpha_in_column_1): Add SC rule.
+
+2018-12-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: adjust preprocessor indentation via cppi
+	Run 'cppi -a' for all *.[ch] files, and add a syntax-check rule for it.
+
+	* cfg.mk (sc_preprocessor_indentation): Add rule.
+	* find/defs.h: Run 'cppi -a' on this file.
+	* find/fstype.c: Likewise.
+	* find/oldfind.c: Likewise.
+	* find/parser.c: Likewise.
+	* find/pred.c: Likewise.
+	* find/print.h: Likewise.
+	* find/sharefile.h: Likewise.
+	* gnulib-local/lib/gcc-function-attributes.h: Likewise.
+	* lib/bugreports.h: Likewise.
+	* lib/buildcmd.c: Likewise.
+	* lib/buildcmd.h: Likewise.
+	* lib/extendbuf.h: Likewise.
+	* lib/fdleak.h: Likewise.
+	* lib/findutils-version.h: Likewise.
+	* lib/listfile.c: Likewise.
+	* lib/printquoted.h: Likewise.
+	* lib/regextype.h: Likewise.
+	* lib/safe-atoi.h: Likewise.
+	* lib/splitstring.h: Likewise.
+	* lib/system.h: Likewise.
+	* locate/locatedb.h: Likewise.
+	* xargs/xargs.c: Likewise.
+
+2018-12-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: remove configure option --enable-id-cache from README
+	* README (--enable-id-cache): Remove here, as the option has already
+	been removed in commit v4.6.0-11-gbcd85897.
+
+2018-11-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix grammar issue in texinfo manual
+	* doc/find.texi (Systems without O_NOFOLLOW): Remove superfluous 'the'.
+
+	Reported by Martin Castillo in https://sv.gnu.org/bugs/?55022
+
+2018-11-10  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typo in comment in safe-atoi.c
+	* lib/safe-atoi.c (safe_atoi): s/chack/check/
+
+2018-11-10  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: remove already retired configure --enable-debug from README
+	That configure option has been removed with commit 995151807658,
+	so also remove it from README.
+
+	* README (Special configure options): Do the above.
+
+2018-11-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest'.
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+	* configure.ac (AC_PREREQ): Change from very old 2.59 to current 2.69
+	to avoid gnulib-tool complaining about "minimum supported autoconf
+	version is 2.63".
+
+2018-11-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: provide make target to update gnulib to latest
+	* Makefile.am (gnulib-sync, update-gnulib-to-latest): Add targets to
+	pull the latest commit of the gnulib submodule, and also to copy over
+	the files we keep in sync.
+	* doc/find-maint.texi (How to update Gnulib to latest): Add section.
+
+	find: add '-D all' to enable all debug flags
+	* find/defs.h (DebugOption): Add DebugAll, which includes all other
+	debug options but DebugHelp.
+	* find/util.c (debugassoc): Add an entry for DebugAll, and move DebugHelp
+	to the end.
+	* doc/find.texi (node Debug Options): Document the new option.
+	* find/find.1: Likewise.
+	* NEWS (Improvements): Likewise.
+
+	doc: use portable 'tail' call in texinfo example
+	* doc/find.texi (node Updating A Timestamp File): Use more portable
+	'tail -n1' instead of the deprecated form 'tail -1'.
+
+2018-10-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix typo in 'xargs -l' examples in texinfo manual
+	* doc/find.texi (node Controlling Parallelism): Change from 'xargs -1'
+	(minus one) to 'xargs -l' (minus El) in three places.
+
+	Reported by Ahmad ElKomey in
+	https://sv.gnu.org/bugs/index.php?54859
+
+2018-10-15  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix the examples of the -perm option in the texinfo documentation
+	* doc/find.texi (Mode Bits): Move the misplaced '-perm -g+w,o+w' example
+	up to the '-perm -022' example to where it belongs.  The former got
+	accidentally separated from the latter in commit 7ade936bc2c4: the patch
+	proposed in https://sv.gnu.org/bugs/?14619 was applied in the wrong place.
+	* NEWS (Bug fixes): Mention the fix.
+
+	Reported by Ahmad ElKomey in https://sv.gnu.org/bugs/?54838
+
+2018-09-23  James Youngman  <jay@gnu.org>
+
+	doc: don't mention indirect blocks.  Clarify how -size is measured.
+	This fixes Savannah bug 36763.
+
+	README: refer user to README-hacking when there is no INSTALL file.
+
+2018-08-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: clarify again exit status handling of -exec command {} +
+	A non-zero exit status of a command launched via the -exec predicate
+	family only leads to a non-zero exit status of 'find' itself when
+	the '+' form of the punctuation for the command is used.  This is
+	also what POSIX requires [1].
+	To put it the other way round: when the ';' form is used, the exit
+	status of 'find' is not affected.
+
+	[1] http://pubs.opengroup.org/onlinepubs/9699919799/utilities/find.html
+
+	* find/find.1 (-exec ... +): Explicitly mention that the exit status of
+	the launched command affects find's exit status when the '+' form is used.
+	To allow a future change, deliberately leave the behavior for failing
+	commands with the ';' form undocumented.
+	(-execdir): Likewise.
+	Previously, in the form committed with v4.6.0-63-gae424b95, that sentence
+	did not explicitly limit the behavior to the '+' form, and therefore
+	might have confused the user.
+
+	Fixes https://sv.gnu.org/bugs/?54509
+
+2018-08-08  Aron Barath  <baratharon@caesar.elte.hu>  (tiny change)
+
+	fdleak.c: avoid compiler error on platforms lacking getrlimit
+	* lib/fdleak.c (get_max_fd): Move definition of the fd_limit variable
+	into the HAVE_GETRLIMIT block giving it a better scope: platforms
+	lacking getrlimit probably also lack struct rlimit, too.
+
+2018-07-26  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	* COPYING: Merge fom gnulib/doc/COPYINGv3.
+	* bootstrap: Merge from gnulib/build-aux/bootstrap.
+	* gnulib: Update, mainly to avoid the following warnings from GCC-8.1.1:
+	  cc1: warning: -Wabi won't warn about anything [-Wabi]
+	  cc1: note: -Wabi warns about differences from the most up-to-date ABI,\
+	       which is also used by default
+	  cc1: note: use e.g. -Wabi=11 to warn about changes from GCC 7
+
+2018-07-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find -printf %Y: handle ENOTDIR also as broken symlink
+	The above command should output 'N' (for broken symlinks) not only in
+	the ENOENT case, but also when an intermediate part of the symlink target
+	file name is a file (ENOTDIR):
+
+	  $ touch file
+	  $ ln -s file/ENOTDIR link
+	  $ find link -printf '%Y %p\n'
+	  N link
+
+	Previously, find output 'l' as for a resolvable symlink.
+
+	* find/print.c (do_fprintf): Treat ENOTDIR the same as ENOENT to detect
+	broken symlinks.
+	* find/testsuite/find.gnu/printf-symlink.exp: Extend the test, and ...
+	* find/testsuite/find.gnu/printf-symlink.xo: ... the expected output.
+	* NEWS (Bug fixes, #54262): Explicitly mention that both ENOENT and ENOTDIR
+	are used to detect broken symlinks.
+
+	Suggested by Tavian Barnes.
+
+2018-07-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	print.c: move 'else' into #ifdef S_ISLNK
+	* find/print.c (do_fprintf): Move the 'else' statment into the #ifdef'ed
+	block to avoid compilation failure on systems without S_ISLNK (although
+	it seems nobody tried to build on such a platform since 2005).
+
+	Bug introduced in commit 'FINDUTILS_4_2_23-1-63-g238d9547'.
+
+2018-07-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: document -printf %Y output consistently
+	* doc/find.texi (node Location Directives): Mention 'L' and '?' as well.
+	* find/find.1 (%Y): Mention '?'.
+	* NEWS (Documentation Changes): Mention the fix.
+
+2018-07-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: fix -printf %Y output to 'N' for broken links
+	The format %Y shall output 'N' for broken links (ENOENT), 'L' for ELOOP,
+	and '?' for any other error when stat()ing the symlink target.
+
+	The %Y implementation implicitly fell back to lstat(); therefore it
+	output 'l' for dangling symlinks.
+
+	  $ ln -s ENOENT DANGLE
+	  $ find -D stat DANGLE -printf '%y %Y %p\n'
+	  fallback_stat(): stat(DANGLE) failed; falling back on lstat()
+	  l l DANGLE
+
+	* find/print.c (do_fprintf): For %Y, always follow links to determine
+	the type of the symlink target.
+	* find/testsuite/find.gnu/printf-symlink.exp: Add a test case for broken
+	links and the ELOOP case ...
+	* find/testsuite/find.gnu/printf-symlink.xo: ... with the expected output.
+	* NEWS (Bug fixes): Mention the fix.
+
+	Bug introduced in version v4.5.8 with commit '25e7c5fbf9'.
+
+2018-07-16  Christopher Leonard  <christopherthomasleonard@yahoo.com>  (tiny change)
+
+	doc: improve readability of find-maint.texi
+	* doc/find-maint.texi: s/fuly/fully/, and re-phrase some sentences,
+	e.g. use active voice.
+
+2018-07-11  Jim Meyering  <jim@meyering.net>
+
+	maint: use gnulib's intprops module to avoid magic numbers
+	* bootstrap.conf (gnulib_modules): Add intprops.
+	* find/ftsfind.c (get_fts_info_name): Use the INT_BUFSIZE_BOUND macro
+	to calculate the size of BUF.
+
+2018-07-07  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	ftsfind.c: avoid buffer overflow in -D code
+	Reported by GCC 8.1.1:
+
+	ftsfind.c: In function ‘get_fts_info_name’:
+	ftsfind.c:164:23: warning: ‘%d’ directive writing between 1 and 11 bytes into a region of size 9 [-Wformat-overflow=]
+	       sprintf (buf, "[%d]", info);
+	                       ^~
+	ftsfind.c:164:7: note: ‘sprintf’ output between 4 and 14 bytes into a destination of size 10
+	       sprintf (buf, "[%d]", info);
+	       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	* find/ftsfind.c (get_fts_info_name): Increase buffer from 10 to 14
+	to be able to hold the 11-char string representation of the %d format,
+	the surrounding '[' and ']', plus the terminating NULL character.
+
+2018-07-07  Andreas Metzler  <ametzler@bebt.de>
+
+	tests: test find -depth with unreadable directory
+	* find/testsuite/find.posix/sv-bug-54171.exp: Add testcase ...
+	* find/testsuite/find.posix/sv-bug-54171.xo: .. and expected output.
+	* find/testsuite/Makefile.am: Include newly added tests in
+	distribution.
+
+2018-07-07  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: process unreadable directories with -depth
+	* find/ftsfind.c (consider_visiting): Split the FTS_ERR and FTS_DNR
+	cases to be able to continue processing that entry in the latter case
+	(unreadable directory) when the -depth option is given.
+	* NEWS (Bug Fixes): Mention the fix.
+
+	Reported by Tavian Barnes in https://savannah.gnu.org/bugs/?54171.
+
+2018-07-06  James Youngman  <jay@gnu.org>
+
+	Shorten output of qmark_chars after replacing a multibyte characer.
+	When qmark_chars() replaces a multibyte character with a single
+	character, this reduces the length of the string.  When this happens,
+	terminate the now-shorter string at the new length.
+
+	This is simple workaround for bug http://savannah.gnu.org/bugs/?54236.
+
+2018-06-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	oldfind.c: port to GCC 8
+	oldfind.c:277:1: error: function might be candidate for attribute 'malloc' if it is known to return normally [-Werror=suggest-attribute=malloc]
+	 specific_dirname (const char *dir)
+	 ^~~~~~~~~~~~~~~~
+
+	* find/oldfind.c (specific_dirname): Mark with _GL_ATTRIBUTE_MALLOC.
+
+2018-06-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs.c: port to GCC 8
+	GCC 8 issues the following warning diagnostic:
+
+	  xargs.c:1134:29: warning: '%u' directive output may be truncated writing \
+	  between 1 and 10 bytes into a region of size 2 [-Wformat-truncation=]
+	     static const char *fmt = "%u";
+	                               ^~
+	  xargs.c:1161:7: note: 'snprintf' output between 2 and 11 bytes into a \
+	  destination of size 2
+	         snprintf (buf, size+1, fmt, n);
+	         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	* xargs/xargs.c (set_slot_var): Simplify BUF handling to pacify GCC 8
+	about safe use of snprintf wrt truncated writing.
+
+2018-06-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	* gnulib: Do the above, mainly for:
+	  > fts: treat CIFS like NFS
+	  > fts: fix bug in find across filesystems
+	* bootstrap: Update from gnulib/build-aux/bootstrap.
+
+	This fixes a bug reported for Fedora which had already newer gnulib
+	than what was upstream - here - in 4.6.0:
+	  https://bugzilla.redhat.com/show_bug.cgi?id=1558249
+	Reported by Kamil Dudka for gnulib in:
+	  https://lists.gnu.org/r/bug-gnulib/2018-04/msg00015.html
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	* gnulib: Do the above.
+	* bootstrap: Update from gnulib/build-aux/bootstrap.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: port sv-48030-exec-plus-bug.sh to Alpine Linux
+	On Alpine Linux v3.6, the test failed because the created 'tstcmd'
+	script lacks a shebang - see shortened log:
+
+	  + echo printf "%s\n" "$@"
+	  + chmod +x bin/tstcmd
+	  + PATH=/tmp/tmp.10fq3tSrnx/bin:...
+	  + .../find/find bin -maxdepth 0 -exec tstcmd {} +
+	  find: ‘tstcmd’: Exec format error
+	  + [ = bin ]
+	  sh: bin: unknown operand
+	  + return 1
+
+	* find/testsuite/sv-48030-exec-plus-bug.sh: Add a shebang to the
+	generated 'tstcmd' script, and add quotes around the find call to
+	avoid the "unknown operand" error.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: skip sv-34079.sh properly if setting up the test fails
+	The test exited as a test failure (exit 1) also when set-up failed,
+	e.g. when running the test with TMPDIR on a file system with too
+	few free inodes.  Instead, the test should exit with 77 to skip the
+	test.  In other cases, exit properly with 99 to signal a test
+	framework failure.
+
+	* find/testsuite/sv-34079.sh (very_expensive_): Move the check for
+	RUN_VERY_EXPENSIVE_TESTS to the beginning, thus decreasing the
+	indentation level of the test code.  This is also a preparation
+	step for moving this check to a central place.
+	(skip_,framework_failure_): Define utility functions to skip the test
+	or terminate it as a test framework failure.
+	(get_ifree_): Define function to determine the number of free inodes.
+	(make_test_data): Use it, and skip early if we know that there are too
+	few free inodes on the current file system.
+	Use "seq -f" to build the file names, and directly feed them via xargs
+	to touch.  This avoids slower shell code.
+	Skip the test if touch fails; previously, the test exited as FAIL.
+	Move the creation of test files up, i.e., outside the if-condition,
+	and use trap to remove the temporary directory at exit.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: skip some tests unless seq(1) is available
+	seq(1) is not required by POSIX and also not available on some
+	systems, e.g. the *BSDs.  Skip tests requiring it.
+
+	* find/testsuite/sv-34079.sh: Add a check whether seq(1) is available,
+	and exit 77 (SKIP) otherwise.
+	* find/testsuite/sv-48030-exec-plus-bug.sh: Likewise.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: remove obsolete ALL_LINGUAS list
+	The list of languages is in po/LINGUAS since gettext-0.11.
+	Removing ALL_LINGUAS avoids the following warning:
+	  config.status: setting ALL_LINGUAS in configure.in is obsolete
+
+	* configure.ac (ALL_LINGUAS): Remove.
+	* Makefile.am (findutils-check-pofiles): Remove check.
+	(dist-hook): Remove dependency to findutils-check-pofiles.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: remove PO files from version control
+	Let bootstrap auto-update the PO files from "translationproject.org".
+
+	* bootstrap.conf (SKIP_PO): Remove, thus letting bootstrap download
+	the PO files now.
+	* po/.gitignore: Add entries now created during the build.
+	* doc/find-maint.texi (Internationalisation): Mention the change.
+	* NEWS (Changes to the build process): Likewise.
+	(Translations): Remove section.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: port generating updatedb to the BSDs
+	sed(1) on FreeBSD-11.1 and OpenBSD 6.2 requires the last command inside
+	'{...}' groups to be terminated with a semicolon, otherwise it fails with:
+
+	  sed: 1: "/^# Copyright /{s/^..// ...: extra characters at the end \
+	  of q command
+
+	* locate/Makefile.am (updatedb): Add a ';' after the last command in the
+	'{...}' group - introduced in commit v4.6.0-133-g6d186665.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: add missing va_end
+	'va_start' must have a corresponding 'va_end'.  Depending on the
+	implementation, the consequence of a missing 'va_end' may be a
+	corrupted stack.
+
+	* find/print.c (checked_fprintf): Add va_end.
+
+	Spotted by coverity analysis.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	parser.c: avoid -Wreturn-type warning on GCC-4.8.5 on NetBSD 7.1
+	parser.c: In function 'collect_arg_stat_info':
+	parser.c:755:1: warning: control reaches end of non-void function [-Wreturn-type]
+
+	* find/parser.c (collect_arg_stat_info): Invert condition to work
+	around the above warning for compilers failing to detect that
+	fatal_target_file_error does never return.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: prevent multiple inclusion of header files
+	* find/print.h: Add #ifndef / #define / #endif guard to prevent
+	multiple inclusion of this header file.
+	* lib/fdleak.h: Likewise.
+	* lib/findutils-version.h: Likewise.
+	* lib/regextype.h: Likewise.
+	* lib/splitstring.h: Likewise.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: avoid use of $(RM)
+	Some make implementations, e.g. on NetBSD 7.1, lack it; therefore
+	avoid it in order to prevent error messages during 'make clean'.
+
+	* Makefile.am (coverage-clean): Replace $(RM) by 'rm -f'.
+	* find/Makefile.am: Likewise.
+	* lib/Makefile.am: Likewise.
+	* locate/Makefile.am: Likewise.
+	* xargs/Makefile.am: Likewise.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: move NLS-related macros to a central place
+	Add definition like in coreutils, thus also silencing GCC on NetBSD 7.1:
+	  warning: "textdomain" redefined
+
+	* lib/system.h: Include <locale.h> and gnulib's "gettext.h" here,
+	and define the macros textdomain, bindtextdomain, _ and N_.
+	* find/exe.c: Use it.
+	* find/fstype.c: Likewise.
+	* find/ftsfind.c: Likewise.
+	* find/oldfind.c: Likewise.
+	* find/parser.c: Likewise.
+	* find/pred.c: Likewise.
+	* find/print.c: Likewise.
+	* find/tree.c: Likewise.
+	* find/util.c: Likewise.
+	* lib/bugreports.c: Likewise.
+	* lib/buildcmd.c: Likewise.
+	* lib/dircallback.c: Likewise.
+	* lib/fdleak.c: Likewise.
+	* lib/findutils-version.c: Likewise.
+	* lib/listfile.c: Likewise.
+	* lib/regextype.c: Likewise.
+	* lib/safe-atoi.c: Likewise.
+	* locate/frcode.c: Likewise.
+	* locate/locate.c: Likewise.
+	* locate/word_io.c: Likewise.
+	* xargs/xargs.c: Likewise.
+	* cfg.mk (exclude_file_name_regexp--sc_bindtextdomain): Add exemption
+	for some non-main sources to pass the syntax-check.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: make -delete honour the -ignore_readdir_race option
+	* find/pred.c (pred_delete): Return true when the -ignore_readdir_race
+	option is active and unlinkat() came back with ENOENT.
+	* doc/find.texi (Option -ignore_readdir_race): Document the change.
+	(Action -delete): Likewise.
+	* find/find.1: Likewise.
+	* NEWS (Bug Fixes): Mention the fix.
+
+	For now, it seems a bit hard to add a proper test for this,
+	so the following shell snippet demonstrates the race:
+
+	  $ seq 10 | xargs touch
+	  $ env time -f 'find exit status: %x\nfind time: %e' \
+	      find -ignore_readdir_race -type f \
+	        -delete \
+	        -exec sh -c 'sleep $(basename {})' \; \
+	        -printf 'find deleted: %p\n' \
+	        & \
+	    sleep 20; \
+	    seq 10 | xargs rm -fv; \
+	    wait $!
+
+	Reported by Alexander Golubev in
+	https://savannah.gnu.org/bugs/?52981
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: add gnupload
+	This may be used by 'make emit_upload_commands' and 'make stable' /
+	'make alpha' later on.
+
+	* bootstrap.conf (gnulib_modules): Add entry for 'gnupload'.
+	* build-aux/.gitignore (/gnupload): Add entry.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: give gnulib's test directory a better name
+	Rename from 'tests' to 'gnulib-tests' to make clearer that these
+	are the tests of gnulib, and not those of findutils.
+
+	* .gitignore (tests): Remove.
+	(/gnulib-tests/): Add entry.
+	* Makefile.am (SUBDIRS): s/tests/gnulib-tests/
+	(findutils-check-smells): Likewise.
+	(coverage-clean): Likewise.
+	* bootstrap.conf (gnulib_tool_option_extras): Add option
+	"--tests-base=gnulib-tests".
+	* configure.ac (AC_CONFIG_FILES): s/tests/gnulib-tests/ here, too.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: make inter-release --version output more useful
+	Now, each snapshot has a version "number" like 4.6-131-219-gda920ee,
+	which indicates that it is built using the 131st change set
+	(in _some_ repository) following the "v4.6" tag, and that da920ee
+	is a prefix of the commit SHA1.
+
+	* bootstrap.conf (gnulib_modules): Add git-version-gen.
+	* build-aux/.gitigore (/git-version-gen): Add entry.
+	* configure.ac: Run it to set the version from .tarball-version.
+	* Makefile.am (EXTRA_DIST): Add git-version-gen.
+	(dist-hook): Create .tarball-version in distribution tarballs,
+	never in a checked-out repository.
+	(AUTOMAKE_OPTIONS): Change from 'gnits' to 'gnu std-options readme-alpha'.
+	* .gitignore (.tarball-version): Add entry.
+	* doc/find-maint.texi (Making Releases): Adjust: tag before the build,
+	changed handling in NEWS, etc.
+	* NEWS (Changes to the build process): Document the change.
+
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: colorize test output on capable terminals
+	* configure.ac (AM_INIT_AUTOMAKE): Add 'color-tests' option.
+
+	build: make --enable-silent-rules the default
+	* configure.ac (AM_SILENT_RULES): Use this, with it's undocumented
+	[yes] argument.  Those who want verbose build output may configure
+	with --disable-silent-rules or use "make V=1".
+
+2018-03-13  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>  (tiny change)
+
+	doc: fix various syntax issues in find.1
+	Changes:
+	- Avoid warning "(macro BR): only 1 argument, but more are expected".
+	- Change misused SI (metric) numeric prefixes to the binary ones, like
+	a bare "1K blocks" to "1 KB blocks".
+	- Protect a full stop (.) with "\&", if it has a blank (white-space)
+	in front of or (ignoring transparent characters to the full stop) after
+	it, and it does not mean an end of a sentence.
+	- Change the name of a macro for two fonts (e.g., BR and IR) to one
+	letter, if there is only one argument.
+	- Use a macro to change to the italic font, instead of \fI [1], if
+	possible.
+	- Remove space in the first column, if not intented.
+	- Move a full stop (period) and a comma outside of a quoted text, if
+	it is at the end of the quote and does not end a quoted sentence.
+	- Change a HYPHEN-MINUS (code 0x55, 2D) to a minus (\-), if in front
+	of a name for an option.
+	- Split lines longer than 80 characters into two or more lines.
+	- Separate the sentences and subordinate clauses; each begins on a new
+	line. Or: Adjust space between sentences (two spaces).
+	- Fix the spelling of "kibi", "mebi", and "gibi".
+
+	* find/find.1: Do the above.
+
+	Patch contributed via https://sv.gnu.org/patch/?9585
+
+2018-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: add remove-potcdate.sed to po/.gitignore
+	* po/.gitignore: Add the above entry which may remains after
+	running 'make distcheck'.
+
+2018-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: run 'make -C po update-po'
+	Mainly for changed line numbers, but also for one white-space change
+	in 'tree.c'.
+
+	* po/be.po: Update via the above 'update-po' target.
+	* po/bg.po: Likewise.
+	* po/ca.po: Likewise.
+	* po/cs.po: Likewise.
+	* po/da.po: Likewise.
+	* po/de.po: Likewise.
+	* po/el.po: Likewise.
+	* po/eo.po: Likewise.
+	* po/es.po: Likewise.
+	* po/et.po: Likewise.
+	* po/fi.po: Likewise.
+	* po/findutils.pot: Likewise.
+	* po/fr.po: Likewise.
+	* po/ga.po: Likewise.
+	* po/gl.po: Likewise.
+	* po/hr.po: Likewise.
+	* po/hu.po: Likewise.
+	* po/id.po: Likewise.
+	* po/it.po: Likewise.
+	* po/ja.po: Likewise.
+	* po/ko.po: Likewise.
+	* po/lg.po: Likewise.
+	* po/lt.po: Likewise.
+	* po/ms.po: Likewise.
+	* po/nb.po: Likewise.
+	* po/nl.po: Likewise.
+	* po/pl.po: Likewise.
+	* po/pt.po: Likewise.
+	* po/pt_BR.po: Likewise.
+	* po/ro.po: Likewise.
+	* po/ru.po: Likewise.
+	* po/sk.po: Likewise.
+	* po/sl.po: Likewise.
+	* po/sr.po: Likewise.
+	* po/sv.po: Likewise.
+	* po/tr.po: Likewise.
+	* po/uk.po: Likewise.
+	* po/vi.po: Likewise.
+	* po/zh_CN.po: Likewise.
+	* po/zh_TW.po: Likewise.
+
+2018-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update copyright year number ranges
+	Run 'make update-copyright'.
+
+	* lib/regexprops.c (copying): Update the year number manually.
+	* All other files: Update copyright years via the above make run.
+
+2018-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: add -Wno-unused-parameter
+	The following new warning sneaked in with the gnulib update in the
+	previous commit:
+	  In file included from parser.c:49:0:
+	  ../gl/lib/stat-time.h: In function 'stat_time_normalize':
+	  ../gl/lib/stat-time.h:215:47: error: unused parameter 'st' \
+	  [-Werror=unused-parameter]
+	   stat_time_normalize (int result, struct stat *st)
+	                                                 ^~
+
+	* configure.ac: Add the -Wno-unused-parameter option explicitly as it
+	is implied - and thus overridden - by the more general -Wunused option.
+
+2018-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	* bootstrap: Merge from gnulib/build-aux/bootstrap.
+
+2018-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find.1: document that access()-based options apply to the current user
+	* find/find.1 (-executable): Mention to whom the matching files are
+	accessible: to the current user.
+	(-readable): Likewise.
+	(-writable): Likewise.
+
+	Reported by 積丹尼 Dan Jacobson <jidanni@jidanni.org> in
+	https://lists.gnu.org/r/bug-findutils/2017-12/msg00017.html
+
+2017-11-17  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: remove bootstrap from distribution
+	* Makefile.am (EXTRA_DIST): Remove bootstrap.
+
+2017-11-14  James Youngman  <jay@gnu.org>
+
+	regexprops: don't mention regex dialects we're not going to document.
+	* lib/regextype.c (get_regex_type_synonym): don't return regex
+	dialect Y as a synonym of dialect X, if we're not in fact going to
+	include X.  Accept a CONTEXT parameter in order to identify this
+	situation.  This ensures that the bug fixed in commit
+	e2c673cbcdc325a3a2e9dd02169bb4a42c61bc48 stays fixed for any
+	permutation of regex_map.
+	* lib/regextype.h: update prototype of get_regex_type_synonym.
+	* lib/regexprops.c (describe_all): Pass the new context parameter.
+	* doc/regexprops.texi: regenerate this file.
+
+	regexprops: fix dangling reference to the `ed' regular expression dialect.
+	* lib/regextype.c (regex_map): Permute the entries to list POSIX
+	dialects before other ones, so that we don't end up with a
+	dangling reference to `ed' regular expressions when
+	context=findutils.  Remove trailing white space from the output.
+	* doc/regexprops.texi: Regenerate this file, so that we no longer
+	have a dangling reference to the `ed' dialect.
+	* doc/find.texi (Regular Expressions): Point out the difference
+	between Emacs regular expressions and findutils regular
+	expressions: in findutils "." will match newline.
+	* find/find.1: Likewise.
+	* locate/locate.1: Likewise.  Also document the --regextype option.
+
+	po: delete po/remove-potcdate.sed so that "make distcheck" works.
+	* po/remove-potcdate.sed: the presence of this generated file
+	causes "make distcheck" to fail on VPATH builds.  Deleting it
+	fixes this.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: shorten https://lists.gnu.org/archive/html/... links
+	Each /archive/html/ part can be replace with /r/.
+	Run this to induce the change:
+	git grep -l archive/html|xargs perl -pi -e 's,/archive/html/,/r/,g'
+	* README: Perform that substitution.
+	* find/testsuite/find.posix/depth1.exp: Likewise.
+	* gnulib-local/lib/gcc-function-attributes.h
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: include the module year2038 from gnulib
+	* bootstrap.conf (gnulib_modules): Add 'year2038' to ensure that time_t
+	is 64-bit (and thus works after 2038).
+
+	Suggested by Bruno Haible in
+	https://lists.gnu.org/r/bug-gnulib/2017-11/msg00022.html
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	* gnulib: Update - mainly for the recent year2038 changes.
+	* bootstrap: Update from gnulib/build-aux/bootstrap.
+
+	maint: document the https change in NEWS
+	* NEWS (Documentation Changes): Mention the switch from http to https
+	done in commit 2cb10332.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	all: use die() rather than error(EXIT_FAILURE)
+	die() has the advantage of being apparent to the compiler
+	that it doesn't return, which will avoid warnings in some cases,
+	and possibly generate better code.
+
+	While at it, wrap some of the overly long error messages into a new line.
+
+	* cfg.mk (sc_die_EXIT_FAILURE): A new syntax check rule to
+	catch any new uses of error (CONSTANT, ...);
+	* find/exec.c: Include "die.h" and use die rather than exit (EXIT_FAILURE).
+	* find/fstype.c: Likewise.
+	* find/ftsfind.c: Likewise.
+	* find/oldfind.c: Likewise.
+	* find/parser.c: Likewise.
+	* find/pred.c: Likewise.
+	* find/print.c: Likewise.
+	* find/tree.c: Likewise.
+	* find/util.c: Likewise.
+	* lib/buildcmd.c: Likewise.
+	* lib/listfile.c: Likewise.
+	* lib/regextype.c: Likewise.
+	* lib/safe-atoi.c: Likewise.
+	* locate/frcode.c: Likewise.
+	* locate/locate.c: Likewise.
+	* locate/word_io.c: Likewise.
+	* xargs/xargs.c: Likewise.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid unused-but-set-variable, unused-parameter warnings from GCC 7
+	GCC-7.2.1 complained about this occur during 'make check'.
+
+	* lib/regexprops.c (menu): Remove set-but-unused-variable 'options'.
+	* lib/test_splitstring.c (main): Avoid unused-parameter warnings
+	for 'argc' and 'argv'.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: add die.h; avoid missing-fallthrough warnings after error w/ GCC 7
+	* lib/die.h (die): New file/function from grep/coreutils.
+	Note: this file will probably be migrated to gnulib.
+	* lib/Makefile.am (libfind_a_SOURCES): Reference it.
+	* xargs/xargs.c: Include die.h.
+	(xargs_do_exec): Use die in place of error-nonzero, thus allowing
+	the compiler to know that we do not fall through into the 0 (child)
+	case.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid implicit-fallthrough warnings from GCC 7
+	Avoid the new warnings GCC 7 gives with the
+	"-Werror=implicit-fallthrough=" compiler option.
+	Since version 7, GCC requires fallthrough switch/cases to be
+	marked by the appropriate attribute.
+
+	* lib/system.h: Add new header file defining the FALLTHROUGH macro.
+	* lib/Makefile.am (libfind_a_SOURCES): Reference it.
+	* find/print.c (do_fprintf): Use the new macro.
+	* xargs/xargs.c (read_line): Likewise.
+	(xargs_do_exec): For error(3), GCC 7 doesn't know that the function
+	does not return, and would complain about falling through into the
+	following case.  Temporarily add an abort call - this will be fixed
+	with another commit.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid implicit-fallthrough warnings from GCC 7
+	Avoid the new warnings GCC 7 gives with the
+	"-Werror=implicit-fallthrough=" compiler option.
+	Since version 7, GCC requires fallthrough switch/cases to be
+	marked by the appropriate attribute.
+
+	* lib/system.h: Add new header file defining the FALLTHROUGH macro.
+	* lib/Makefile.am (libfind_a_SOURCES): Reference it.
+	* find/print.c (do_fprintf): Use the new macro.
+	* xargs/xargs.c (read_line): Likewise.
+	(xargs_do_exec): For error(3), GCC 7 doesn't know that the function
+	does not return, and would complain about falling through into the
+	following case.  Temporarily add an abort call - this will be fixed
+	with another commit.
+
+2017-11-07  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid unused-macros warning from GCC 7
+	GCC-7.2.1 on openSUSE-Tumbleweed complains:
+	  listfile.c:56:0: error: macro "HAVE_MAJOR" is not used \
+	  [-Werror=unused-macros]
+	  #define HAVE_MAJOR
+
+	* listfile.c (major,minor): Avoid the temporary #define HAVE_MAJOR
+	by using #else's.
+
+2017-10-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	updatedb: use Copyright header of updatedb.sh
+	Previously, the Copyright header output by 'updatedb --version' was
+	not updated by 'make update-copyright', so it still showed 2010 as
+	the Copyright year.
+
+	* locate/updatedb.sh (version): Replace the Copyright header by
+	the placeholder "@COPYRIGHT@" ...
+	* locate/Makefile.am (updatedb): ... set here from the Copyright line
+	extracted from 'updatedb.sh'.
+
+2017-10-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: cleanup files left behind by sv-52220.sh
+	'make distcheck' failed with:
+	  ...
+	  ERROR: files left in build directory after distclean:
+	  ./find/testsuite/find.err
+	  ./find/testsuite/oldfind.err
+	  Makefile:2064: recipe for target 'distcleancheck' failed
+
+	* find/testsuite/sv-52220.sh: Add command to remove the temporary
+	files used for stderr output.
+
+	Bug introduced in commit v4.6.0-123-gef1581e.
+
+2017-10-28  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: use an optimal-for-findutils xz compression setting
+	* cfg.mk: Set XZ_OPT = -7e (determined empirically).
+	The compressed tarball size is identical to the default settings (-9e),
+	but using -9e would force every decompression process to use 48 MiB
+	more memory.
+
+2017-10-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: run 'make -C po update-po'
+	Mainly for changed line numbers, but also for a couple of new
+	translation strings, and the switch to https.
+
+	* po/be.po: Update via the above 'update-po' target.
+	* po/bg.po: Likewise.
+	* po/ca.po: Likewise.
+	* po/cs.po: Likewise.
+	* po/da.po: Likewise.
+	* po/de.po: Likewise.
+	* po/el.po: Likewise.
+	* po/eo.po: Likewise.
+	* po/es.po: Likewise.
+	* po/et.po: Likewise.
+	* po/fi.po: Likewise.
+	* po/findutils.pot: Likewise.
+	* po/fr.po: Likewise.
+	* po/ga.po: Likewise.
+	* po/gl.po: Likewise.
+	* po/hr.po: Likewise.
+	* po/hu.po: Likewise.
+	* po/id.po: Likewise.
+	* po/it.po: Likewise.
+	* po/ja.po: Likewise.
+	* po/ko.po: Likewise.
+	* po/lg.po: Likewise.
+	* po/lt.po: Likewise.
+	* po/ms.po: Likewise.
+	* po/nb.po: Likewise.
+	* po/nl.po: Likewise.
+	* po/pl.po: Likewise.
+	* po/pt.po: Likewise.
+	* po/pt_BR.po: Likewise.
+	* po/ro.po: Likewise.
+	* po/ru.po: Likewise.
+	* po/sk.po: Likewise.
+	* po/sl.po: Likewise.
+	* po/sr.po: Likewise.
+	* po/sv.po: Likewise.
+	* po/tr.po: Likewise.
+	* po/uk.po: Likewise.
+	* po/vi.po: Likewise.
+	* po/zh_CN.po: Likewise.
+	* po/zh_TW.po: Likewise.
+
+2017-10-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	all: prefer https:// URLs where possible
+	Change from http:// to https:// URLs for the following:
+	www.gnu.org, gnu.org, savannah.gnu.org, git.sv.gnu.org, lists.gnu.org,
+	translationproject.org, cve.mitre.org, cwe.mitre.org, xkcd.com,
+	standards.ieee.org, and gcc.gnu.org.
+
+	* COPYING: Do the above replacement.
+	* ChangeLog-2013: Likewise.
+	* NEWS: Likewise.
+	* README: Likewise.
+	* README-hacking: Likewise.
+	* build-aux/Makefile.am: Likewise.
+	* build-aux/check-testfiles.sh: Likewise.
+	* build-aux/gen-changelog.sh: Likewise.
+	* build-aux/man-lint.sh: Likewise.
+	* build-aux/src-sniff.py: Likewise.
+	* cfg.mk: Likewise.
+	* configure.ac: Likewise.
+	* doc/Makefile.am: Likewise.
+	* doc/find-maint.texi: Likewise.
+	* doc/find.texi: Likewise.
+	* find/defs.h: Likewise.
+	* find/exec.c: Likewise.
+	* find/find.1: Likewise.
+	* find/finddata.c: Likewise.
+	* find/fstype.c: Likewise.
+	* find/ftsfind.c: Likewise.
+	* find/oldfind.c: Likewise.
+	* find/parser.c: Likewise.
+	* find/pred.c: Likewise.
+	* find/print.c: Likewise.
+	* find/print.h: Likewise.
+	* find/sharefile.c: Likewise.
+	* find/sharefile.h: Likewise.
+	* find/testsuite/Makefile.am: Likewise.
+	* find/testsuite/binary_locations.sh: Likewise.
+	* find/testsuite/checklists.py: Likewise.
+	* find/testsuite/config/unix.exp: Likewise.
+	* find/testsuite/find.gnu/name-period.exp: Likewise.
+	* find/testsuite/find.posix/depth1.exp: Likewise.
+	* find/testsuite/sv-34079.sh: Likewise.
+	* find/testsuite/sv-34976-execdir-fd-leak.sh: Likewise.
+	* find/testsuite/sv-48030-exec-plus-bug.sh: Likewise.
+	* find/testsuite/sv-48180-refuse-noop.sh: Likewise.
+	* find/testsuite/sv-52220.sh: Likewise.
+	* find/testsuite/sv-bug-32043.sh: Likewise.
+	* find/testsuite/test_escape_c.sh: Likewise.
+	* find/testsuite/test_escapechars.sh: Likewise.
+	* find/testsuite/test_inode.sh: Likewise.
+	* find/testsuite/test_type-list.sh: Likewise.
+	* find/tree.c: Likewise.
+	* find/util.c: Likewise.
+	* gnulib-local/lib/gcc-function-attributes.h: Likewise.
+	* lib/bugreports.c: Likewise.
+	* lib/bugreports.h: Likewise.
+	* lib/buildcmd.c: Likewise.
+	* lib/buildcmd.h: Likewise.
+	* lib/check-regexprops.sh: Likewise.
+	* lib/dircallback.c: Likewise.
+	* lib/dircallback.h: Likewise.
+	* lib/extendbuf.c: Likewise.
+	* lib/extendbuf.h: Likewise.
+	* lib/fdleak.c: Likewise.
+	* lib/fdleak.h: Likewise.
+	* lib/findutils-version.c: Likewise.
+	* lib/findutils-version.h: Likewise.
+	* lib/listfile.c: Likewise.
+	* lib/listfile.h: Likewise.
+	* lib/printquoted.c: Likewise.
+	* lib/printquoted.h: Likewise.
+	* lib/qmark.c: Likewise.
+	* lib/regexprops.c: Likewise.
+	* lib/regextype.c: Likewise.
+	* lib/regextype.h: Likewise.
+	* lib/safe-atoi.c: Likewise.
+	* lib/safe-atoi.h: Likewise.
+	* lib/splitstring.c: Likewise.
+	* lib/splitstring.h: Likewise.
+	* lib/test_splitstring.c: Likewise.
+	* lib/unused-result.h: Likewise.
+	* locate/frcode.c: Likewise.
+	* locate/locate.1: Likewise.
+	* locate/locate.c: Likewise.
+	* locate/locatedb.5: Likewise.
+	* locate/locatedb.h: Likewise.
+	* locate/testsuite/Makefile.am: Likewise.
+	* locate/testsuite/config/unix.exp: Likewise.
+	* locate/updatedb.1: Likewise.
+	* locate/updatedb.sh: Likewise.
+	* locate/word_io.c: Likewise.
+	* po/fetch-po-files: Likewise.
+	* xargs/testsuite/Makefile.am: Likewise.
+	* xargs/testsuite/config/unix.exp: Likewise.
+	* xargs/xargs.1: Likewise.
+	* xargs/xargs.c: Likewise.
+
+2017-10-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: add copyright section to man pages
+	* find/find.1: Add copyright section, deriving first copyright year from
+	the corresponding *.c file.
+	* locate/locate.1: Likewise.
+	* locate/locatedb.5: Likewise.
+	* locate/updatedb.1: Likewise.
+	* xargs/xargs.1: Likewise.
+
+	maint: add copyright header to more files
+	* Makefile.am: Add copyright header.
+	* README: Likewise.
+	* TODO: Likewise.
+	* doc/perm.texi: Likewise; use 1994-2017 as Kevin brought it into
+	findutils from coreutils.
+	* find/Makefile.am: Add copyright header.
+	* lib/Makefile.am: Likewise.
+	* locate/Makefile.am: Likewise.
+	* xargs/Makefile.am: Likewise.
+
+	maint: align copyright header line
+	* lib/extendbuf.c: s/Copyright/Copyright (C)/
+	* lib/printquoted.h: Likewise.
+	* lib/regextype.c: Likewise.
+	* lib/regextype.h: Likewise.
+
+2017-10-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update copyright year number ranges
+	Better late than never: run 'make update-copyright'.
+
+	* cfg.mk (update-copyright-env): Change UPDATE_COPYRIGHT_USE_INTERVALS
+	from 1 to 2 to get a minimal containing range of years; also set
+	UPDATE_COPYRIGHT_MAX_LINE_LENGTH to 79 characters.
+	* .x-update-copyright: Add an entry for bootstrap which comes from
+	gnulib.
+	* lib/qmark.c: While at it, fix a typo: s/courutils/coreutils/.
+	* lib/regexprops.c (copying): Update the text so that the
+	copyright years match the result of "make update-copyright".
+	* po/fi.po: Change copyright header so that "make update-copyright"
+	can pick it up: s/©/(C)/
+	* po/it.po: Likewise.
+	* po/vi.po: Likewise.
+	* All other files: Update copyright years via the above make run.
+
+2017-10-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	gnulib: update to latest
+	* bootstrap: Merge from gnulib/build-aux/.
+	* bootstrap.conf: Likewise.
+
+2017-10-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: avoid segfault with -D without argument
+	On some platforms, 'find -D' without any further argument crashed.
+
+	* find/util.c (process_leading_options): Output an error diagnostic
+	when the -D option is the last argument.  Previously, 'find -D'
+	without any further arguments crashed on some platforms where the
+	following strtok_r does not expect a NULL pointer argument in the
+	first call.
+	* NEWS (Bug Fixes): Mention the fix.
+	* find/testsuite/sv-52220.sh: Add a test.
+	* find/testsuite/Makefile.am (test_shell_progs): Reference the test.
+
+	Fixes https://savannah.gnu.org/bugs/?52220
+
+2017-10-10  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typos in commments
+	* find/fstype.c: s/unneccessary/unnecessary/
+	* xargs/xargs.c: s/utliity/utility/
+
+2017-09-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find.1: improve explanation in the NON-BUGS section
+	* find/find.1 (NON-BUGS): Update the sample error diagnostic to match
+	the latest code of the unquoted pattern example for the -name predicate.
+	Also improve the explanation about what is happening in that case.
+
+2017-09-08  Andreas Metzler  <ametzler@bebt.de>
+
+	tests: test more printf format specifiers
+	* find/testsuite/find.gnu/printf.exp: Add coverage for %T* (limited to
+	strftime sequences mandated by POSIX), %M, %t, %y, and %Y. Run this test
+	with TZ=UTC. (Latter fix by Bernhard Voelker.)
+	* find/testsuite/find.gnu/printf.xo: Likewise.
+
+2017-09-03  James Youngman  <jay@gnu.org>
+
+	intl: update Brazilian Portuguese, Slovak, Dutch translations.
+	* po/pt_BR.po: Update Brazilian Portuguese translation.
+	* po/sk.po: Update Slovak translation.
+	* po/nl.po: Update Dutch translation.
+
+2017-08-28  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: avoid buffer-overflow with -printf '%T+'
+	* find/print.c (format_date): Increase size of local variable
+	FMT to match the longest possible content.
+
+	Fixes https://bugs.debian.org/873032 reported upstream by
+	Andreas Metzler in https://savannah.gnu.org/bugs/?51841;
+	fix proposed by Kamil Dudka.
+
+	Bug introduced in commit v4.6.0-111-g95816b2, so no released version
+	ever saw this; therefore not adding a NEWS entry.
+
+2017-08-28  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typo in comment
+	* locate/locate.c (dolocate): Change a double comma to a
+	single one: s/,,/,/
+
+	Reported by Reuben Thomas in
+	http://lists.gnu.org/archive/html/bug-findutils/2017-08/msg00023.html
+
+2017-08-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: add a NEWS entry for the previous commit
+	* NEWS (Improvements): Add an entry for v4.6.0-115-g9530e31.
+
+2017-08-17  Assaf Gordon  <assafgordon@gmail.com>
+
+	find: give helpful hint for unquoted patterns errors
+	Try to detect cases where the user provided an unquoted shell-glob
+	pattern (which was expanded by the shell before calling find(1),
+	resulting in an invalid usage).
+
+	  $ touch a.txt b.txt c.txt
+	  $ find -name *.txt
+	  find: paths must precede expression: `b.txt'
+	  find: possible unquoted pattern after predicate `-name'?
+
+	Continuation of
+	   https://savannah.gnu.org/bugs/?51711
+	   https://lists.gnu.org/archive/html/bug-findutils/2017-08/msg00000.html
+	   https://git.sv.gnu.org/cgit/findutils.git/commit/?id=50a7c5d1f572
+
+	* find/tree.c (build_expression_tree): If the offending argument is an
+	existing file, print a hint with the last (valid) predicate.
+
+2017-08-10  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: avoid usage() in more error cases
+	When the user passes a bad command line, then find(1) outputs the
+	error message followed by a short usage() text, e.g. (wrapped):
+
+	  $ find . -name a* b*
+	  find: paths must precede expression: bfile
+	  Usage: find [-H] [-L] [-P] [-Olevel] \
+	  [-D help|tree|search|stat|rates|opt|exec] [path...] [expression]
+
+	Omit the usage() text in more cases like this in order to make the
+	error diagnostic more eye-catching.
+
+	* find/tree.c (build_expression_tree): Exit with EXIT_FAILURE
+	immediately in more cases, i.e., without outputting also a short
+	usage() text.  While at it, add quotes around the offending argument
+	in one another place.
+	* NEWS (Improvements): Mention the fix.
+
+	Reported in https://savannah.gnu.org/bugs/?51711
+
+2017-07-29  James Youngman  <jay@gnu.org>
+
+	po/*.po: update line numbers.
+
+	gnulib: update to f42d5af5ba76970309c5704db1c229143043bcc0.
+	* build-aux/.gitignore: arg-nonnull.h, ar-lib, c++defs.h.
+
+2017-07-23  James Youngman  <jay@gnu.org>
+
+	find: avoid strftime's non-portable %F specifier.
+	* find/print.c (format_date): Avoid passing %F to strftime since
+	some implementation lack it.  Pass the synonymous %Y-%m-%d
+	instead.  This fixes a bug manifesting on HP Tru64 UNIX V5.1B.
+	Reported by Steven M. Schweda <sms@antinode.info>.
+
+	ChangeLog: fix some incorrectly-formatted messages.
+	* build-aux/git-log-fix: Ignore a recent incorrectly-formatted
+	change-log message (5e56fe96bc5cf5c0b616dc0251dddebb7e480074)
+	which is replaced by another
+	(f146a243400c211a19c9b76e5f598b6d7c57b1b0).  Also don't copy the
+	resulting merge commit message into the ChangeLog.
+
+	locate: don't warn about slocate databases any more.
+	* locate/locate.c (search_one_database): Remove warning about
+	support for slocate databases being new.
+
+2017-06-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: update the "STANDARDS CONFORMANCE" section in find.1
+	* find/find.1 (STANDARDS CONFORMANCE): Change the reference to the
+	POSIX standard from the 2003 Edition to the 2016 Edition.
+	In the list of supported primaries, add the missing ones:
+	-exec, -ok and -path.  Remove the stray duplicates from the list.
+
+	doc: clarify 'find -size' values prefixed with '+' and '-'
+	* doc/find.texi (node Size): Add a sentence to make even clearer that
+	values prefixed with '+' or '-' do not find files with an exact match
+	of N in file size.
+	* find/find.1 (-size): Likewise.
+
+2017-06-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix explanation of 'find -size' example
+	'find -size -1048576c' also matches empty files.
+
+	* doc/find.texi (node Size): Change "1 to 1,048,575 bytes" to
+	"0 to 1,048,575 bytes".
+	* find/find.1 (-size): Likewise.
+
+2017-06-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: use correct IEC unit prefixes in the documentation of 'find -size'
+	find(1) uses binary-based units for the suffixes 'k', 'M', and 'G' of
+	the argument of the '-size' option: 1024, 1024*1024 and 1024^3.
+	Therefore, the documentation should use the correct IEC prefixes
+	kibibyte, mebibyte and gibibyte respectively (or their abbreviations
+	'KiB', 'MiB' and 'GiB').
+
+	* doc/find.texi (node Overview): Change 'Kilobytes' to the shorter
+	but correct 'KiB'.
+	(node Size): Use the above mentioned, correct IEC prefixes.
+	While at it, move the 'w' suffix up to match the man page.
+	* find/find.1 (-size): Likewise.
+	* find/parser.c (parse_size): Also change to IEX prefixes in some
+	comments for consistency.
+	* NEWS (Bug fixes): Mention the fix.
+
+	See also:
+	  https://en.wikipedia.org/wiki/Binary_prefix
+
+	Reported by Andreas Metzler in
+	  https://savannah.gnu.org/bugs/?51304
+
+2017-06-08  Andreas Metzler  <ametzler@bebt.de>
+
+	doc: drop workarounds for missing xargs -o option
+	* doc/find.texi (Multiple Files): Mention the new --open-tty option
+	to be used as an alternative.
+	(Safe File Name Handling): Likewise.
+	* xargs/xargs.1 (EXAMPLES): Remove the tty redirection example.
+
+2017-06-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs: add -o, --open-tty option
+	This option is available in the xargs implementation of FreeBSD, NetBSD,
+	OpenBSD and in the Apple variant.  Add it for compatibility.
+
+	* xargs/xargs.c (open_tty): Add static flag for the new option.
+	(longopts): Add member.
+	(main): Handle the 'o' case in the getopt_long() loop.
+	(prep_child_for_exec): Redirect stdin of the child to /dev/tty when
+	the -o option is given.  Furthermore, move the just-opened file
+	descriptor to STDIN_FILENO.
+	(usage): Document the new option.
+	* bootstrap.conf (gnulib_modules): Add dup2.
+	* xargs/xargs.1 (SYNOPSIS): Replace the too-long list of options by
+	"[options]" - they are listed later anyway.
+	(OPTIONS): Document the new option.
+	(STANDARDS CONFORMANCE): Mention that the -o option is an extension.
+	* doc/find.texi (xargs options): Document the new option.
+	(Invoking the shell from xargs): Amend the explanation of the
+	redirection example with a note about the -o option.
+	(Viewing And Editing): Likewise.
+	(Error Messages From xargs): Add the message when dup2() fails.
+	(NEWS): Mention the new option.
+
+	Fixes http://savannah.gnu.org/bugs/?51151
+
+2017-04-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix some -perm examples in find.info
+	* doc/find.texi (Mode Bits): Fix the description of the -perm examples
+	which search for the "022" mode bits: the match is for the file's group
+	and 'other' mode bits instead of for user and group.
+	While at it, remove a superfluous ';' in the adjacent example.
+	Bug introduced when adding the -perm examples in FINDUTILS-4.2.11.
+	* NEWS: Mention the fix.
+
+	Reported by Jacob Nevins <0jacobnk.gnu@chiark.greenend.org.uk> in
+	http://savannah.gnu.org/bugs/?50758
+
+2017-03-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: clarify that -links counts hard links in find.1
+	* find/find.1 (TESTS): Mention that -links tests the number of
+	"hard links", not just "links".
+
+	Reported by Dan Jacobson <jidanni@jidanni.org>.
+
+2017-02-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: fix -printf '%h' for arguments with one or more trailing slashes
+	Previously, find would output the pathname name for the '%h' format
+	when that was passed with a trailing slash:
+
+	  $ mkdir foo
+	  $ find foo/ -printf '%h/%f\n'
+	  foo/foo/
+
+	* find/print.c (do_fprintf -> 'h'): Strip trailing slashes, i.e. any
+	number of directory separators, unless this is the root "/" directory.
+	* find/testsuite/find.gnu/printf-h.exp: Enhance test with various
+	combinations of "/", "./", "foo/", "./foo", "./foolink/", etc.
+	* find/testsuite/find.gnu/printf-h.xo: Add the expected output for the
+	above new test cases.
+	* NEWS: Mention the fix.
+
+	Bug introduced in commit FINDUTILS_4_2_18-1-6-g0fd15a4.
+
+	Reported by	Tavian Barnes <tavianator@gmail.com> in
+	  https://savannah.gnu.org/bugs/?50259
+
+2017-02-16  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: add the bug number #50326 to NEWS
+	* NEWS (Bug Fixes): Add the above bug number to the NEWS entry
+	of commit v4.6.0-90-gc155689, now as this issue is also reported
+	as a bug.
+
+	gnulib: update to latest
+	* gnulib: Do the above.
+
+2017-02-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: improve readability of fstype.c
+	* find/fstype.c (fstype_known): Move variable from global context ...
+	(filesystem_type): ... here, and pass it on explicitly by reference
+	to file_system_type_uncached().
+	(file_system_type_uncached): Add fstype_known as parameter.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: avoid unneccessary reading of the mount list
+	Add a static cache for mount list to fstype.c.
+
+	* find/fstype.c (get_file_system_list): Add wrapper around GNULIB's
+	read_file_system_list function with a static cache to avoid multiple
+	invocations of that GNULIB function.  Still re-read the list if the
+	first invocation didn't include the ME_TYPE members.
+	(is_used_fs_type): Use the above new wrapper.
+	(file_system_type_uncached): Likewise, and do not free the list here
+	anymore because this is now done in get_file_system_list() as needed.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: move is_used_fs_type to fstype.c
+	* find/parser.c (is_used_fs_type): Move to ...
+	* find/fstype.c: ... here.
+	* find/defs.h (is_used_fs_type): Add declaration.
+
+	maint: inline now last use of must_read_fs_list
+	* find/fstype.c (must_read_fs_list): Remove function and inline body ...
+	(file_system_type_uncached): ... here where its last use was.
+	(get_mounted_devices): Remove it from a comment.
+
+	maint: remove unused get_mounted_filesystems
+	* find/fstype.c (get_mounted_filesystems): Remove unused function ...
+	* find/defs.h (get_mounted_filesystems): ... and its declaration.
+
+2017-02-06  Goffredo Baroncelli  <kreijack@inwind.it>
+
+	find: fix memory leak in mount list handling
+	The following gnulib commit added the structure member me_mntroot
+	which our free_file_system_list function didn't consider, thus leading
+	to a memory leak:
+	http://git.sv.gnu.org/cgit/gnulib.git/commit/?id=c6148bca89e9
+
+	* find/fstype.c (free_file_system_list): Use gnulib's free_mount_entry
+	function to free the mount list instead of free()ing all members here
+	manually.
+	* NEWS (Bug Fixes): Mention the fix.
+
+	Reported in
+	http://lists.gnu.org/archive/html/findutils-patches/2016-12/msg00000.html
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid -Werror=missing-prototypes warning in oldfind
+	oldfind.c:169:1: error: no previous prototype for ‘get_current_dirfd’ [-Werror=missing-prototypes]
+	 get_current_dirfd (void)
+	 ^~~~~~~~~~~~~~~~~
+
+	* find/oldfind.c (get_current_dirfd): Remove unused function.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid -Werror=unused-macros warning in oldfind
+	oldfind.c: At top level:
+	oldfind.c:88:0: error: macro "N_" is not used [-Werror=unused-macros]
+	 # define N_(String) gettext_noop (String)
+
+	cc1: all warnings being treated as errors
+
+	* find/oldfind.c (N_): Remove unused macro.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid -Werror=unsafe-loop-optimizations warning in oldfind
+	oldfind.c: In function ‘process_path’:
+	oldfind.c:1445:14: error: cannot optimize loop, the loop counter may overflow [-Werror=unsafe-loop-optimizations]
+	        while (cur_path_size < file_len)
+	              ^
+	cc1: all warnings being treated as errors
+
+	* find/oldfind.c (process_path): Replace loop by calculation, avoiding
+	the offending loop at all.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid warnings from GCC 6.2.1
+	buildcmd.c: In function 'bc_push_arg':
+	buildcmd.c:362:11: error: this 'if' clause does not guard... [-Werror=misleading-indentation]
+	           if (ctl->replace_pat
+	           ^~
+	buildcmd.c:366:13: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
+	             bc_do_exec (ctl, state);
+	             ^~~~~~~~~~
+	pred.c: In function 'print_optlist':
+	pred.c:1328:46: error: format '%ld' expects argument of type 'long int', but argument 3 has type 'long unsigned int' [-Werror=format=]
+	           fprintf (fp, "[real success rate %ld/%ld", p->perf.successes, p->perf.visits);
+	                                              ^
+	pred.c:1328:50: error: format '%ld' expects argument of type 'long int', but argument 4 has type 'long unsigned int' [-Werror=format=]
+	           fprintf (fp, "[real success rate %ld/%ld", p->perf.successes, p->perf.visits);
+	                                                  ^
+	print.c: In function 'scan_for_digit_differences':
+	print.c:449:46: error: logical 'or' of equal expressions [-Werror=logical-op]
+	           if (!isdigit ((unsigned char)q[i]) || !isdigit ((unsigned char)q[i]))
+	                                              ^~
+	In file included from ../gl/lib/gettext.h:25:0,
+	                 from locate.c:86:
+	locate.c: In function 'dolocate':
+	locate.c:1873:28: error: format '%d' expects argument of type 'int', but argument 5 has type 'unsigned int' [-Werror=format=]
+	                          _("warning: database %s is more than %d %s old (actual age is %.1f %s)"),
+	                            ^
+	locate.c:1873:26: note: in expansion of macro '_'
+	                          _("warning: database %s is more than %d %s old (actual age is %.1f %s)"),
+	                          ^
+	locate.c:1927:18: error: format '%ld' expects argument of type 'long int', but argument 2 has type 'long unsigned int' [-Werror=format=]
+	       printf ("%ld\n", found);
+	                  ^
+	cc1: all warnings being treated as errors
+
+	* find/pred.c (print_optlist): Use %lu for unsigned long int.
+	* find/print.c (scan_for_digit_differences): Check p[i] too rather than
+	q[i] two times.
+	* lib/buildcmd.c (bc_push_arg): Fix indentation.
+	* locate/locate.c (dolocate): Use %u format for unsigned int.
+	Use %lu format for unsigned long int.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	gnulib: update to latest
+	* gnulib: Do the above.
+	* bootstrap: Update from gnulib.
+	* doc/find.texi: s/time stamp/timestamp/ to adhere to new syntax-check
+	rule from gnulib.
+
 2016-11-06  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: fix typos in find.1
@@ -1962,7 +3718,7 @@
 	More removal of support for -perm +MODE.
 	* find/parser.c (parse_perm): Remove no-longer-needed local var
 	and associated code.  Reported by Eric Blake in
-	<http://savannah.gnu.org/bugs/?38474#comment9>.
+	<https://savannah.gnu.org/bugs/?38474#comment9>.
 
 2013-04-21  Paul Eggert  <eggert@cs.ucla.edu>
 
@@ -2283,7 +4039,7 @@
 	When reallocating buf, be sure to update its buf_size.
 	Also free "altbuf".
 	Reported by Nemo Maelstrom Thorx in http://bugs.debian.org/687358
-	via Andreas Metzler in http://savannah.gnu.org/bugs/?37356
+	via Andreas Metzler in https://savannah.gnu.org/bugs/?37356
 
 	find: minor tweaks
 	* find/print.c (do_time_format): Use memcpy in place of sprintf.

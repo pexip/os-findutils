@@ -1,6 +1,5 @@
 /* buildcmd.c -- build command lines from a list of arguments.
-   Copyright (C) 1990-1994, 2000, 2003, 2005-2008, 2010-2011, 2016 Free
-   Software Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* config.h must be included first. */
 #include <config.h>
@@ -21,9 +20,7 @@
 /* system headers. */
 #include <assert.h>
 #include <errno.h>
-#include <error.h>
 #include <limits.h>
-#include <locale.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,27 +32,20 @@
 #include <xalloc.h>
 
 /* gnulib headers. */
-#include "gettext.h"
 #include "xstrtol.h"
 
 /* find headers. */
+#include "system.h"
 #include "buildcmd.h"
+#include "die.h"
 
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#define textdomain(Domain)
-#define bindtextdomain(Package, Directory)
-#endif
 
 /* COMPAT:  SYSV version defaults size (and has a max value of) to 470.
    We try to make it as large as possible.  See bc_get_arg_max() below. */
 #if defined NCARGS && !defined ARG_MAX
 /* We include sys/param.h in order to detect this case. */
-#error "You have an unusual system.  Once you remove this error message from buildcmd.c, it should work, but please make sure that DejaGnu is installed on your system and that 'make check' passes before using the findutils programs.  Please mail bug-findutils@gnu.org to tell us about your system."
-#define ARG_MAX NCARGS
+# error "You have an unusual system.  Once you remove this error message from buildcmd.c, it should work, but please make sure that DejaGnu is installed on your system and that 'make check' passes before using the findutils programs.  Please mail bug-findutils@gnu.org to tell us about your system."
+# define ARG_MAX NCARGS
 #endif
 
 
@@ -151,7 +141,7 @@ bc_do_insert (struct buildcmd_control *ctl,
     }
   while (*arg);
   if (*arg)
-    error (EXIT_FAILURE, 0, _("command too long"));
+    die (EXIT_FAILURE, 0, _("command too long"));
   *p++ = '\0';
 
   bc_push_arg (ctl, state,
@@ -290,8 +280,8 @@ bc_do_exec (struct buildcmd_control *ctl,
 	      {
 		/* No room to reduce the length of the argument list.
 		   Issue an error message and give up. */
-		error (EXIT_FAILURE, 0,
-		       _("can't call exec() due to argument size restrictions"));
+		die (EXIT_FAILURE, 0,
+		     _("can't call exec() due to argument size restrictions"));
 	      }
 	    else
 	      {
@@ -355,15 +345,15 @@ bc_push_arg (struct buildcmd_control *ctl,
       if (state->cmd_argv_chars + len + pfxlen > ctl->arg_max)
         {
           if (initial_args || state->cmd_argc == ctl->initial_argc)
-            error (EXIT_FAILURE, 0,
-		   _("cannot fit single argument within argument list size limit"));
+            die (EXIT_FAILURE, 0,
+		 _("cannot fit single argument within argument list size limit"));
 
           /* xargs option -i (replace_pat) implies -x (exit_if_size_exceeded) */
           if (ctl->replace_pat
               || (ctl->exit_if_size_exceeded &&
                   (ctl->lines_per_exec || ctl->args_per_exec)))
-            error (EXIT_FAILURE, 0, _("argument list too long"));
-            bc_do_exec (ctl, state);
+            die (EXIT_FAILURE, 0, _("argument list too long"));
+          bc_do_exec (ctl, state);
         }
       if (bc_argc_limit_reached (initial_args, ctl, state))
             bc_do_exec (ctl, state);
@@ -618,10 +608,10 @@ exceeds (const char *env_var_name, size_t quantity)
 	}
       else
 	{
-	  error (EXIT_FAILURE, errno,
-		 _("Environment variable %s is not set to a "
-		   "valid decimal number"),
-		 env_var_name);
+	  die (EXIT_FAILURE, errno,
+	       _("Environment variable %s is not set to a "
+		 "valid decimal number"),
+	       env_var_name);
 	  return 0;
 	}
     }

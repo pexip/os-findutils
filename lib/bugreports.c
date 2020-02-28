@@ -1,5 +1,5 @@
 /* bugreports.h -- explain how to report bugs
-   Copyright (C) 2016 Free Software Foundation, Inc.
+   Copyright (C) 2016-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,30 +12,25 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* Written by James Youngman <jay@gnu.org>.
  */
 #include <config.h>
 #include <stdio.h>
-#include "bugreports.h"
 
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
+#include "bugreports.h"
+#include "system.h"
 
 int
 explain_how_to_report_bugs (FILE *f, const char *program_name)
 {
-  return fprintf (f,_("\
-Please see also the documentation at %s.\n\
-You can report (and track progress on fixing) bugs in the \"%s\"\n\
-program via the %s bug-reporting page at\n\
-%s or, if\n\
-you have no web access, by sending email to <%s>.\n"),
+  return fprintf (f,_(""
+"Please see also the documentation at %s.\n"
+"You can report (and track progress on fixing) bugs in the \"%s\"\n"
+"program via the %s bug-reporting page at\n"
+"%s or, if\n"
+"you have no web access, by sending email to <%s>.\n"),
 		  PACKAGE_URL,
 		  program_name,
 		  PACKAGE_NAME,

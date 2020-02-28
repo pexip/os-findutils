@@ -1,7 +1,6 @@
 /* Print a string, appropriately quoted.
 
-   Copyright 1997, 1999, 2001, 2003, 2005, 2010-2011, 2016 Free Software
-   Foundation, Inc.
+   Copyright (C) 1997-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,17 +13,17 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 #if !defined PRINTQUOTED_H
 # define PRINTQUOTED_H
 
-#include <stdbool.h>
-#include <stdio.h>
+# include <stdbool.h>
+# include <stdio.h>
 
-#include "quote.h"
-#include "quotearg.h"
+# include "quote.h"
+# include "quotearg.h"
 
 
 size_t qmark_chars(char *buf, size_t len);

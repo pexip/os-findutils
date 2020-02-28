@@ -1,6 +1,5 @@
 /* find -- search for files in a directory hierarchy
-   Copyright (C) 1990-1994, 2000, 2003-2005, 2007-2011, 2016 Free
-   Software Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* GNU find was written by Eric Decker <cire@soe.ucsc.edu>,
    with enhancements by David MacKenzie <djm@gnu.org>,
@@ -31,7 +30,6 @@
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <locale.h>
 #include <sys/stat.h>
 
 /* gnulib headers. */
@@ -41,7 +39,6 @@
 #include "dirname.h"
 #include "error.h"
 #include "fcntl--.h"
-#include "gettext.h"
 #include "human.h"
 #include "progname.h"
 #include "save-cwd.h"
@@ -52,7 +49,9 @@
 /* find headers. */
 #include "buildcmd.h"
 #include "defs.h"
+#include "die.h"
 #include "fdleak.h"
+#include "system.h"
 
 #undef  STAT_MOUNTPOINTS
 
@@ -73,22 +72,6 @@ enum
 #else
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
 # define D_INO(dp) NOT_AN_INODE_NUMBER
-#endif
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#define textdomain(Domain)
-#define bindtextdomain(Package, Directory)
-#define ngettext(singular,plural,n) ((1==n) ? singular : plural)
-#endif
-#ifdef gettext_noop
-# define N_(String) gettext_noop (String)
-#else
-/* See locate.c for explanation as to why not use (String) */
-# define N_(String) String
 #endif
 
 #ifdef STAT_MOUNTPOINTS
@@ -137,39 +120,33 @@ type_to_mode (unsigned type)
 {
   switch (type)
     {
-#ifdef DT_FIFO
+# ifdef DT_FIFO
     case DT_FIFO: return S_IFIFO;
-#endif
-#ifdef DT_CHR
+# endif
+# ifdef DT_CHR
     case DT_CHR:  return S_IFCHR;
-#endif
-#ifdef DT_DIR
+# endif
+# ifdef DT_DIR
     case DT_DIR:  return S_IFDIR;
-#endif
-#ifdef DT_BLK
+# endif
+# ifdef DT_BLK
     case DT_BLK:  return S_IFBLK;
-#endif
-#ifdef DT_REG
+# endif
+# ifdef DT_REG
     case DT_REG:  return S_IFREG;
-#endif
-#ifdef DT_LNK
+# endif
+# ifdef DT_LNK
     case DT_LNK:  return S_IFLNK;
-#endif
-#ifdef DT_SOCK
+# endif
+# ifdef DT_SOCK
     case DT_SOCK: return S_IFSOCK;
-#endif
+# endif
     default:
       return 0;			/* Unknown. */
     }
 }
 #endif
 
-
-int
-get_current_dirfd (void)
-{
-  return AT_FDCWD;
-}
 
 /* CAUTION: this is the entry point for the oldfind executable, which is not the binary that
  * will actually get installed.   See ftsfind.c. */
@@ -198,8 +175,8 @@ main (int argc, char **argv)
   state.shared_files = sharefile_init ("w");
   if (NULL == state.shared_files)
     {
-      error (EXIT_FAILURE, errno,
-	     _("Failed to initialize shared-file hash table"));
+      die (EXIT_FAILURE, errno,
+	   _("Failed to initialize shared-file hash table"));
     }
 
   /* Set the option defaults before we do the locale
@@ -215,7 +192,7 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
   if (atexit (close_stdin))
     {
-      error (EXIT_FAILURE, errno, _("The atexit library function failed"));
+      die (EXIT_FAILURE, errno, _("The atexit library function failed"));
     }
 
   /* Check for -P, -H or -L options. */
@@ -258,7 +235,7 @@ main (int argc, char **argv)
 
   set_stat_placeholders (&starting_stat_buf);
   if ((*options.xstat) (".", &starting_stat_buf) != 0)
-    error (EXIT_FAILURE, errno, _("cannot stat current directory"));
+    die (EXIT_FAILURE, errno, _("cannot stat current directory"));
 
   /* If no paths are given, default to ".".  */
   for (i = end_of_leading_options; i < argc && !looks_like_expression (argv[i], true); i++)
@@ -296,6 +273,8 @@ bool is_fts_enabled (int *ftsoptions)
 }
 
 
+static char *
+specific_dirname (const char *dir) _GL_ATTRIBUTE_MALLOC;
 static char *
 specific_dirname (const char *dir)
 {
@@ -349,7 +328,7 @@ init_mounted_dev_list (int mandatory)
   mounted_devices = get_mounted_devices (&num_mounted_devices);
   if (mandatory && (NULL == mounted_devices))
     {
-      error (EXIT_FAILURE, 0, _("Cannot read list of mounted devices."));
+      die (EXIT_FAILURE, 0, _("Cannot read list of mounted devices."));
     }
 }
 
@@ -544,15 +523,15 @@ wd_sanity_check (const char *thing_to_stat,
 	case FATAL_IF_SANITY_CHECK_FAILS:
 	  {
 	    fstype = filesystem_type (newinfo, current_dir);
-	    error (EXIT_FAILURE, 0,
-		   _("%s%s changed during execution of %s (old device number %ld, new device number %ld, file system type is %s) [ref %ld]"),
-		   safely_quote_err_filename (0, specific_what),
-		   parent ? "/.." : "",
-		   safely_quote_err_filename (1, progname),
-		   (long) old_dev,
-		   (long) newinfo->st_dev,
-		   fstype,
-		   (long)line_no);
+	    die (EXIT_FAILURE, 0,
+		 _("%s%s changed during execution of %s (old device number %ld, new device number %ld, file system type is %s) [ref %ld]"),
+		 safely_quote_err_filename (0, specific_what),
+		 parent ? "/.." : "",
+		 safely_quote_err_filename (1, progname),
+		 (long) old_dev,
+		 (long) newinfo->st_dev,
+		 fstype,
+		 (long)line_no);
 	    /*NOTREACHED*/
 	    return false;
 	  }
@@ -746,8 +725,8 @@ safely_chdir_lstat (const char *dest,
 			   * can't recover from this and so this error
 			   * is fatal.
 			   */
-			  error (EXIT_FAILURE, errno,
-				 _("failed to return to parent directory"));
+			  die (EXIT_FAILURE, errno,
+			       _("failed to return to parent directory"));
 			}
 		    }
 		  else
@@ -1454,8 +1433,7 @@ process_dir (const char *pathname, const char *name, int pathlen, const struct s
 	  file_len = pathname_len + strlen (namep);
 	  if (file_len > cur_path_size)
 	    {
-	      while (file_len > cur_path_size)
-		cur_path_size += 1024;
+	      cur_path_size = (file_len/1024 + 1) * 1024;
 	      free (cur_path);
 	      cur_path = xmalloc (cur_path_size);
 	      strcpy (cur_path, pathname);
@@ -1549,7 +1527,7 @@ process_dir (const char *pathname, const char *name, int pathlen, const struct s
 	      break;
 
 	    case SafeChdirFailWouldBeUnableToReturn:
-	      error (EXIT_FAILURE, errno, ".");
+	      die (EXIT_FAILURE, errno, ".");
 	      return;
 
 	    case SafeChdirFailNonexistent:
@@ -1558,8 +1536,8 @@ process_dir (const char *pathname, const char *name, int pathlen, const struct s
 	    case SafeChdirFailSymlink:
 	    case SafeChdirFailNotDir:
 	    case SafeChdirFailChdirFailed:
-	      error (EXIT_FAILURE, errno,
-		     "%s", safely_quote_err_filename (0, pathname));
+	      die (EXIT_FAILURE, errno,
+		   "%s", safely_quote_err_filename (0, pathname));
 	      return;
 	    }
 	}

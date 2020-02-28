@@ -1,6 +1,5 @@
 /* find -- search for files in a directory hierarchy (fts version)
-   Copyright (C) 1990, 1091, 1992-1994, 2000, 2003-2011, 2016 Free
-   Software Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -13,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* This file was written by James Youngman, based on oldfind.c.
@@ -35,7 +34,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <locale.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -44,7 +42,7 @@
 #include "closeout.h"
 #include "error.h"
 #include "fts_.h"
-#include "gettext.h"
+#include "intprops.h"
 #include "progname.h"
 #include "quotearg.h"
 #include "save-cwd.h"
@@ -52,21 +50,14 @@
 
 /* find headers. */
 #include "defs.h"
+#include "die.h"
 #include "dircallback.h"
 #include "fdleak.h"
 #include "unused-result.h"
+#include "system.h"
+
 
 #undef  STAT_MOUNTPOINTS
-
-
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#define textdomain(Domain)
-#define bindtextdomain(Package, Directory)
-#endif
 
 
 /* FTS_TIGHT_CYCLE_CHECK tries to work around Savannah bug #17877
@@ -153,7 +144,7 @@ static void init_mounted_dev_list (void);
 static const char *
 get_fts_info_name (int info)
 {
-  static char buf[10];
+  static char buf[1 + INT_BUFSIZE_BOUND (info) + 1];
   switch (info)
     {
       HANDLECASE(FTS_D);
@@ -352,11 +343,22 @@ consider_visiting (FTS *p, FTSENT *ent)
   statbuf.st_ino = ent->fts_statp->st_ino;
 
   /* Cope with various error conditions. */
-  if (ent->fts_info == FTS_ERR
-      || ent->fts_info == FTS_DNR)
+  if (ent->fts_info == FTS_ERR)
     {
       nonfatal_target_file_error (ent->fts_errno, ent->fts_path);
       return;
+    }
+  if (ent->fts_info == FTS_DNR)
+    {
+      nonfatal_target_file_error (ent->fts_errno, ent->fts_path);
+      if (options.do_dir_first)
+	{
+	  /* Return for unreadable directories without -depth.
+	   * With -depth, the directory itself has to be processed, yet the
+	   * error message above has to be output.
+	   */
+	  return;
+	}
     }
   else if (ent->fts_info == FTS_DC)
     {
@@ -667,8 +669,8 @@ main (int argc, char **argv)
   state.shared_files = sharefile_init ("w");
   if (NULL == state.shared_files)
     {
-      error (EXIT_FAILURE, errno,
-	     _("Failed to initialize shared-file hash table"));
+      die (EXIT_FAILURE, errno,
+	   _("Failed to initialize shared-file hash table"));
     }
 
   /* Set the option defaults before we do the locale initialisation as
@@ -684,7 +686,7 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
   if (atexit (close_stdout))
     {
-      error (EXIT_FAILURE, errno, _("The atexit library function failed"));
+      die (EXIT_FAILURE, errno, _("The atexit library function failed"));
     }
 
   /* Check for -P, -H or -L options.  Also -D and -O, which are

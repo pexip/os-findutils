@@ -1,7 +1,6 @@
 /* printquoted.c -- print a specified string with any necessary quoting.
 
-   Copyright (C) 1990-1994, 2000, 2003-2005, 2007, 2009-2011, 2016 Free
-   Software Foundation, Inc.
+   Copyright (C) 1990-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,7 +13,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* config.h must be included first. */
 #include <config.h>
@@ -63,6 +62,7 @@ print_quoted (FILE *fp,
 
       /* Replace any remaining funny characters with '?'. */
       len = qmark_chars (buf, len);
+      buf[len] = 0;
 
       rv = fprintf (fp, format, buf);	/* Print the quoted version */
       if (buf != smallbuf)

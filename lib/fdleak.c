@@ -1,5 +1,5 @@
 /* fdleak.c -- detect file descriptor leaks
-   Copyright (C) 2010-2011, 2016 Free Software Foundation, Inc.
+   Copyright (C) 2010-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /* config.h must be included first. */
 #include <config.h>
@@ -37,19 +37,13 @@
 #include "dirent-safer.h"
 #include "error.h"
 #include "fcntl--.h"
-#include "gettext.h"
 
 /* find headers. */
+#include "system.h"
 #include "extendbuf.h"
 #include "fdleak.h"
 #include "safe-atoi.h"
 
-#if ENABLE_NLS
-# include <libintl.h>
-# define _(Text) gettext (Text)
-#else
-# define _(Text) Text
-#endif
 
 /* In order to detect FD leaks, we take a snapshot of the open
  * file descriptors which are not FD_CLOEXEC when the program starts.
@@ -115,7 +109,6 @@ get_proc_max_fd (void)
 static int
 get_max_fd (void)
 {
-  struct rlimit fd_limit;
   long open_max;
 
   open_max = get_proc_max_fd ();
@@ -128,13 +121,16 @@ get_max_fd (void)
 
   /* We assume if RLIMIT_NOFILE is defined, all the related macros are, too. */
 #if defined HAVE_GETRLIMIT && defined RLIMIT_NOFILE
-  if (0 == getrlimit (RLIMIT_NOFILE, &fd_limit))
-    {
-      if (fd_limit.rlim_cur == RLIM_INFINITY)
-	return open_max;
-      else
-	return (int) fd_limit.rlim_cur;
-    }
+  {
+    struct rlimit fd_limit;
+    if (0 == getrlimit (RLIMIT_NOFILE, &fd_limit))
+      {
+	if (fd_limit.rlim_cur == RLIM_INFINITY)
+	  return open_max;
+	else
+	  return (int) fd_limit.rlim_cur;
+      }
+  }
 #endif
   /* cannot determine the limit's value */
   return open_max;

@@ -1,5 +1,5 @@
 /* splitstring.h -- split a const string into fields.
-   Copyright (C) 2011, 2016 Free Software Foundation, Inc.
+   Copyright (C) 2011-2019 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -12,11 +12,13 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 /*
  * Written by James Youngman.
  */
+#ifndef SPLITSTRING_H
+# define SPLITSTRING_H
 
 /* Split a string into fields.   The string is never modified.
  *
@@ -33,8 +35,10 @@
  * Consecutive field separators are taken to indicate the presence of
  * an empty field.
  */
-#include <stdbool.h>
-#include <stddef.h>
+# include <stdbool.h>
+# include <stddef.h>
 
 bool splitstring(const char *s, const char *separators,
 		 bool first, size_t *pos, size_t *len);
+
+#endif
