@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2019 Free Software Foundation, Inc.
+# Copyright (C) 2002-2021 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 #  faccessat \
 #  fchdir \
 #  fcntl \
-#  fdl \
+#  fcntl-safer \
 #  fdopendir \
 #  fflush \
 #  fileblocks \
@@ -73,7 +73,7 @@
 #  getdelim \
 #  getline \
 #  getopt-gnu \
-#  gettext \
+#  gettext-h \
 #  gettimeofday \
 #  git-version-gen \
 #  gitlog-to-changelog \
@@ -100,7 +100,9 @@
 #  modechange \
 #  modf \
 #  mountlist \
+#  nstrftime \
 #  open \
+#  openat-safer \
 #  parse-datetime \
 #  pathmax \
 #  perror \
@@ -128,7 +130,6 @@
 #  stpcpy \
 #  strcasestr \
 #  strdup-posix \
-#  strftime \
 #  string \
 #  strndup \
 #  strtoull \
@@ -138,6 +139,7 @@
 #  sys_wait \
 #  timespec \
 #  uname \
+#  unistd-safer \
 #  unlinkat \
 #  update-copyright \
 #  verify \
@@ -151,6 +153,7 @@
 #  xgetcwd \
 #  xstrtod \
 #  xstrtol \
+#  xstrtol-error \
 #  xstrtoumax \
 #  year2038 \
 #  yesno
@@ -180,7 +183,7 @@ gl_MODULES([
   faccessat
   fchdir
   fcntl
-  fdl
+  fcntl-safer
   fdopendir
   fflush
   fileblocks
@@ -193,7 +196,7 @@ gl_MODULES([
   getdelim
   getline
   getopt-gnu
-  gettext
+  gettext-h
   gettimeofday
   git-version-gen
   gitlog-to-changelog
@@ -220,7 +223,9 @@ gl_MODULES([
   modechange
   modf
   mountlist
+  nstrftime
   open
+  openat-safer
   parse-datetime
   pathmax
   perror
@@ -248,7 +253,6 @@ gl_MODULES([
   stpcpy
   strcasestr
   strdup-posix
-  strftime
   string
   strndup
   strtoull
@@ -258,6 +262,7 @@ gl_MODULES([
   sys_wait
   timespec
   uname
+  unistd-safer
   unlinkat
   update-copyright
   verify
@@ -271,6 +276,7 @@ gl_MODULES([
   xgetcwd
   xstrtod
   xstrtol
+  xstrtol-error
   xstrtoumax
   year2038
   yesno

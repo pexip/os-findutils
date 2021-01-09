@@ -1,5 +1,5 @@
 /* find -- search for files in a directory hierarchy
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 /* gnulib headers. */
 #include "canonicalize.h"
 #include "closein.h"
-#include "dirent-safer.h"
+#include "dirent--.h"
 #include "dirname.h"
 #include "error.h"
 #include "fcntl--.h"
@@ -1304,7 +1304,7 @@ process_dir (const char *pathname, const char *name, int pathlen, const struct s
     }
 
   errno = 0;
-  dirp = opendir_safer (name);
+  dirp = opendir (name);
 
   if (dirp == NULL)
     {

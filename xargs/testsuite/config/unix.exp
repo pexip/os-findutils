@@ -1,6 +1,6 @@
 # -*- TCL -*-
 # Test-specific TCL procedures required by DejaGNU.
-# Copyright (C) 1994-2019 Free Software Foundation, Inc.
+# Copyright (C) 1994-2021 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 
 verbose "base_dir is $base_dir" 2
+
+set env(GNU_FINDUTILS_FD_LEAK_CHECK) "1"
 
 set objfile "xargs.o"
 set dir "$base_dir/.."
@@ -155,6 +157,7 @@ proc xargs_start { passfail options {infile ""} {errh ""} {command ""} } {
     # if stderr check is enabled,
     if {$errfile != ""} then {
 	if {[file exists $errfile]} then {
+            catch "exec sed -i s/^.*xargs:/xargs:/ xargs.err" tmp
 	    set cmp_cmd "cmp xargs.err $errfile"
 	    send_log "$cmp_cmd\n"
 	    catch "exec $cmp_cmd" cmperr

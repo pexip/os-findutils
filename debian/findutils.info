@@ -1,2 +1,1 @@
-doc/find-maint.info*
-doc/find.info*
+usr/share/info/*.info*

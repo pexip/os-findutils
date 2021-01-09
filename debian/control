@@ -5,11 +5,11 @@ Maintainer: Andreas Metzler <ametzler@debian.org>
 Uploaders: Chuan-kai Lin <cklin@debian.org>
 Build-Depends:
  bison,
- debhelper (>= 11),
+ debhelper-compat (= 13),
  dejagnu <!nocheck>,
  libselinux1-dev [!hurd-i386 !kfreebsd-i386 !kfreebsd-amd64],
  texinfo
-Standards-Version: 4.3.0
+Standards-Version: 4.5.1
 Rules-Requires-Root: no
 Vcs-Git: https://salsa.debian.org/debian/findutils.git
 Vcs-Browser: https://salsa.debian.org/debian/findutils

@@ -1,5 +1,5 @@
 /* parser.c -- convert the command line args into an expression tree.
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -331,8 +331,7 @@ static const char *first_nonoption_arg = NULL;
 static const struct parser_table *noop = NULL;
 
 static int
-fallback_getfilecon (int fd, const char *name, security_context_t *p,
-		     int prev_rv)
+fallback_getfilecon (int fd, const char *name, char **p, int prev_rv)
 {
   /* Our original getfilecon () call failed.  Perhaps we can't follow a
    * symbolic link.  If that might be the problem, lgetfilecon () the link.
@@ -370,7 +369,7 @@ fallback_getfilecon (int fd, const char *name, security_context_t *p,
  * If the item to be examined is not a command-line argument, we
  * examine the link itself. */
 static int
-optionh_getfilecon (int fd, const char *name, security_context_t *p)
+optionh_getfilecon (int fd, const char *name, char **p)
 {
   int rv;
   if (0 == state.curdepth)
@@ -394,7 +393,7 @@ optionh_getfilecon (int fd, const char *name, security_context_t *p)
  * -L option is in effect.  That option makes us examine the thing the
  * symbolic link points to, not the symbolic link itself. */
 static int
-optionl_getfilecon (int fd, const char *name, security_context_t *p)
+optionl_getfilecon (int fd, const char *name, char **p)
 {
   int rv = getfileconat (fd, name, p);
   if (0 == rv)
@@ -407,7 +406,7 @@ optionl_getfilecon (int fd, const char *name, security_context_t *p)
  * option is in effect (this is also the default).  That option makes
  * us examine the symbolic link itself, not the thing it points to. */
 static int
-optionp_getfilecon (int fd, const char *name, security_context_t *p)
+optionp_getfilecon (int fd, const char *name, char **p)
 {
   return lgetfileconat (fd, name, p);
 }
@@ -606,12 +605,11 @@ found_parser (const char *original_arg, const struct parser_table *entry)
 	    {
 	      /* option which follows a non-option */
 	      error (0, 0,
-		     _("warning: you have specified the %s "
-		       "option after a non-option argument %s, "
-		       "but options are not positional (%s affects "
-		       "tests specified before it as well as those "
-		       "specified after it).  Please specify options "
-		       "before other arguments.\n"),
+		     _("warning: you have specified the global option %s "
+		       "after the argument %s, but global options are not "
+		       "positional, i.e., %s affects tests specified before it "
+		       "as well as those specified after it.  "
+		       "Please specify global options before other arguments."),
 		     original_arg,
 		     first_nonoption_arg,
 		     original_arg);
@@ -2541,19 +2539,11 @@ parse_version (const struct parser_table* entry, char **argv, int *arg_ptr)
   flags = 0;
   if (is_fts_enabled (&flags))
     {
-      int nflags = 0;
       printf ("FTS(");
       has_features = true;
 
       if (flags & FTS_CWDFD)
-	{
-	  if (nflags)
-	    {
-	      printf (",");
-	    }
-	  printf ("FTS_CWDFD");
-	  has_features = true;
-	}
+	printf ("FTS_CWDFD");
       printf (") ");
     }
 

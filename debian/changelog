@@ -1,3 +1,72 @@
+findutils (4.8.0-1) unstable; urgency=medium
+
+  * New upstream release.
+    + Drop 0001-xargs-warn-on-conflicting-options-L-I-n.patch
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 09 Jan 2021 18:36:56 +0100
+
+findutils (4.7.0+git20210106-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Add 0001-xargs-warn-on-conflicting-options-L-I-n.patch.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 08 Jan 2021 12:36:11 +0100
+
+findutils (4.7.0+git20210106-1) experimental; urgency=medium
+
+  * New upstream GIT snapshot 62b59ea8b734e72398f388e23c35bd42e6cbc38a.
+    + Drop superfluous patches.
+
+ -- Andreas Metzler <ametzler@debian.org>  Thu, 07 Jan 2021 18:09:19 +0100
+
+findutils (4.7.0+git20201010-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Update patches with version from upstream GIT, featuring changed commit
+    messages.
+
+ -- Andreas Metzler <ametzler@debian.org>  Wed, 28 Oct 2020 08:10:58 +0100
+
+findutils (4.7.0+git20201010-1) experimental; urgency=low
+
+  * New upstream snapshot from GIT fda5f2845327636f3b8022b0ec6b95bcfaded135.
+    + Drop 10_fix_bsd_hurd_testsuite.diff.
+  * Use dh v13 compat level.
+    + Make dh_missing happy.
+  * 0001-find.1-fix-typo-onthe.patch 0002-updatedb.1-fix-formatting.patch,
+    trivial fixes for lintian-found issues.
+  * [lintian] Install frcode to /usr/libexec.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 24 Oct 2020 14:25:42 +0200
+
+findutils (4.7.0-1) unstable; urgency=low
+
+  * Add A5189DB69C1164D33002936646502EF796917195 (Bernhard Voelker) to
+    debian/upstream/signing-key.asc. (Key downloaded from
+    <https://savannah.gnu.org/>.)
+  * New upstream version.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 01 Sep 2019 13:50:29 +0200
+
+findutils (4.6.0+git+20190510-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Andreas Metzler <ametzler@debian.org>  Fri, 12 Jul 2019 18:56:26 +0200
+
+findutils (4.6.0+git+20190510-1) experimental; urgency=low
+
+  * New upstream snapshot f2542a4fe3e2e361b0dcb31a7561fa5503b55d1f.
+  * Do away with debian/compat, b-d on debhelper-compat (= version) instead.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sun, 07 Jul 2019 16:24:55 +0200
+
+findutils (4.6.0+git+20190505-1) experimental; urgency=low
+
+  * New upstream snapshot 9930316f51c43d013fdec1255aef57c07cfcc033.
+
+ -- Andreas Metzler <ametzler@debian.org>  Sat, 11 May 2019 18:41:48 +0200
+
 findutils (4.6.0+git+20190209-2) unstable; urgency=medium
 
   * Upload to unstable.

@@ -1,5 +1,5 @@
 /* fdleak.c -- detect file descriptor leaks
-   Copyright (C) 2010-2019 Free Software Foundation, Inc.
+   Copyright (C) 2010-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 
 /* gnulib headers. */
 #include "cloexec.h"
-#include "dirent-safer.h"
+#include "dirent--.h"
 #include "error.h"
 #include "fcntl--.h"
 
@@ -66,7 +66,7 @@ get_proc_max_fd (void)
    * a given directory (the manpage for readdir_r claims this
    * is the approved method, but the manpage for pathconf indicates
    * that _PC_NAME_MAX is not an upper limit). */
-  DIR *dir = opendir_safer (path);
+  DIR *dir = opendir (path);
   if (dir)
     {
       int good = 0;
@@ -366,6 +366,17 @@ forget_non_cloexec_fds (void)
   num_cloexec_fds = 0;
 }
 
+/* Return nonzero if file descriptor leak-checking is enabled.
+ */
+bool
+fd_leak_check_is_enabled (void)
+{
+  if (getenv ("GNU_FINDUTILS_FD_LEAK_CHECK"))
+    return true;
+  else
+    return false;
+
+}
 
 void
 complain_about_leaky_fds (void)

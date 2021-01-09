@@ -1,5 +1,5 @@
 /* pred.c -- execute the expression tree.
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 #include "areadlink.h"
 #include "dirname.h"
 #include "error.h"
+#include "fcntl--.h"
 #include "fnmatch.h"
 #include "stat-size.h"
 #include "stat-time.h"
@@ -61,75 +62,6 @@
 #endif
 
 static bool match_lname (const char *pathname, struct stat *stat_buf, struct predicate *pred_ptr, bool ignore_case);
-
-struct pred_assoc
-{
-  PRED_FUNC pred_func;
-  const char *pred_name;
-};
-
-struct pred_assoc pred_table[] =
-{
-  {pred_amin, "amin    "},
-  {pred_and, "and     "},
-  {pred_anewer, "anewer  "},
-  {pred_atime, "atime   "},
-  {pred_closeparen, ")       "},
-  {pred_cmin, "cmin    "},
-  {pred_cnewer, "cnewer  "},
-  {pred_comma, ",       "},
-  {pred_ctime, "ctime   "},
-  {pred_delete, "delete  "},
-  {pred_empty, "empty   "},
-  {pred_exec, "exec    "},
-  {pred_execdir, "execdir "},
-  {pred_executable, "executable "},
-  {pred_false, "false   "},
-  {pred_fprint, "fprint  "},
-  {pred_fprint0, "fprint0 "},
-  {pred_fprintf, "fprintf "},
-  {pred_fstype, "fstype  "},
-  {pred_gid, "gid     "},
-  {pred_group, "group   "},
-  {pred_ilname, "ilname  "},
-  {pred_iname, "iname   "},
-  {pred_inum, "inum    "},
-  {pred_ipath, "ipath   "},
-  {pred_links, "links   "},
-  {pred_lname, "lname   "},
-  {pred_ls, "ls      "},
-  {pred_mmin, "mmin    "},
-  {pred_mtime, "mtime   "},
-  {pred_name, "name    "},
-  {pred_negate, "not     "},
-  {pred_newer, "newer   "},
-  {pred_newerXY, "newerXY   "},
-  {pred_nogroup, "nogroup "},
-  {pred_nouser, "nouser  "},
-  {pred_ok, "ok      "},
-  {pred_okdir, "okdir   "},
-  {pred_openparen, "(       "},
-  {pred_or, "or      "},
-  {pred_path, "path    "},
-  {pred_perm, "perm    "},
-  {pred_print, "print   "},
-  {pred_print0, "print0  "},
-  {pred_prune, "prune   "},
-  {pred_quit, "quit    "},
-  {pred_readable, "readable    "},
-  {pred_regex, "regex   "},
-  {pred_samefile,"samefile "},
-  {pred_size, "size    "},
-  {pred_true, "true    "},
-  {pred_type, "type    "},
-  {pred_uid, "uid     "},
-  {pred_used, "used    "},
-  {pred_user, "user    "},
-  {pred_writable, "writable "},
-  {pred_xtype, "xtype   "},
-  {pred_context, "context"},
-  {0, "none    "}
-};
 
 /* Returns ts1 - ts2 */
 static double ts_difference (struct timespec ts1,
@@ -1163,11 +1095,15 @@ pred_used (const char *pathname, struct stat *stat_buf, struct predicate *pred_p
 
   (void) pathname;
 
-  /* TODO: this needs to be retested carefully (manually, if necessary) */
   at = get_stat_atime (stat_buf);
   ct = get_stat_ctime (stat_buf);
-  delta.tv_sec  = at.tv_sec  - ct.tv_sec;
-  delta.tv_nsec = at.tv_nsec - ct.tv_nsec;
+
+  /* Always evaluate to false if atime < ctime.  */
+  if (compare_ts (at, ct) < 0)
+    return false;
+
+  delta.tv_sec  = ct.tv_sec  - at.tv_sec;
+  delta.tv_nsec = ct.tv_nsec - at.tv_nsec;
   if (delta.tv_nsec < 0)
     {
       delta.tv_nsec += 1000000000;
@@ -1229,7 +1165,7 @@ bool
 pred_context (const char *pathname, struct stat *stat_buf,
 	      struct predicate *pred_ptr)
 {
-  security_context_t scontext;
+  char *scontext;
   int rv = (*options.x_getfilecon) (state.cwd_dir_fd, state.rel_pathname,
 				    &scontext);
   (void) stat_buf;

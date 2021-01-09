@@ -5,7 +5,7 @@
 # if there was only one last single file argument.
 # See Savannah bug #48030.
 
-# Copyright (C) 2016-2019 Free Software Foundation, Inc.
+# Copyright (C) 2016-2021 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-. "${srcdir=.}/tests/init.sh"
+. "${srcdir=.}/tests/init.sh"; fu_path_prepend_
 print_ver_ find oldfind
 
 # Require seq(1) for this test - which may not be available
