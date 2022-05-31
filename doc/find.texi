@@ -1,12 +1,12 @@
 \input texinfo @c -*-texinfo-*-
 @c %**start of header
 @setfilename find.info
-@settitle Finding Files
+@include version.texi
+@settitle GNU Findutils @value{VERSION}
 @c For double-sided printing, uncomment:
 @c @setchapternewpage odd
 @c %**end of header
 
-@include version.texi
 @include dblocation.texi
 
 @iftex
@@ -27,24 +27,25 @@
 @end direntry
 
 @copying
+This manual documents version @value{VERSION} of the GNU utilities for finding
+files that match certain criteria and performing various operations on them.
 
-This file documents the GNU utilities for finding files that match
-certain criteria and performing various operations on them.
+Copyright @copyright{} 1994--2021 Free Software Foundation, Inc.
 
-Copyright @copyright{} 1994-2019 Free Software Foundation, Inc.
-
+@quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
 any later version published by the Free Software Foundation; with no
 Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled
 ``GNU Free Documentation License''.
+@end quotation
 @end copying
 
 @titlepage
-@title Finding Files
-@subtitle Edition @value{EDITION}, for GNU @code{find} version @value{VERSION}
-@subtitle @value{UPDATED}
+@title GNU Findutils
+@subtitle Finding files
+@subtitle version @value{VERSION}, @value{UPDATED}
 @author by David MacKenzie and James Youngman
 
 @page
@@ -59,11 +60,6 @@ A copy of the license is included in the section entitled
 @top GNU Findutils
 @comment  node-name,  next,  previous,  up
 @insertcopying
-
-This file documents the GNU utilities for finding files that match
-certain criteria and performing various actions on them.
-
-This is edition @value{EDITION}, for @code{find} version @value{VERSION}.
 @end ifnottex
 
 @c The master menu, created with texinfo-master-menu, goes here.
@@ -148,7 +144,6 @@ check the GNU FTP site.
 @menu
 * Scope::
 * Overview::
-* find Expressions::
 @end menu
 
 @node Scope
@@ -282,6 +277,29 @@ word @samp{typedef}.
 xargs grep typedef < file-list
 @end example
 
+@node Finding Files
+@chapter Finding Files
+
+By default, @code{find} prints to the standard output the names of the
+files that match the given criteria.  @xref{Actions}, for how to get
+more information about the matching files.
+
+
+@menu
+* find Expressions::
+* Name::
+* Links::
+* Time::
+* Size::
+* Type::
+* Owner::
+* Mode Bits::
+* Contents::
+* Directories::
+* Filesystems::
+* Combining Primaries With Operators::
+@end menu
+
 @node find Expressions
 @section @code{find} Expressions
 
@@ -306,10 +324,15 @@ evaluated.
 
 You can omit the operator between two primaries; it defaults to
 @samp{-and}.  @xref{Combining Primaries With Operators}, for ways to
-connect primaries into more complex expressions.  If the expression
-contains no actions other than @samp{-prune}, @samp{-print} is
-performed on all files for which the entire expression is true
-(@pxref{Print File Name}).
+connect primaries into more complex expressions.
+
+The @samp{-print} action is performed on all files for which the
+entire expression is true (@pxref{Print File Name}), unless the
+expression contains an action other than @samp{-prune} or
+@samp{-quit}. Actions which inhibit the default @samp{-print} are
+@samp{-delete}, @samp{-exec}, @samp{-execdir}, @samp{-ok},
+@samp{-okdir}, @samp{-fls}, @samp{-fprint}, @samp{-fprintf},
+@samp{-ls}, @samp{-print} and @samp{-printf}.
 
 Options take effect immediately, rather than being evaluated for each
 file when their place in the expression is reached.  Therefore, for
@@ -333,27 +356,6 @@ for less than @var{n},
 for exactly @var{n}.
 @end table
 
-@node Finding Files
-@chapter Finding Files
-
-By default, @code{find} prints to the standard output the names of the
-files that match the given criteria.  @xref{Actions}, for how to get
-more information about the matching files.
-
-
-@menu
-* Name::
-* Links::
-* Time::
-* Size::
-* Type::
-* Owner::
-* Mode Bits::
-* Contents::
-* Directories::
-* Filesystems::
-* Combining Primaries With Operators::
-@end menu
 
 @node Name
 @section Name
@@ -398,8 +400,8 @@ Notice that the wildcard must be enclosed in quotes in order to
 protect it from expansion by the shell.
 
 As of findutils version 4.2.2, patterns for @samp{-name} and
-@samp{-iname} will match a file name with a leading @samp{.}.  For
-example the command @samp{find /tmp -name \*bar} will match the file
+@samp{-iname} match a file name with a leading @samp{.}.  For
+example the command @samp{find /tmp -name \*bar} match the file
 @file{/tmp/.foobar}.  Braces within the pattern (@samp{@{@}}) are not
 considered to be special (that is, @code{find . -name 'foo@{1,2@}'}
 matches a file named @file{foo@{1,2@}}, not the files @file{foo1} and
@@ -777,54 +779,69 @@ find . -lname '*sysdep.c'
 @node Hard Links
 @subsection Hard Links
 
-Hard links allow more than one name to refer to the same file.  To
-find all the names which refer to the same file as @var{name}, use
-@samp{-samefile NAME}.  If you are not using the @samp{-L} option, you
-can confine your search to one filesystem using the @samp{-xdev}
-option.  This is useful because hard links cannot point outside a
-single filesystem, so this can cut down on needless searching.
-
-If the @samp{-L} option is in effect, and @var{name} is in fact a symbolic
-link, the symbolic link will be dereferenced.  Hence you are searching
-for other links (hard or symbolic) to the file pointed to by @var{name}.  If
-@samp{-L} is in effect but @var{name} is not itself a symbolic link, other
-symbolic links to the file @var{name} will be matched.
-
-You can also search for files by inode number.  This can occasionally
-be useful in diagnosing problems with filesystems for example, because
-@code{fsck} tends to print inode numbers.  Inode numbers also
-occasionally turn up in log messages for some types of software, and
-are used to support the @code{ftok()} library function.
-
-You can learn a file's inode number and the number of links to it by
-running @samp{ls -li} or @samp{find -ls}.
-
-You can search for hard links to inode number NUM by using @samp{-inum
-NUM}. If there are any filesystem mount points below the directory
-where you are starting the search, use the @samp{-xdev} option unless
-you are also using the @samp{-L} option.  Using @samp{-xdev} this
-saves needless searching, since hard links to a file must be on the
-same filesystem.  @xref{Filesystems}.
+Hard links allow more than one name to refer to the same file on a
+file system, i.e., to the same inode.  To find all the names which refer
+to the same file as @var{name}, use @samp{-samefile NAME}.
 
 @deffn Test -samefile NAME
-File is a hard link to the same inode as @var{name}.  If the @samp{-L}
-option is in effect, symbolic links to the same file as @var{name} points to
-are also matched.
+True if the file is a hard link to the same inode as @var{name}.
+This implies that @var{name} and the file reside on the same file system,
+i.e., they have the same device number.
+
+Unless the @samp{-L} option is also given to follow symbolic links, one may
+confine the search to one file system by using the @samp{-xdev} option.
+This is useful because hard links cannot point outside a single file system,
+so this can cut down on needless searching.
+
+If the @samp{-L} option is in effect, then dereferencing of symbolic links
+applies both to the @var{name} argument of the @samp{-samefile} primary and
+to each file examined during the traversal of the directory hierarchy.
+Therefore, @samp{find -L -samefile NAME} will find both hard links and
+symbolic links pointing to the file referenced by @var{name}.
 @end deffn
+
+@command{find} also allows searching for files by inode number.
+
+This can occasionally be useful in diagnosing problems with file systems;
+for example, @command{fsck} and @command{lsof} tend to print inode numbers.
+Inode numbers also occasionally turn up in log messages for some types of
+software.
+
+You can learn a file's inode number and the number of links to it by
+running @samp{ls -li}, @samp{stat} or @samp{find -ls}.
+
+You can search for hard links to inode number NUM by using @samp{-inum
+NUM}. If there are any file system mount points below the directory
+where you are starting the search, use the @samp{-xdev} option unless
+you are also using the @samp{-L} option.  Using @samp{-xdev} saves
+needless searching, since hard links to a file must be on the
+same file system.  @xref{Filesystems}.
 
 @deffn Test -inum n
-File has inode number @var{n}.  The @samp{+} and @samp{-} qualifiers
-also work, though these are rarely useful.  Much of the time it is
-easier to use @samp{-samefile} rather than this option.
+True if the file has inode number @var{n}.  The @samp{+} and @samp{-} qualifiers
+also work, though these are rarely useful.
+
+Please note that the @samp{-inum} primary simply compares the inode number
+against the given @var{n}.
+This means that a search for a certain inode number in several file systems
+may return several files with that inode number, but as each file system has
+its own device number, those files are not necessarily hard links to the
+same file.
+
+Therefore, it is much of the time easier to use @samp{-samefile} rather than
+this option.
 @end deffn
 
-You can also search for files that have a certain number of links,
-with @samp{-links}.  Directories normally have at least two hard
-links; their @file{.} entry is the second one.  If they have
-subdirectories, each of those also has a hard link called @file{..} to
-its parent directory.  The @file{.} and @file{..} directory entries
-are not normally searched unless they are mentioned on the @code{find}
-command line.
+@command{find} also allows searching for files that have a certain number of
+links, with @samp{-links}.
+
+A directory normally has at least two hard links: the entry named in its parent
+directory, and the @file{.} entry inside of the directory.
+If a directory has subdirectories, each of those also has a hard link called
+@file{..} to its parent directory.
+
+The @file{.} and @file{..} directory entries are not normally searched unless
+they are mentioned on the @code{find} command line.
 
 @deffn Test -links n
 File has @var{n} hard links.
@@ -979,14 +996,24 @@ find /usr -newer /tmp/stamp$$
 rm -f /tmp/stamp$$
 @end example
 
-@deffn Test -anewer file
-@deffnx Test -cnewer file
-@deffnx Test -newer file
-True if the file was last accessed (or its status changed, or it was
-modified) more recently than @var{file} was modified.  These tests are
-affected by @samp{-follow} only if @samp{-follow} comes before them on
-the command line.  @xref{Symbolic Links}, for more information on
-@samp{-follow}.  As an example, to list any files modified since
+@deffn Test -anewer reference
+@deffnx Test -cnewer reference
+@deffnx Test -newer reference
+True if the time of the last access (or status change or data modification)
+of the current file is more recent than that of the last data modification
+of the @var{reference} file.
+As such, @samp{-anewer} is equivalent to @samp{-neweram},
+@samp{-cnewer} to @samp{-newercm}, and @samp{-newer} to @samp{-newermm}.
+
+If @var{reference} is a symbolic link and the @samp{-H} option or the @samp{-L}
+option is in effect, then the time of the last data modification of the file
+it points to is always used.
+
+These tests are affected by @samp{-follow} only if @samp{-follow} comes before
+them on the command line.  @xref{Symbolic Links}, for more information on
+@samp{-follow}.
+
+As an example, to list any files modified since
 @file{/bin/sh} was last modified:
 
 @example
@@ -1197,6 +1224,10 @@ True if the file's mode bits match @var{pmode}, which can be
 either a symbolic or numeric @var{mode} (@pxref{File Permissions})
 optionally prefixed by @samp{-} or @samp{/}.
 
+Note that @var{pmode} starts with all file mode bits cleared, i.e.,
+does not relate to the process's file creation bit mask (also known
+as @command{umask}).
+
 A @var{pmode} that starts with neither @samp{-} nor @samp{/} matches
 if @var{mode} exactly matches the file mode bits.
 (To avoid confusion with an obsolete GNU extension, @var{mode}
@@ -1327,14 +1358,33 @@ slice of a directory tree.
 
 @deffn Option -maxdepth levels
 Descend at most @var{levels} (a non-negative integer) levels of
-directories below the command line arguments.  @samp{-maxdepth 0}
+directories below the command line arguments.  Using @samp{-maxdepth 0}
 means only apply the tests and actions to the command line arguments.
+
+@example
+$ mkdir -p dir/d1/d2/d3/d4/d5/d6
+
+$ find dir -maxdepth 1
+dir
+dir/d1
+
+$ find dir -mindepth 5
+dir/d1/d2/d3/d4/d5
+dir/d1/d2/d3/d4/d5/d6
+
+$ find dir -mindepth 2 -maxdepth 4
+dir/d1/d2
+dir/d1/d2/d3
+dir/d1/d2/d3/d4
+@end example
 @end deffn
 
 @deffn Option -mindepth levels
 Do not apply any tests or actions at levels less than @var{levels} (a
-non-negative integer).  @samp{-mindepth 1} means process all files
+non-negative integer).  Using @samp{-mindepth 1} means process all files
 except the command line arguments.
+
+See @samp{-maxdepth} for examples.
 @end deffn
 
 @deffn Option -depth
@@ -1397,11 +1447,18 @@ Exit immediately (with return value zero if no errors have occurred).
 This is different to @samp{-prune} because @samp{-prune} only applies
 to the contents of pruned directories, while @samp{-quit} simply makes
 @code{find} stop immediately.  No child processes will be left
-running, but no more files specified on the command line will be
-processed.  For example, @code{find /tmp/foo /tmp/bar -print -quit}
-will print only @samp{/tmp/foo}.  Any command lines which have been
-built by @samp{-exec ... \+} or @samp{-execdir ... \+} are invoked
-before the program is exited.
+running.  Any command lines which have been built by @samp{-exec
+... \+} or @samp{-execdir ... \+} are invoked before the program is
+exited.  After @samp{-quit} is executed, no more files specified on
+the command line will be processed.  For example, @samp{find /tmp/foo
+/tmp/bar -print -quit} will print only @samp{/tmp/foo}.  One common
+use of @samp{-quit} is to stop searching the file system once we have
+found what we want.  For example, if we want to find just a single
+file we can do this:
+@example
+find / -name needle -print -quit
+@end example
+@noindent
 @end deffn
 
 @deffn Option -noleaf
@@ -1477,7 +1534,7 @@ filesystem types vary among different versions of Unix; an incomplete
 list of filesystem types that are accepted on some version of Unix or
 another is:
 @example
-ext2 ext3 proc sysfs ufs 4.2 4.3 nfs tmp mfs S51K S52K
+autofs ext3 ext4 fuse.sshfs nfs proc sshfs sysfs ufs tmpfs xfs
 @end example
 You can use @samp{-printf} with the @samp{%F} directive to see the
 types of your filesystems.  The @samp{%D} directive shows the device
@@ -1720,11 +1777,11 @@ the output, instead of @samp{-ls}'s backslash-escaped names.  (Using
 specifier; @pxref{Unusual Characters in File Names}).  This format also
 outputs a uniform timestamp format.
 
-As for symlinks, the format above outputs the symlink target on a second
-line, following @samp{\n->}.  There is nothing following the arrow for
-non-symlinks.  Another approach, for complete consistency, would be to
-@code{-fprintf} the symlinks into a separate file, so they too can be
-null-terminated.
+As for symbolic links, the format above outputs the target of the symbolic link
+on a second line, following @samp{\n->}.  There is nothing following the arrow
+for file types other than symbolic links.
+Another approach, for complete consistency, would be to @code{-fprintf} the
+symbolic links into a separate file, so they too can be null-terminated.
 @end deffn
 
 @deffn Action -fprintf file format
@@ -1817,15 +1874,15 @@ it was encountered by @code{find} - that is, as a relative path from
 one of the starting points).
 @item %f
 File's name with any leading directories removed (only the last
-element).
+element).  That is, the basename of the file.
 @c supports %-X.Yf
 @item %h
 Leading directories of file's name (all but the last element and the
-slash before it).  If the file's name contains no slashes (for example
-because it was named on the command line and is in the current working
-directory), then ``%h'' expands to ``.''.  This prevents ``%h/%f''
-expanding to ``/foo'', which would be surprising and probably not
-desirable.
+slash before it).  That is, the dirname of the file.  If the file's
+name contains no slashes (for example because it was named on the
+command line and is in the current working directory), then ``%h''
+expands to ``.''.  This prevents ``%h/%f'' expanding to ``/foo'',
+which would be surprising and probably not desirable.
 @c supports %-X.Yh
 @item %P
 File's name with the name of the command line argument under which
@@ -1835,6 +1892,23 @@ it was found removed from the beginning.
 Command line argument under which file was found.
 @c supports %-X.YH
 @end table
+
+For some corner-cases, the interpretation of the @samp{%f} and
+@samp{%h} format directives is not obvious.  Here is an example
+including some output:
+
+@example
+$ find \
+  . .. / /tmp /tmp/TRACE compile compile/64/tests/find \
+  -maxdepth 0 -printf '%p: [%h][%f]\n'
+.: [.][.]
+..: [.][..]
+/: [][/]
+/tmp: [][tmp]
+/tmp/TRACE: [/tmp][TRACE]
+compile: [.][compile]
+compile/64/tests/find: [compile/64/tests][find]
+@end example
 
 @node Ownership Directives
 @subsubsection Ownership Directives
@@ -1926,8 +2000,8 @@ link, @samp{l} will be printed.
 Type of the file as used with @samp{-type}.  If the file is a symbolic
 link, it is dereferenced.  If the file is a broken symbolic link,
 @samp{N} is printed.
-When determining the type of the symlink target, and a loop is encountered,
-then @samp{L} is printed (e.g. for a symlink to itself);
+When determining the type of the target of a symbolic link, and a loop is
+encountered, then @samp{L} is printed (e.g. for a symbolic link to itself);
 @samp{?} is printed for any other error (like e.g. @samp{permission denied}).
 
 @end table
@@ -1991,10 +2065,11 @@ behaviour, because other directives may be added in the future.
 @node Time Formats
 @subsection Time Formats
 
-Below are the formats for the directives @samp{%A}, @samp{%C}, and
-@samp{%T}, which print the file's timestamps.  Some of these formats
-might not be available on all systems, due to differences in the C
-@code{strftime} function between systems.
+Below is an incomplete list of formats for the directives @samp{%A}, @samp{%C},
+and @samp{%T}, which print the file's timestamps.
+Please refer to the documentation of @code{strftime} for the full list.
+Some of these formats might not be available on all systems, due to differences
+in the implementation of the C @code{strftime} function.
 
 @menu
 * Time Components::
@@ -2090,6 +2165,8 @@ locale's date and time in ctime format (Sat Nov 04 12:02:33 EST
 seconds field.
 @item D
 date (mm/dd/yy)
+@item F
+date (yyyy-mm-dd)
 @item x
 locale's date representation (mm/dd/yy)
 @item +
@@ -2609,7 +2686,7 @@ reduce performance.  If you don't want to tolerate the performance
 difference, simply arrange for each process to produce a separate output
 file (or otherwise use separate resources).
 
-@code{xargs} also allows you to ``turn up'' or ``turn down'' its parallelism
+@code{xargs} also allows ``turning up'' or ``turning down'' its parallelism
 in the middle of a run.  Suppose you are keeping your four-processor
 system busy for hours, processing thousands of images using @code{-P 4}.
 Now, in the middle of the run, you or someone else wants you to reduce
@@ -3103,8 +3180,8 @@ When the new database format is being used, the compression technique
 used to generate the database though relies on the ability to sort the
 list of files before they are presented to @code{frcode}.
 
-If the system's sort command allows its input list of files to be
-separated with null characters via the @samp{-z} option, this option
+If the system's sort command allows separating its input list of
+files with null characters via the @samp{-z} option, this option
 is used and therefore @code{updatedb} and @code{locate} will both
 correctly handle file names containing newlines.  If the @code{sort}
 command lacks support for this, the list of files is delimited with
@@ -3134,7 +3211,6 @@ useful or which are not obvious are explained here.
 @menu
 * Leaf Optimisation::        Take advantage of Unix file system semantics.
 * d_type Optimisation::      Take advantage of file type information.
-* fts::                      A non-recursive file system search.
 @end menu
 
 @node Leaf Optimisation
@@ -3147,7 +3223,7 @@ and a @file{.} entry which functions as a link to the directory itself.
 The @file{..} entry of the root directory also points to the root.
 This means that @code{find} can deduce the number of subdirectories a
 directory has, simply by subtracting 2 from the directory's link
-count.  This allows @file{find} the calls to @code{stat} which would
+count.  This allows @file{find} saving @code{stat} calls which would
 otherwise be needed to discover which directory entries are
 subdirectories.
 
@@ -3166,21 +3242,6 @@ assumption being made.
 When this feature is enabled, @code{find} takes advantage of the fact
 that on some systems @code{readdir} will return the type of a file in
 @code{struct dirent}.
-
-@node fts
-@section fts
-
-The findutils source distribution contains two different implementations of
-@code{find}.  The older implementation descends the file system
-recursively, while the newer one uses @code{fts}.  Both are normally
-installed.
-
-If the option @code{--without-fts} was passed to @code{configure}, the
-recursive implementation is installed as @code{find} and the fts-based
-implementation is installed as @code{ftsfind}. Otherwise, the
-fts-based implementation is installed as @code{find} and the recursive
-implementation is installed as @code{oldfind}.
-
 
 
 @node Reference
@@ -3681,6 +3742,7 @@ a program died due to a fatal signal.
 
 @menu
 * xargs options::
+* Conflicting xargs options::
 * Invoking the shell from xargs::
 @end menu
 
@@ -3830,6 +3892,33 @@ integer.  Values are reused once child processes exit.  This can be
 used in a rudimentary load distribution scheme, for example.
 @end table
 
+@node Conflicting xargs options
+@subsection Conflicting options
+The options @samp{--max-lines} (@samp{-L}, @samp{-l}), @samp{--replace}
+(@samp{-I}, @samp{-i}) and @samp{--max-args} (@samp{-n}) are mutually exclusive.
+
+If some of them are specified at the same time, then @code{xargs} will
+generally use the option specified last on the command line, i.e., it will
+reset the value of the offending option (given before) to its default value.
+Additionally, @code{xargs} will issue a warning diagnostic on @file{stderr}.
+
+@example
+$ seq 4 | xargs -l2 -n3
+xargs: warning: options --max-lines and --max-args/-n are \
+  mutually exclusive, ignoring previous --max-lines value
+1 2 3
+4
+@end example
+
+The exception to this rule is that the special @var{max-args} value @var{1} is
+ignored after the @samp{--replace} option and its short-option aliases @samp{-I}
+and @samp{-i}, because it would not actually conflict.
+@example
+$ seq 2 | xargs --replace -n1 echo a-@{@}-b
+a-1-b
+a-2-b
+@end example
+
 @node Invoking the shell from xargs
 @subsection Invoking the shell from xargs
 
@@ -3856,8 +3945,8 @@ at the end of the command line, while the destination directory would
 need to be specified last.  We also can't use @code{xargs} in the
 obvious way for the same reason.  One way of working around this
 problem is to make use of the special properties of GNU @code{mv}; it
-has a @code{-t} option that allows the target directory to be
-specified before the list of files to be moved.  However, while this
+has a @code{-t} option that allows specifying the target directory
+before the list of files to be moved.  However, while this
 technique works for GNU @code{mv}, it doesn't solve the more general
 problem.
 
@@ -3941,8 +4030,8 @@ expression used by @code{find} and @code{locate} is almost identical to
 that used in GNU Emacs.  The single difference is that in @code{find}
 and @code{locate}, a @samp{.} will match a newline character.
 
-Both @code{find} and @code{locate} provide an option which allows you
-to select an alternative regular expression syntax; for @code{find}
+Both @code{find} and @code{locate} provide an option which allows
+selecting an alternative regular expression syntax; for @code{find}
 this is the @samp{-regextype} option, and for @code{locate} this is
 the @samp{--regextype} option.
 
@@ -4506,9 +4595,9 @@ find /var/tmp/stuff -mtime +90 -exec /bin/rm @{@} \+
 
 The above use of @samp{-exec} causes @code{find} to build up a long
 command line and then issue it.  This can be less efficient than some
-uses of @code{xargs}; for example @code{xargs} allows new command
-lines to be built up while the previous command is still executing, and
-allows you to specify a number of commands to run in parallel.
+uses of @code{xargs}; for example @code{xargs} allows building up
+new command lines while the previous command is still executing, and
+allows specifying a number of commands to run in parallel.
 However, the @code{find @dots{} -exec @dots{} +} construct has the advantage
 of wide portability.  GNU findutils did not support @samp{-exec @dots{} +}
 until version 4.2.12; one of the reasons for this is that it already
@@ -5190,14 +5279,16 @@ find --version
 This will tell you the version number and which features are enabled.
 For example, if I run this on my system now, this gives:
 @example
-find (GNU findutils) 4.5.11-git
-Copyright (C) 2012 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+find (GNU findutils) 4.8.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later \
+<https://gnu.org/licenses/gpl.html>.
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by Eric B. Decker, James Youngman, and Kevin Dalley.
-Features enabled: D_TYPE O_NOFOLLOW(enabled) LEAF_OPTIMISATION FTS(FTS_CWDFD) CBO(level=2)
+Features enabled: D_TYPE O_NOFOLLOW(enabled) LEAF_OPTIMISATION \
+FTS(FTS_CWDFD) CBO(level=2)
 @end example
 
 Here, you can see that I am running a version of @code{find} which was
@@ -5423,7 +5514,7 @@ While there are a number of books on computer security, there are also
 useful articles on the web that touch on the issues described above:
 
 @table @url
-@item http://goo.gl/DAvh
+@item https://goo.gl/DAvh
 @c https://www.securecoding.cert.org/confluence/display/seccode/MSC09-C.+Character+Encoding+-+Use+Subset+of+ASCII+for+Safety
 This article describes some of the unfortunate effects of allowing
 free choice of file names.

@@ -1,7 +1,7 @@
 # -*- autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1996-2019 Free Software Foundation, Inc.
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,10 +30,10 @@ dnl Set the bug-report URL
 dnl
 dnl The call to AC_INIT causes AC_PACKAGE_BUGREPORT to be defined
 dnl and we've used an email address.  However, we would also like to
-dnl specify at URL at which to report bugs (and in fact we prefer
+dnl specify an URL at which to report bugs (and in fact we prefer
 dnl people to use that).  Se we define that here, too.
 bugreport_url='https://savannah.gnu.org/bugs/?group=findutils'
-dnl Ensure that PACKAGE_BUGREPORT_URL shows up n config.h so that
+dnl Ensure that PACKAGE_BUGREPORT_URL shows up in config.h so that
 dnl it can be picked up by bugreport.c.
 AC_DEFINE_UNQUOTED([PACKAGE_BUGREPORT_URL], ["$bugreport_url"],
                    [URL at which bugs should be reported])
@@ -52,8 +52,6 @@ AC_CANONICAL_HOST
 AC_CONFIG_MACRO_DIR(gl/m4)
 
 AC_SUBST(AUXDIR,$ac_aux_dir)
-dnl check for --with-fts
-FIND_WITH_FTS
 
 AC_ARG_ENABLE(leaf-optimisation,
 	AS_HELP_STRING(--enable-leaf-optimisation,Enable an optimisation which saves lstat calls to identify subdirectories on filesystems having traditional Unix semantics),
@@ -160,6 +158,8 @@ AC_ARG_ENABLE(compiler-warnings,
   WARN_CFLAGS="$WARN_CFLAGS  -Wno-sign-compare"
   # Likewise for -Wunused-parameter: it is implied by -Wunused and -Wextra.
   gl_WARN_ADD([-Wno-unused-parameter])
+  # Likewise for -Wformat-nonliteral: it is implied by -Wformat.
+  gl_WARN_ADD([-Wno-format-nonliteral])
   ])
 
 dnl For --enable-compiler-warnings-are-errors, any GCC compiler

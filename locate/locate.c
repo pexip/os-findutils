@@ -1,5 +1,5 @@
 /* locate -- search databases for filenames that match patterns
-   Copyright (C) 1994-2019 Free Software Foundation, Inc.
+   Copyright (C) 1994-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -84,12 +84,14 @@
 #include "progname.h"
 #include "xalloc.h"
 #include "error.h"
+#include "fcntl--.h"
 #include "human.h"
 #include "dirname.h"
 #include "closeout.h"
 #include "quotearg.h"
 #include "regextype.h"
 #include "stat-time.h"
+#include "xstrtol-error.h"
 
 /* find headers. */
 #include "system.h"

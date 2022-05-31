@@ -1,5 +1,5 @@
 /* sharefile.c -- open files just once.
-   Copyright (C) 2008-2019 Free Software Foundation, Inc.
+   Copyright (C) 2008-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@
 /* gnulib headers. */
 #include "cloexec.h"
 #include "hash.h"
-#include "stdio-safer.h"
+#include "stdio--.h"
 
 /* find headers. */
 #include "sharefile.h"
@@ -154,9 +154,9 @@ sharefile_fopen (sharefile_handle h, const char *filename)
       return NULL;
     }
 
-  if (NULL == (new_entry->fp = fopen_safer (filename, p->mode)))
+  if (NULL == (new_entry->fp = fopen (filename, p->mode)))
     {
-      free (new_entry);
+      entry_free (new_entry);
       return NULL;
     }
   else

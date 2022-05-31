@@ -1,4 +1,4 @@
-# Copyright (C) 2001-2019 Free Software Foundation, Inc.
+# Copyright (C) 2001-2021 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -119,7 +119,6 @@ find.posix/prune-stat.xo \
 find.posix/sizetype.xo \
 find.posix/sv-bug-15235.xo \
 find.posix/sv-bug-19613.xo \
-find.posix/sv-bug-54171.xo \
 find.posix/typesize.xo
 
 
@@ -246,7 +245,6 @@ find.posix/sv-bug-15235.exp \
 find.posix/sv-bug-19605.exp \
 find.posix/sv-bug-19613.exp \
 find.posix/sv-bug-19617.exp \
-find.posix/sv-bug-54171.exp \
 find.posix/typesize.exp \
 find.posix/user-empty.exp \
 find.posix/user-missing.exp

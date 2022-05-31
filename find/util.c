@@ -1,5 +1,5 @@
 /* util.c -- functions for initializing new tree elements, and other things.
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ static struct debug_option_assoc debugassoc[] =
    p_prec	    NO_PREC
 
    Other cells that need to be filled in are defaulted by
-   get_new_pred_chk_op, which is used to insure that the prior node is
+   get_new_pred_chk_op, which is used to ensure that the prior node is
    either not there at all (we are the very first node) or is an
    operator. */
 
@@ -543,18 +543,6 @@ undangle_file_pointers (struct predicate *p)
       /* The file was already fclose()d by sharefile_destroy. */
       p->args.printf_vec.stream = NULL;
     }
-}
-
-/* Return nonzero if file descriptor leak-checking is enabled.
- */
-bool
-fd_leak_check_is_enabled (void)
-{
-  if (getenv ("GNU_FINDUTILS_FD_LEAK_CHECK"))
-    return true;
-  else
-    return false;
-
 }
 
 /* Complete any outstanding commands.

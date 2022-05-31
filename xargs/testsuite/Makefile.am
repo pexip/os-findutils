@@ -1,4 +1,4 @@
-# Copyright (C) 2001-2019 Free Software Foundation, Inc.
+# Copyright (C) 2001-2021 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -213,9 +213,13 @@ xargs.sysv/trace.xo
 
 
 EXTRA_DIST_XE = \
+xargs.gnu/P3-n1-IARG.xe \
 xargs.gnu/space-t-0.xe \
+xargs.posix/L2-n2.xe \
+xargs.posix/rc-123.xe \
 xargs.sysv/empty_def-t.xe \
 xargs.sysv/empty-t.xe \
+xargs.sysv/l1n4.xe \
 xargs.sysv/s25-t.xe \
 xargs.sysv/space-t.xe \
 xargs.sysv/trace.xe

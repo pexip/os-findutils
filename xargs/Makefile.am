@@ -1,4 +1,4 @@
-## Copyright (C) 1996-2019 Free Software Foundation, Inc.
+## Copyright (C) 1996-2021 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ localedir = $(datadir)/locale
 bin_PROGRAMS = xargs
 man_MANS = xargs.1
 AM_CPPFLAGS = -I.. -I../gl/lib -I$(top_srcdir)/gl/lib -I$(top_srcdir)/lib -DLOCALEDIR=\"$(localedir)\"
-LDADD = ../lib/libfind.a ../gl/lib/libgnulib.a $(LIB_CLOSE) $(LIBINTL)
+LDADD = ../lib/libfind.a ../gl/lib/libgnulib.a $(LIB_CLOSE) $(LIBINTL) $(LIB_SETLOCALE_NULL) $(LIB_MBRTOWC)
 EXTRA_DIST = $(man_MANS)
 SUBDIRS = . testsuite
 

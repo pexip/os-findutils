@@ -1,5 +1,5 @@
 /* Test of execution of file name canonicalization.
-   Copyright (C) 2007-2019 Free Software Foundation, Inc.
+   Copyright (C) 2007-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -16,6 +16,11 @@
 
 /* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
 
+/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
+   may "optimize" the null_ptr function, when its result gets passed to a
+   function that has an argument declared as _GL_ARG_NONNULL.  */
+#define _GL_ARG_NONNULL(params)
+
 #include <config.h>
 
 #include "canonicalize.h"
@@ -31,7 +36,10 @@
 #include "same-inode.h"
 #include "ignore-value.h"
 
-#include "null-ptr.h"
+#if GNULIB_defined_canonicalize_file_name
+# include "null-ptr.h"
+#endif
+
 #include "macros.h"
 
 #define BASE "t-can.tmp"
@@ -62,22 +70,34 @@ main (void)
             == result1 + strlen (result1) - strlen ("/" BASE "/tra"));
     free (result1);
     free (result2);
+
     errno = 0;
     result1 = canonicalize_file_name ("");
     ASSERT (result1 == NULL);
     ASSERT (errno == ENOENT);
+
     errno = 0;
     result2 = canonicalize_filename_mode ("", CAN_EXISTING);
     ASSERT (result2 == NULL);
     ASSERT (errno == ENOENT);
+
+    /* This test works only if the canonicalize_file_name implementation
+       comes from gnulib.  If it comes from libc, we have no way to prevent
+       gcc from "optimizing" the null_ptr function in invalid ways.  See
+       <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93156>.  */
+#if GNULIB_defined_canonicalize_file_name
     errno = 0;
     result1 = canonicalize_file_name (null_ptr ());
     ASSERT (result1 == NULL);
     ASSERT (errno == EINVAL);
+#endif
+
     errno = 0;
     result2 = canonicalize_filename_mode (NULL, CAN_EXISTING);
     ASSERT (result2 == NULL);
     ASSERT (errno == EINVAL);
+
+    errno = 0;
     result2 = canonicalize_filename_mode (".", CAN_MISSING | CAN_ALL_BUT_LAST);
     ASSERT (result2 == NULL);
     ASSERT (errno == EINVAL);
@@ -194,18 +214,32 @@ main (void)
     ASSERT (errno == ENOENT);
   }
 
-  /* Check that a non-directory symlink with trailing slash yields NULL.  */
+  /* Check that a non-directory symlink with trailing slash yields NULL,
+     and likewise for other troublesome suffixes.  */
   {
-    char *result1;
-    char *result2;
-    errno = 0;
-    result1 = canonicalize_file_name (BASE "/huk/");
-    ASSERT (result1 == NULL);
-    ASSERT (errno == ENOTDIR);
-    errno = 0;
-    result2 = canonicalize_filename_mode (BASE "/huk/", CAN_EXISTING);
-    ASSERT (result2 == NULL);
-    ASSERT (errno == ENOTDIR);
+    char const *const file_name[]
+      = {
+         BASE "/huk/",
+         BASE "/huk/.",
+         BASE "/huk/./",
+         BASE "/huk/./.",
+         BASE "/huk/x",
+         BASE "/huk/..",
+         BASE "/huk/../",
+         BASE "/huk/../.",
+         BASE "/huk/../x",
+         BASE "/huk/./..",
+         BASE "/huk/././../x",
+        };
+    for (int i = 0; i < sizeof file_name / sizeof *file_name; i++)
+      {
+        errno = 0;
+        ASSERT (!canonicalize_file_name (file_name[i]));
+        ASSERT (errno == ENOTDIR);
+        errno = 0;
+        ASSERT (!canonicalize_filename_mode (file_name[i], CAN_EXISTING));
+        ASSERT (errno == ENOTDIR);
+      }
   }
 
   /* Check that a missing directory via symlink yields NULL.  */

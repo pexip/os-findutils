@@ -1,5 +1,5 @@
 /* Case-insensitive searching in a string.  -*- coding: utf-8 -*-
-   Copyright (C) 2005-2019 Free Software Foundation, Inc.
+   Copyright (C) 2005-2021 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2005.
 
    This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stddef.h>  /* for NULL, in case a nonstandard string.h lacks it */
+#include <stdlib.h>
 
 #include "malloca.h"
 #include "mbuiter.h"
