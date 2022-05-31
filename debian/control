@@ -15,7 +15,7 @@ Rules-Requires-Root: no
 Vcs-Git: https://salsa.debian.org/debian/findutils.git
 Vcs-Browser: https://salsa.debian.org/debian/findutils
 Homepage: https://savannah.gnu.org/projects/findutils/
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ buster
+XS-Pexip-Upstream: http://deb.debian.org/debian/ bullseye
 
 Package: findutils
 Architecture: any
