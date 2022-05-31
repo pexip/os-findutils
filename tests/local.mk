@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in -*-Makefile-*-.
 
-## Copyright (C) 2007-2019 Free Software Foundation, Inc.
+## Copyright (C) 2007-2021 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -106,6 +106,7 @@ check-root:
 
 all_tests = \
   tests/misc/help-version.sh \
+  tests/find/depth-unreadable-dir.sh \
   tests/find/many-dir-entries-vs-OOM.sh \
   tests/find/name-lbracket-literal.sh \
   tests/find/printf_escapechars.sh \
@@ -115,6 +116,9 @@ all_tests = \
   tests/find/exec-plus-last-file.sh \
   tests/find/refuse-noop.sh \
   tests/find/debug-missing-arg.sh \
+  tests/find/used.sh \
+  tests/xargs/conflicting_opts.sh \
+  tests/xargs/verbose-quote.sh \
   $(all_root_tests)
 
 $(TEST_LOGS): $(PROGRAMS)

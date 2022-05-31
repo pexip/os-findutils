@@ -1,6 +1,6 @@
 /* mountlist.c -- return a list of mounted file systems
 
-   Copyright (C) 1991-1992, 1997-2019 Free Software Foundation, Inc.
+   Copyright (C) 1991-1992, 1997-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -66,7 +66,12 @@
                                    also (obsolete) 4.3BSD, SunOS */
 # include <mntent.h>
 # include <sys/types.h>
-# if !defined MOUNTED
+# if defined __ANDROID__        /* Android */
+   /* Bionic versions from between 2014-01-09 and 2015-01-08 define MOUNTED to
+      an incorrect value; older Bionic versions don't define it at all.  */
+#  undef MOUNTED
+#  define MOUNTED "/proc/mounts"
+# elif !defined MOUNTED
 #  if defined _PATH_MOUNTED     /* GNU libc  */
 #   define MOUNTED _PATH_MOUNTED
 #  endif
@@ -116,6 +121,15 @@
 #if HAVE_SYS_MNTENT_H
 /* This is to get MNTOPT_IGNORE on e.g. SVR4.  */
 # include <sys/mntent.h>
+#endif
+
+#ifdef MOUNTED_GETMNTENT1
+# if !HAVE_SETMNTENT            /* Android <= 4.4 */
+#  define setmntent(fp,mode) fopen (fp, mode "e")
+# endif
+# if !HAVE_ENDMNTENT            /* Android <= 4.4 */
+#  define endmntent(fp) fclose (fp)
+# endif
 #endif
 
 #ifndef HAVE_HASMNTOPT
@@ -181,6 +195,9 @@
 
 #ifdef __CYGWIN__
 # include <windows.h>
+/* Don't assume that UNICODE is not defined.  */
+# undef GetDriveType
+# define GetDriveType GetDriveTypeA
 # define ME_REMOTE me_remote
 /* All cygwin mount points include ':' or start with '//'; so it
    requires a native Windows call to determine remote disks.  */
@@ -207,14 +224,26 @@ me_remote (char const *fs_name, char const *fs_type _GL_UNUSED)
 #ifndef ME_REMOTE
 /* A file system is "remote" if its Fs_name contains a ':'
    or if (it is of type (smbfs or cifs) and its Fs_name starts with '//')
-   or Fs_name is equal to "-hosts" (used by autofs to mount remote fs).  */
+   or if it is of any other of the listed types
+   or Fs_name is equal to "-hosts" (used by autofs to mount remote fs).
+   "VM" file systems like prl_fs or vboxsf are not considered remote here. */
 # define ME_REMOTE(Fs_name, Fs_type)            \
     (strchr (Fs_name, ':') != NULL              \
      || ((Fs_name)[0] == '/'                    \
          && (Fs_name)[1] == '/'                 \
          && (strcmp (Fs_type, "smbfs") == 0     \
+             || strcmp (Fs_type, "smb3") == 0   \
              || strcmp (Fs_type, "cifs") == 0)) \
-     || (strcmp("-hosts", Fs_name) == 0))
+     || strcmp (Fs_type, "acfs") == 0           \
+     || strcmp (Fs_type, "afs") == 0            \
+     || strcmp (Fs_type, "coda") == 0           \
+     || strcmp (Fs_type, "auristorfs") == 0     \
+     || strcmp (Fs_type, "fhgfs") == 0          \
+     || strcmp (Fs_type, "gpfs") == 0           \
+     || strcmp (Fs_type, "ibrix") == 0          \
+     || strcmp (Fs_type, "ocfs2") == 0          \
+     || strcmp (Fs_type, "vxfs") == 0           \
+     || strcmp ("-hosts", Fs_name) == 0)
 #endif
 
 #if MOUNTED_GETMNTINFO          /* Mac OS X, FreeBSD, OpenBSD, also (obsolete) 4.4BSD */
@@ -378,7 +407,7 @@ dev_from_mount_options (char const *mount_options)
 
 #endif
 
-#if defined MOUNTED_GETMNTENT1 && defined __linux__ /* GNU/Linux, Android */
+#if defined MOUNTED_GETMNTENT1 && (defined __linux__ || defined __ANDROID__) /* GNU/Linux, Android */
 
 /* Unescape the paths in mount tables.
    STR is updated in place.  */
@@ -404,6 +433,18 @@ unescape_tab (char *str)
         str[j++] = str[i];
     }
 }
+
+/* Find the next space in STR, terminate the string there in place,
+   and return that position.  Otherwise return NULL.  */
+
+static char *
+terminate_at_blank (char *str)
+{
+  char *s = strchr (str, ' ');
+  if (s)
+    *s = '\0';
+  return s;
+}
 #endif
 
 /* Return a list of the currently mounted file systems, or NULL on error.
@@ -424,13 +465,13 @@ read_file_system_list (bool need_fs_type)
   {
     FILE *fp;
 
-# ifdef __linux__
+# if defined __linux__ || defined __ANDROID__
     /* Try parsing mountinfo first, as that make device IDs available.
        Note we could use libmount routines to simplify this parsing a little
        (and that code is in previous versions of this function), however
        libmount depends on libselinux which pulls in many dependencies.  */
     char const *mountinfo = "/proc/self/mountinfo";
-    fp = fopen (mountinfo, "r");
+    fp = fopen (mountinfo, "re");
     if (fp != NULL)
       {
         char *line = NULL;
@@ -439,56 +480,58 @@ read_file_system_list (bool need_fs_type)
         while (getline (&line, &buf_size, fp) != -1)
           {
             unsigned int devmaj, devmin;
-            int target_s, target_e, type_s, type_e;
-            int source_s, source_e, mntroot_s, mntroot_e;
-            char test;
-            char *dash;
-            int rc;
+            int rc, mntroot_s;
 
             rc = sscanf(line, "%*u "        /* id - discarded  */
-                              "%*u "        /* parent - discarded */
+                              "%*u "        /* parent - discarded  */
                               "%u:%u "      /* dev major:minor  */
-                              "%n%*s%n "    /* mountroot */
-                              "%n%*s%n"     /* target, start and end  */
-                              "%c",         /* more data...  */
+                              "%n",         /* mountroot (start)  */
                               &devmaj, &devmin,
-                              &mntroot_s, &mntroot_e,
-                              &target_s, &target_e,
-                              &test);
+                              &mntroot_s);
 
-            if (rc != 3 && rc != 7)  /* 7 if %n included in count.  */
+            if (rc != 2 && rc != 3)  /* 3 if %n included in count.  */
+              continue;
+
+            /* find end of MNTROOT.  */
+            char *mntroot = line + mntroot_s;
+            char *blank = terminate_at_blank (mntroot);
+            if (! blank)
+              continue;
+
+            /* find end of TARGET.  */
+            char *target = blank + 1;
+            blank = terminate_at_blank (target);
+            if (! blank)
               continue;
 
             /* skip optional fields, terminated by " - "  */
-            dash = strstr (line + target_e, " - ");
+            char *dash = strstr (blank + 1, " - ");
             if (! dash)
               continue;
 
-            rc = sscanf(dash, " - "
-                              "%n%*s%n "    /* FS type, start and end  */
-                              "%n%*s%n "    /* source, start and end  */
-                              "%c",         /* more data...  */
-                              &type_s, &type_e,
-                              &source_s, &source_e,
-                              &test);
-            if (rc != 1 && rc != 5)  /* 5 if %n included in count.  */
+            /* advance past the " - " separator.  */
+            char *fstype = dash + 3;
+            blank = terminate_at_blank (fstype);
+            if (! blank)
+              continue;
+
+            /* find end of SOURCE.  */
+            char *source = blank + 1;
+            if (! terminate_at_blank (source))
               continue;
 
             /* manipulate the sub-strings in place.  */
-            line[mntroot_e] = '\0';
-            line[target_e] = '\0';
-            dash[type_e] = '\0';
-            dash[source_e] = '\0';
-            unescape_tab (dash + source_s);
-            unescape_tab (line + target_s);
-            unescape_tab (line + mntroot_s);
+            unescape_tab (source);
+            unescape_tab (target);
+            unescape_tab (mntroot);
+            unescape_tab (fstype);
 
             me = xmalloc (sizeof *me);
 
-            me->me_devname = xstrdup (dash + source_s);
-            me->me_mountdir = xstrdup (line + target_s);
-            me->me_mntroot = xstrdup (line + mntroot_s);
-            me->me_type = xstrdup (dash + type_s);
+            me->me_devname = xstrdup (source);
+            me->me_mountdir = xstrdup (target);
+            me->me_mntroot = xstrdup (mntroot);
+            me->me_type = xstrdup (fstype);
             me->me_type_malloced = 1;
             me->me_dev = makedev (devmaj, devmin);
             /* we pass "false" for the "Bind" option as that's only
@@ -517,7 +560,7 @@ read_file_system_list (bool need_fs_type)
           goto free_then_fail;
       }
     else /* fallback to /proc/self/mounts (/etc/mtab).  */
-# endif /* __linux __ */
+# endif /* __linux __ || __ANDROID__ */
       {
         struct mntent *mnt;
         char const *table = MOUNTED;
@@ -762,7 +805,7 @@ read_file_system_list (bool need_fs_type)
     char *table = "/etc/mnttab";
     FILE *fp;
 
-    fp = fopen (table, "r");
+    fp = fopen (table, "re");
     if (fp == NULL)
       return NULL;
 
@@ -820,7 +863,7 @@ read_file_system_list (bool need_fs_type)
        by the kernel.  */
 
     errno = 0;
-    fp = fopen (table, "r");
+    fp = fopen (table, "re");
     if (fp == NULL)
       ret = errno;
     else
@@ -870,7 +913,7 @@ read_file_system_list (bool need_fs_type)
 #  ifndef MNTTAB_LOCK
 #   define MNTTAB_LOCK "/etc/.mnttab.lock"
 #  endif
-    lockfd = open (MNTTAB_LOCK, O_RDONLY);
+    lockfd = open (MNTTAB_LOCK, O_RDONLY | O_CLOEXEC);
     if (0 <= lockfd)
       {
         struct flock flock;
@@ -892,7 +935,7 @@ read_file_system_list (bool need_fs_type)
 # endif
 
     errno = 0;
-    fp = fopen (table, "r");
+    fp = fopen (table, "re");
     if (fp == NULL)
       ret = errno;
     else

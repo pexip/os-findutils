@@ -1,16 +1,17 @@
-This is find.info, produced by makeinfo version 6.5 from find.texi.
+This is find.info, produced by makeinfo version 6.7 from find.texi.
 
-This file documents the GNU utilities for finding files that match
-certain criteria and performing various operations on them.
+This manual documents version 4.8.0 of the GNU utilities for finding
+files that match certain criteria and performing various operations on
+them.
 
-   Copyright (C) 1994-2019 Free Software Foundation, Inc.
+   Copyright (C) 1994-2021 Free Software Foundation, Inc.
 
-   Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled "GNU Free
-Documentation License".
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled "GNU Free Documentation License".
 INFO-DIR-SECTION Basics
 START-INFO-DIR-ENTRY
 * Finding files: (find).        Operating on files matching certain criteria.
@@ -26,160 +27,165 @@ END-INFO-DIR-ENTRY
 
 
 Indirect:
-find.info-1: 1155
-find.info-2: 303992
+find.info-1: 1201
+find.info-2: 306962
 
 Tag Table:
 (Indirect)
-Node: Top1155
-Node: Introduction3004
-Node: Scope5928
-Node: Overview7861
-Node: find Expressions9725
-Node: Finding Files11552
-Node: Name12017
-Node: Base Name Patterns12645
-Ref: Base Name Patterns-Footnote-113974
-Node: Full Name Patterns14186
-Node: Fast Full Name Search18189
-Node: Shell Pattern Matching21238
-Node: Links23327
-Node: Symbolic Links23762
-Node: Hard Links28818
-Node: Time31373
-Node: Age Ranges32345
-Node: Comparing Timestamps34029
-Node: Size36890
-Node: Type39086
-Node: Owner40964
-Node: Mode Bits41783
-Node: Contents47180
-Node: Directories48351
-Node: Filesystems53925
-Node: Combining Primaries With Operators55276
-Node: Actions56894
-Node: Print File Name57454
-Node: Print File Information58472
-Node: Escapes62418
-Node: Format Directives63159
-Node: Name Directives64405
-Node: Ownership Directives65387
-Node: Size Directives66391
-Node: Location Directives67760
-Node: Time Directives69084
-Node: Other Directives69982
-Node: Reserved and Unknown Directives70257
-Node: Time Formats71125
-Node: Time Components71586
-Node: Date Components72545
-Node: Combined Time Formats73357
-Node: Formatting Flags74299
-Node: Run Commands74909
-Node: Single File75267
-Node: Multiple Files77934
-Node: Unsafe File Name Handling82720
-Node: Safe File Name Handling84433
-Node: Unusual Characters in File Names86047
-Node: Limiting Command Size89209
-Node: Controlling Parallelism91645
-Node: Interspersing File Names97497
-Node: Querying99952
-Node: Delete Files102209
-Node: Adding Tests103153
-Node: Databases105792
-Node: Database Locations106509
-Node: Database Formats107956
-Node: LOCATE02 Database Format109049
-Node: Sample LOCATE02 Database110741
-Node: slocate Database Format111425
-Node: Old Database Format112433
-Node: Newline Handling115404
-Node: File Permissions116356
-Node: Mode Structure116934
-Node: Symbolic Modes120069
-Node: Setting Permissions121166
-Node: Copying Permissions123707
-Node: Changing Special Permissions124520
-Node: Conditional Executability126064
-Node: Multiple Changes126596
-Node: Umask and Protection128253
-Node: Numeric Modes129351
-Node: Date input formats131042
-Node: General date syntax133453
-Node: Calendar date items136431
-Node: Time of day items138429
-Node: Time zone items140626
-Node: Combined date and time of day items141877
-Node: Day of week items142733
-Node: Relative items in date strings143742
-Node: Pure numbers in date strings146545
-Node: Seconds since the Epoch147527
-Node: Specifying time zone rules149148
-Node: Authors of parse_datetime151522
-Ref: Authors of get_date151702
-Node: Configuration152665
-Node: Leaf Optimisation153446
-Node: d_type Optimisation154558
-Node: fts154860
-Node: Reference155464
-Node: Invoking find155809
-Node: Filesystem Traversal Options157291
-Node: Warning Messages158382
-Node: Optimisation Options160348
-Node: Debug Options162293
-Node: Find Expressions163409
-Node: Invoking locate163775
-Node: Invoking updatedb169962
-Node: Invoking xargs173000
-Node: xargs options173720
-Node: Invoking the shell from xargs179329
-Node: Regular Expressions183319
-Node: findutils-default regular expression syntax184915
-Node: emacs regular expression syntax187420
-Node: gnu-awk regular expression syntax189958
-Node: grep regular expression syntax192422
-Node: posix-awk regular expression syntax195075
-Node: awk regular expression syntax197366
-Node: posix-basic regular expression syntax199232
-Node: posix-egrep regular expression syntax201863
-Node: egrep regular expression syntax204192
-Node: posix-extended regular expression syntax204489
-Node: Environment Variables206955
-Node: Common Tasks209923
-Node: Viewing And Editing210348
-Node: Archiving212267
-Node: Cleaning Up213900
-Node: Strange File Names216788
-Node: Fixing Permissions218437
-Node: Classifying Files219001
-Node: Worked Examples219719
-Node: Deleting Files220424
-Node: Copying A Subset of Files233459
-Node: Updating A Timestamp File235478
-Node: Finding the Shallowest Instance241466
-Node: Security Considerations243402
-Node: Levels of Risk244969
-Ref: Levels of Risk-Footnote-1247767
-Node: Security Considerations for find247946
-Ref: Security Considerations for find-Footnote-1250270
-Node: Problems with -exec and filenames250343
-Node: Changing the Current Working Directory251977
-Node: O_NOFOLLOW253748
-Ref: O_NOFOLLOW-Footnote-1255803
-Node: Systems without O_NOFOLLOW255905
-Ref: Systems without O_NOFOLLOW-Footnote-1258054
-Node: Race Conditions with -exec258116
-Node: Race Conditions with -print and -print0261033
-Node: Security Considerations for xargs261962
-Node: Security Considerations for locate264464
-Node: Security Summary265210
-Node: Further Reading on Security266005
-Node: Error Messages267187
-Node: Error Messages From find268216
-Node: Error Messages From xargs273339
-Node: Error Messages From locate276042
-Node: Error Messages From updatedb277274
-Node: GNU Free Documentation License277681
-Node: Primary Index303992
+Node: Top1201
+Node: Introduction2897
+Node: Scope5800
+Node: Overview7733
+Node: Finding Files9572
+Node: find Expressions10058
+Node: Name12069
+Node: Base Name Patterns12722
+Ref: Base Name Patterns-Footnote-114041
+Node: Full Name Patterns14253
+Node: Fast Full Name Search18256
+Node: Shell Pattern Matching21305
+Node: Links23394
+Node: Symbolic Links23829
+Node: Hard Links28885
+Node: Time32005
+Node: Age Ranges32977
+Node: Comparing Timestamps34661
+Node: Size37902
+Node: Type40098
+Node: Owner41976
+Node: Mode Bits42795
+Node: Contents48351
+Node: Directories49522
+Node: Filesystems55716
+Node: Combining Primaries With Operators57075
+Node: Actions58693
+Node: Print File Name59253
+Node: Print File Information60271
+Node: Escapes64270
+Node: Format Directives65011
+Node: Name Directives66257
+Node: Ownership Directives67751
+Node: Size Directives68755
+Node: Location Directives70124
+Node: Time Directives71465
+Node: Other Directives72363
+Node: Reserved and Unknown Directives72638
+Node: Time Formats73506
+Node: Time Components74058
+Node: Date Components75017
+Node: Combined Time Formats75829
+Node: Formatting Flags76798
+Node: Run Commands77408
+Node: Single File77766
+Node: Multiple Files80433
+Node: Unsafe File Name Handling85219
+Node: Safe File Name Handling86932
+Node: Unusual Characters in File Names88546
+Node: Limiting Command Size91708
+Node: Controlling Parallelism94144
+Node: Interspersing File Names99996
+Node: Querying102451
+Node: Delete Files104708
+Node: Adding Tests105652
+Node: Databases108291
+Node: Database Locations109008
+Node: Database Formats110455
+Node: LOCATE02 Database Format111548
+Node: Sample LOCATE02 Database113240
+Node: slocate Database Format113924
+Node: Old Database Format114932
+Node: Newline Handling117903
+Node: File Permissions118850
+Node: Mode Structure119428
+Node: Symbolic Modes122563
+Node: Setting Permissions123660
+Node: Copying Permissions126201
+Node: Changing Special Permissions127014
+Node: Conditional Executability128558
+Node: Multiple Changes129090
+Node: Umask and Protection130747
+Node: Numeric Modes131845
+Node: Date input formats133536
+Node: General date syntax135924
+Node: Calendar date items138902
+Node: Time of day items140808
+Node: Time zone items143005
+Node: Combined date and time of day items144352
+Node: Day of week items145208
+Node: Relative items in date strings146217
+Node: Pure numbers in date strings149020
+Node: Seconds since the Epoch150002
+Node: Specifying time zone rules151689
+Node: Authors of parse_datetime154067
+Ref: Authors of get_date154247
+Node: Configuration155210
+Node: Leaf Optimisation155926
+Node: d_type Optimisation157038
+Node: Reference157328
+Node: Invoking find157673
+Node: Filesystem Traversal Options159155
+Node: Warning Messages160246
+Node: Optimisation Options162212
+Node: Debug Options164157
+Node: Find Expressions165273
+Node: Invoking locate165639
+Node: Invoking updatedb171826
+Node: Invoking xargs174864
+Node: xargs options175614
+Node: Conflicting xargs options181219
+Node: Invoking the shell from xargs182247
+Node: Regular Expressions186244
+Node: findutils-default regular expression syntax187836
+Node: emacs regular expression syntax190341
+Node: gnu-awk regular expression syntax192879
+Node: grep regular expression syntax195343
+Node: posix-awk regular expression syntax197996
+Node: awk regular expression syntax200287
+Node: posix-basic regular expression syntax202153
+Node: posix-egrep regular expression syntax204784
+Node: egrep regular expression syntax207113
+Node: posix-extended regular expression syntax207410
+Node: Environment Variables209876
+Node: Common Tasks212844
+Node: Viewing And Editing213269
+Node: Archiving215188
+Node: Cleaning Up216821
+Node: Strange File Names219709
+Node: Fixing Permissions221358
+Node: Classifying Files221922
+Node: Worked Examples222640
+Node: Deleting Files223345
+Node: Copying A Subset of Files236373
+Node: Updating A Timestamp File238392
+Node: Finding the Shallowest Instance244380
+Node: Security Considerations246316
+Node: Levels of Risk247883
+Ref: Levels of Risk-Footnote-1250681
+Node: Security Considerations for find250860
+Ref: Security Considerations for find-Footnote-1253184
+Node: Problems with -exec and filenames253257
+Node: Changing the Current Working Directory254891
+Node: O_NOFOLLOW256662
+Ref: O_NOFOLLOW-Footnote-1258726
+Node: Systems without O_NOFOLLOW258828
+Ref: Systems without O_NOFOLLOW-Footnote-1260977
+Node: Race Conditions with -exec261039
+Node: Race Conditions with -print and -print0263956
+Node: Security Considerations for xargs264885
+Node: Security Considerations for locate267387
+Node: Security Summary268133
+Node: Further Reading on Security268928
+Node: Error Messages270111
+Node: Error Messages From find271140
+Node: Error Messages From xargs276263
+Node: Error Messages From locate278966
+Node: Error Messages From updatedb280198
+Node: GNU Free Documentation License280605
+Node: Primary Index306962
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

@@ -1,16 +1,17 @@
-This is find.info, produced by makeinfo version 6.5 from find.texi.
+This is find.info, produced by makeinfo version 6.7 from find.texi.
 
-This file documents the GNU utilities for finding files that match
-certain criteria and performing various operations on them.
+This manual documents version 4.8.0 of the GNU utilities for finding
+files that match certain criteria and performing various operations on
+them.
 
-   Copyright (C) 1994-2019 Free Software Foundation, Inc.
+   Copyright (C) 1994-2021 Free Software Foundation, Inc.
 
-   Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled "GNU Free
-Documentation License".
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled "GNU Free Documentation License".
 INFO-DIR-SECTION Basics
 START-INFO-DIR-ENTRY
 * Finding files: (find).        Operating on files matching certain criteria.
@@ -30,22 +31,18 @@ File: find.info,  Node: Top,  Next: Introduction,  Up: (dir)
 GNU Findutils
 *************
 
-This file documents the GNU utilities for finding files that match
-certain criteria and performing various operations on them.
+This manual documents version 4.8.0 of the GNU utilities for finding
+files that match certain criteria and performing various operations on
+them.
 
-   Copyright (C) 1994-2019 Free Software Foundation, Inc.
+   Copyright (C) 1994-2021 Free Software Foundation, Inc.
 
-   Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled "GNU Free
-Documentation License".
-
-   This file documents the GNU utilities for finding files that match
-certain criteria and performing various actions on them.
-
-   This is edition 4.6.0.225-235f, for 'find' version 4.6.0.225-235f.
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled "GNU Free Documentation License".
 
 * Menu:
 
@@ -127,7 +124,6 @@ site.
 
 * Scope::
 * Overview::
-* find Expressions::
 
 
 File: find.info,  Node: Scope,  Next: Overview,  Up: Introduction
@@ -183,7 +179,7 @@ files you have found include, but are not limited to:
    This manual describes how to perform each of those tasks, and more.
 
 
-File: find.info,  Node: Overview,  Next: find Expressions,  Prev: Scope,  Up: Introduction
+File: find.info,  Node: Overview,  Prev: Scope,  Up: Introduction
 
 1.2 Overview
 ============
@@ -230,9 +226,34 @@ and prints all of the lines in them that contain the word 'typedef'.
      xargs grep typedef < file-list
 
 
-File: find.info,  Node: find Expressions,  Prev: Overview,  Up: Introduction
+File: find.info,  Node: Finding Files,  Next: Actions,  Prev: Introduction,  Up: Top
 
-1.3 'find' Expressions
+2 Finding Files
+***************
+
+By default, 'find' prints to the standard output the names of the files
+that match the given criteria.  *Note Actions::, for how to get more
+information about the matching files.
+
+* Menu:
+
+* find Expressions::
+* Name::
+* Links::
+* Time::
+* Size::
+* Type::
+* Owner::
+* Mode Bits::
+* Contents::
+* Directories::
+* Filesystems::
+* Combining Primaries With Operators::
+
+
+File: find.info,  Node: find Expressions,  Next: Name,  Up: Finding Files
+
+2.1 'find' Expressions
 ======================
 
 The expression that 'find' uses to select files consists of one or more
@@ -253,9 +274,13 @@ An expression can contain any of the following types of primaries:
 
    You can omit the operator between two primaries; it defaults to
 '-and'.  *Note Combining Primaries With Operators::, for ways to connect
-primaries into more complex expressions.  If the expression contains no
-actions other than '-prune', '-print' is performed on all files for
-which the entire expression is true (*note Print File Name::).
+primaries into more complex expressions.
+
+   The '-print' action is performed on all files for which the entire
+expression is true (*note Print File Name::), unless the expression
+contains an action other than '-prune' or '-quit'.  Actions which
+inhibit the default '-print' are '-delete', '-exec', '-execdir', '-ok',
+'-okdir', '-fls', '-fprint', '-fprintf', '-ls', '-print' and '-printf'.
 
    Options take effect immediately, rather than being evaluated for each
 file when their place in the expression is reached.  Therefore, for
@@ -277,33 +302,9 @@ arguments can be specified as
      for exactly N.
 
 
-File: find.info,  Node: Finding Files,  Next: Actions,  Prev: Introduction,  Up: Top
+File: find.info,  Node: Name,  Next: Links,  Prev: find Expressions,  Up: Finding Files
 
-2 Finding Files
-***************
-
-By default, 'find' prints to the standard output the names of the files
-that match the given criteria.  *Note Actions::, for how to get more
-information about the matching files.
-
-* Menu:
-
-* Name::
-* Links::
-* Time::
-* Size::
-* Type::
-* Owner::
-* Mode Bits::
-* Contents::
-* Directories::
-* Filesystems::
-* Combining Primaries With Operators::
-
-
-File: find.info,  Node: Name,  Next: Links,  Up: Finding Files
-
-2.1 Name
+2.2 Name
 ========
 
 Here are ways to search for files whose name matches a certain pattern.
@@ -325,7 +326,7 @@ names 'Foo', 'FOO', 'foo', 'fOo', etc.
 
 File: find.info,  Node: Base Name Patterns,  Next: Full Name Patterns,  Up: Name
 
-2.1.1 Base Name Patterns
+2.2.1 Base Name Patterns
 ------------------------
 
  -- Test: -name pattern
@@ -342,8 +343,8 @@ File: find.info,  Node: Base Name Patterns,  Next: Full Name Patterns,  Up: Name
      protect it from expansion by the shell.
 
      As of findutils version 4.2.2, patterns for '-name' and '-iname'
-     will match a file name with a leading '.'.  For example the command
-     'find /tmp -name \*bar' will match the file '/tmp/.foobar'.  Braces
+     match a file name with a leading '.'.  For example the command
+     'find /tmp -name \*bar' match the file '/tmp/.foobar'.  Braces
      within the pattern ('{}') are not considered to be special (that
      is, 'find . -name 'foo{1,2}'' matches a file named 'foo{1,2}', not
      the files 'foo1' and 'foo2'.
@@ -362,7 +363,7 @@ implementation, we use that and otherwise we use the one from gnulib
 
 File: find.info,  Node: Full Name Patterns,  Next: Fast Full Name Search,  Prev: Base Name Patterns,  Up: Name
 
-2.1.2 Full Name Patterns
+2.2.2 Full Name Patterns
 ------------------------
 
  -- Test: -path pattern
@@ -460,7 +461,7 @@ will match both '/' and leading dots in file names:
 
 File: find.info,  Node: Fast Full Name Search,  Next: Shell Pattern Matching,  Prev: Full Name Patterns,  Up: Name
 
-2.1.3 Fast Full Name Search
+2.2.3 Fast Full Name Search
 ---------------------------
 
 To search for files by name without having to actually scan the
@@ -527,7 +528,7 @@ of its '--dbformat' and '--output' options.
 
 File: find.info,  Node: Shell Pattern Matching,  Prev: Fast Full Name Search,  Up: Name
 
-2.1.4 Shell Pattern Matching
+2.2.4 Shell Pattern Matching
 ----------------------------
 
 'find' and 'locate' can compare file names, or parts of file names, to
@@ -579,7 +580,7 @@ total number of matches.
 
 File: find.info,  Node: Links,  Next: Time,  Prev: Name,  Up: Finding Files
 
-2.2 Links
+2.3 Links
 =========
 
 There are two ways that files can be linked together.  "Symbolic links"
@@ -596,7 +597,7 @@ disk.
 
 File: find.info,  Node: Symbolic Links,  Next: Hard Links,  Up: Links
 
-2.2.1 Symbolic Links
+2.3.1 Symbolic Links
 --------------------
 
 Symbolic links are names that reference other files.  GNU 'find' will
@@ -697,54 +698,70 @@ otherwise the timestamp from the symbolic link is used).
 
 File: find.info,  Node: Hard Links,  Prev: Symbolic Links,  Up: Links
 
-2.2.2 Hard Links
+2.3.2 Hard Links
 ----------------
 
-Hard links allow more than one name to refer to the same file.  To find
-all the names which refer to the same file as NAME, use '-samefile
-NAME'.  If you are not using the '-L' option, you can confine your
-search to one filesystem using the '-xdev' option.  This is useful
-because hard links cannot point outside a single filesystem, so this can
-cut down on needless searching.
-
-   If the '-L' option is in effect, and NAME is in fact a symbolic link,
-the symbolic link will be dereferenced.  Hence you are searching for
-other links (hard or symbolic) to the file pointed to by NAME.  If '-L'
-is in effect but NAME is not itself a symbolic link, other symbolic
-links to the file NAME will be matched.
-
-   You can also search for files by inode number.  This can occasionally
-be useful in diagnosing problems with filesystems for example, because
-'fsck' tends to print inode numbers.  Inode numbers also occasionally
-turn up in log messages for some types of software, and are used to
-support the 'ftok()' library function.
-
-   You can learn a file's inode number and the number of links to it by
-running 'ls -li' or 'find -ls'.
-
-   You can search for hard links to inode number NUM by using '-inum
-NUM'.  If there are any filesystem mount points below the directory
-where you are starting the search, use the '-xdev' option unless you are
-also using the '-L' option.  Using '-xdev' this saves needless
-searching, since hard links to a file must be on the same filesystem.
-*Note Filesystems::.
+Hard links allow more than one name to refer to the same file on a file
+system, i.e., to the same inode.  To find all the names which refer to
+the same file as NAME, use '-samefile NAME'.
 
  -- Test: -samefile NAME
-     File is a hard link to the same inode as NAME.  If the '-L' option
-     is in effect, symbolic links to the same file as NAME points to are
-     also matched.
+     True if the file is a hard link to the same inode as NAME.  This
+     implies that NAME and the file reside on the same file system,
+     i.e., they have the same device number.
+
+     Unless the '-L' option is also given to follow symbolic links, one
+     may confine the search to one file system by using the '-xdev'
+     option.  This is useful because hard links cannot point outside a
+     single file system, so this can cut down on needless searching.
+
+     If the '-L' option is in effect, then dereferencing of symbolic
+     links applies both to the NAME argument of the '-samefile' primary
+     and to each file examined during the traversal of the directory
+     hierarchy.  Therefore, 'find -L -samefile NAME' will find both hard
+     links and symbolic links pointing to the file referenced by NAME.
+
+   'find' also allows searching for files by inode number.
+
+   This can occasionally be useful in diagnosing problems with file
+systems; for example, 'fsck' and 'lsof' tend to print inode numbers.
+Inode numbers also occasionally turn up in log messages for some types
+of software.
+
+   You can learn a file's inode number and the number of links to it by
+running 'ls -li', 'stat' or 'find -ls'.
+
+   You can search for hard links to inode number NUM by using '-inum
+NUM'.  If there are any file system mount points below the directory
+where you are starting the search, use the '-xdev' option unless you are
+also using the '-L' option.  Using '-xdev' saves needless searching,
+since hard links to a file must be on the same file system.  *Note
+Filesystems::.
 
  -- Test: -inum n
-     File has inode number N.  The '+' and '-' qualifiers also work,
-     though these are rarely useful.  Much of the time it is easier to
-     use '-samefile' rather than this option.
+     True if the file has inode number N.  The '+' and '-' qualifiers
+     also work, though these are rarely useful.
 
-   You can also search for files that have a certain number of links,
-with '-links'.  Directories normally have at least two hard links; their
-'.' entry is the second one.  If they have subdirectories, each of those
-also has a hard link called '..' to its parent directory.  The '.' and
-'..' directory entries are not normally searched unless they are
-mentioned on the 'find' command line.
+     Please note that the '-inum' primary simply compares the inode
+     number against the given N.  This means that a search for a certain
+     inode number in several file systems may return several files with
+     that inode number, but as each file system has its own device
+     number, those files are not necessarily hard links to the same
+     file.
+
+     Therefore, it is much of the time easier to use '-samefile' rather
+     than this option.
+
+   'find' also allows searching for files that have a certain number of
+links, with '-links'.
+
+   A directory normally has at least two hard links: the entry named in
+its parent directory, and the '.' entry inside of the directory.  If a
+directory has subdirectories, each of those also has a hard link called
+'..' to its parent directory.
+
+   The '.' and '..' directory entries are not normally searched unless
+they are mentioned on the 'find' command line.
 
  -- Test: -links n
      File has N hard links.
@@ -758,7 +775,7 @@ mentioned on the 'find' command line.
 
 File: find.info,  Node: Time,  Next: Size,  Prev: Links,  Up: Finding Files
 
-2.3 Time
+2.4 Time
 ========
 
 Each file has three timestamps, which record the last time that certain
@@ -787,7 +804,7 @@ range, or compare them to other timestamps.
 
 File: find.info,  Node: Age Ranges,  Next: Comparing Timestamps,  Up: Time
 
-2.3.1 Age Ranges
+2.4.1 Age Ranges
 ----------------
 
 These tests are mainly useful with ranges ('+N' and '-N').
@@ -829,7 +846,7 @@ These tests are mainly useful with ranges ('+N' and '-N').
 
 File: find.info,  Node: Comparing Timestamps,  Prev: Age Ranges,  Up: Time
 
-2.3.2 Comparing Timestamps
+2.4.2 Comparing Timestamps
 --------------------------
 
  -- Test: -newerXY reference
@@ -882,15 +899,25 @@ of the current year.  One uses '-newermt':
      find /usr -newer /tmp/stamp$$
      rm -f /tmp/stamp$$
 
- -- Test: -anewer file
- -- Test: -cnewer file
- -- Test: -newer file
-     True if the file was last accessed (or its status changed, or it
-     was modified) more recently than FILE was modified.  These tests
-     are affected by '-follow' only if '-follow' comes before them on
-     the command line.  *Note Symbolic Links::, for more information on
-     '-follow'.  As an example, to list any files modified since
-     '/bin/sh' was last modified:
+ -- Test: -anewer reference
+ -- Test: -cnewer reference
+ -- Test: -newer reference
+     True if the time of the last access (or status change or data
+     modification) of the current file is more recent than that of the
+     last data modification of the REFERENCE file.  As such, '-anewer'
+     is equivalent to '-neweram', '-cnewer' to '-newercm', and '-newer'
+     to '-newermm'.
+
+     If REFERENCE is a symbolic link and the '-H' option or the '-L'
+     option is in effect, then the time of the last data modification of
+     the file it points to is always used.
+
+     These tests are affected by '-follow' only if '-follow' comes
+     before them on the command line.  *Note Symbolic Links::, for more
+     information on '-follow'.
+
+     As an example, to list any files modified since '/bin/sh' was last
+     modified:
 
           find . -newer /bin/sh
 
@@ -902,7 +929,7 @@ of the current year.  One uses '-newermt':
 
 File: find.info,  Node: Size,  Next: Type,  Prev: Time,  Up: Finding Files
 
-2.4 Size
+2.5 Size
 ========
 
  -- Test: -size n[bckwMG]
@@ -956,7 +983,7 @@ File: find.info,  Node: Size,  Next: Type,  Prev: Time,  Up: Finding Files
 
 File: find.info,  Node: Type,  Next: Owner,  Prev: Size,  Up: Finding Files
 
-2.5 Type
+2.6 Type
 ========
 
  -- Test: -type c
@@ -1014,7 +1041,7 @@ File: find.info,  Node: Type,  Next: Owner,  Prev: Size,  Up: Finding Files
 
 File: find.info,  Node: Owner,  Next: Mode Bits,  Prev: Type,  Up: Finding Files
 
-2.6 Owner
+2.7 Owner
 =========
 
  -- Test: -user uname
@@ -1038,7 +1065,7 @@ File: find.info,  Node: Owner,  Next: Mode Bits,  Prev: Type,  Up: Finding Files
 
 File: find.info,  Node: Mode Bits,  Next: Contents,  Prev: Owner,  Up: Finding Files
 
-2.7 File Mode Bits
+2.8 File Mode Bits
 ==================
 
 *Note File Permissions::, for information on how file mode bits are
@@ -1084,6 +1111,10 @@ on the basis of the result of that test.
      True if the file's mode bits match PMODE, which can be either a
      symbolic or numeric MODE (*note File Permissions::) optionally
      prefixed by '-' or '/'.
+
+     Note that PMODE starts with all file mode bits cleared, i.e., does
+     not relate to the process's file creation bit mask (also known as
+     'umask').
 
      A PMODE that starts with neither '-' nor '/' matches if MODE
      exactly matches the file mode bits.  (To avoid confusion with an
@@ -1166,7 +1197,7 @@ on the basis of the result of that test.
 
 File: find.info,  Node: Contents,  Next: Directories,  Prev: Mode Bits,  Up: Finding Files
 
-2.8 Contents
+2.9 Contents
 ============
 
 To search for files based on their contents, you can use the 'grep'
@@ -1196,8 +1227,8 @@ pattern, see the manual page for 'grep'.
 
 File: find.info,  Node: Directories,  Next: Filesystems,  Prev: Contents,  Up: Finding Files
 
-2.9 Directories
-===============
+2.10 Directories
+================
 
 Here is how to control which directories 'find' searches, and how it
 searches them.  These two options allow you to process a horizontal
@@ -1205,13 +1236,31 @@ slice of a directory tree.
 
  -- Option: -maxdepth levels
      Descend at most LEVELS (a non-negative integer) levels of
-     directories below the command line arguments.  '-maxdepth 0' means
-     only apply the tests and actions to the command line arguments.
+     directories below the command line arguments.  Using '-maxdepth 0'
+     means only apply the tests and actions to the command line
+     arguments.
+
+          $ mkdir -p dir/d1/d2/d3/d4/d5/d6
+
+          $ find dir -maxdepth 1
+          dir
+          dir/d1
+
+          $ find dir -mindepth 5
+          dir/d1/d2/d3/d4/d5
+          dir/d1/d2/d3/d4/d5/d6
+
+          $ find dir -mindepth 2 -maxdepth 4
+          dir/d1/d2
+          dir/d1/d2/d3
+          dir/d1/d2/d3/d4
 
  -- Option: -mindepth levels
      Do not apply any tests or actions at levels less than LEVELS (a
-     non-negative integer).  '-mindepth 1' means process all files
+     non-negative integer).  Using '-mindepth 1' means process all files
      except the command line arguments.
+
+     See '-maxdepth' for examples.
 
  -- Option: -depth
      Process each directory's contents before the directory itself.
@@ -1263,11 +1312,15 @@ slice of a directory tree.
      occurred).  This is different to '-prune' because '-prune' only
      applies to the contents of pruned directories, while '-quit' simply
      makes 'find' stop immediately.  No child processes will be left
-     running, but no more files specified on the command line will be
-     processed.  For example, 'find /tmp/foo /tmp/bar -print -quit' will
-     print only '/tmp/foo'.  Any command lines which have been built by
-     '-exec ... \+' or '-execdir ... \+' are invoked before the program
-     is exited.
+     running.  Any command lines which have been built by '-exec ... \+'
+     or '-execdir ... \+' are invoked before the program is exited.
+     After '-quit' is executed, no more files specified on the command
+     line will be processed.  For example, 'find /tmp/foo /tmp/bar
+     -print -quit' will print only '/tmp/foo'.  One common use of
+     '-quit' is to stop searching the file system once we have found
+     what we want.  For example, if we want to find just a single file
+     we can do this:
+          find / -name needle -print -quit
 
  -- Option: -noleaf
      Do not optimize by assuming that directories contain 2 fewer
@@ -1314,7 +1367,7 @@ slice of a directory tree.
 
 File: find.info,  Node: Filesystems,  Next: Combining Primaries With Operators,  Prev: Directories,  Up: Finding Files
 
-2.10 Filesystems
+2.11 Filesystems
 ================
 
 A "filesystem" is a section of a disk, either on the local host or
@@ -1337,7 +1390,7 @@ not descend directories that are on undesirable filesystem types:
      filesystem types vary among different versions of Unix; an
      incomplete list of filesystem types that are accepted on some
      version of Unix or another is:
-          ext2 ext3 proc sysfs ufs 4.2 4.3 nfs tmp mfs S51K S52K
+          autofs ext3 ext4 fuse.sshfs nfs proc sshfs sysfs ufs tmpfs xfs
      You can use '-printf' with the '%F' directive to see the types of
      your filesystems.  The '%D' directive shows the device number.
      *Note Print File Information::.  '-fstype' is usually used with
@@ -1347,7 +1400,7 @@ not descend directories that are on undesirable filesystem types:
 
 File: find.info,  Node: Combining Primaries With Operators,  Prev: Filesystems,  Up: Finding Files
 
-2.11 Combining Primaries With Operators
+2.12 Combining Primaries With Operators
 =======================================
 
 Operators build a complex expression from tests and actions.  The
@@ -1516,11 +1569,12 @@ File: find.info,  Node: Print File Information,  Next: Run Commands,  Prev: Prin
      *note Unusual Characters in File Names::).  This format also
      outputs a uniform timestamp format.
 
-     As for symlinks, the format above outputs the symlink target on a
-     second line, following '\n->'.  There is nothing following the
-     arrow for non-symlinks.  Another approach, for complete
-     consistency, would be to '-fprintf' the symlinks into a separate
-     file, so they too can be null-terminated.
+     As for symbolic links, the format above outputs the target of the
+     symbolic link on a second line, following '\n->'.  There is nothing
+     following the arrow for file types other than symbolic links.
+     Another approach, for complete consistency, would be to '-fprintf'
+     the symbolic links into a separate file, so they too can be
+     null-terminated.
 
  -- Action: -fprintf file format
      True; like '-printf' but write to FILE like '-fprint' (*note Print
@@ -1615,19 +1669,33 @@ File: find.info,  Node: Name Directives,  Next: Ownership Directives,  Up: Forma
      one of the starting points).
 '%f'
      File's name with any leading directories removed (only the last
-     element).
+     element).  That is, the basename of the file.
 '%h'
      Leading directories of file's name (all but the last element and
-     the slash before it).  If the file's name contains no slashes (for
-     example because it was named on the command line and is in the
-     current working directory), then "%h" expands to ".".  This
-     prevents "%h/%f" expanding to "/foo", which would be surprising and
-     probably not desirable.
+     the slash before it).  That is, the dirname of the file.  If the
+     file's name contains no slashes (for example because it was named
+     on the command line and is in the current working directory), then
+     "%h" expands to ".".  This prevents "%h/%f" expanding to "/foo",
+     which would be surprising and probably not desirable.
 '%P'
      File's name with the name of the command line argument under which
      it was found removed from the beginning.
 '%H'
      Command line argument under which file was found.
+
+   For some corner-cases, the interpretation of the '%f' and '%h' format
+directives is not obvious.  Here is an example including some output:
+
+     $ find \
+       . .. / /tmp /tmp/TRACE compile compile/64/tests/find \
+       -maxdepth 0 -printf '%p: [%h][%f]\n'
+     .: [.][.]
+     ..: [.][..]
+     /: [][/]
+     /tmp: [][tmp]
+     /tmp/TRACE: [/tmp][TRACE]
+     compile: [.][compile]
+     compile/64/tests/find: [compile/64/tests][find]
 
 
 File: find.info,  Node: Ownership Directives,  Next: Size Directives,  Prev: Name Directives,  Up: Format Directives
@@ -1716,10 +1784,10 @@ File: find.info,  Node: Location Directives,  Next: Time Directives,  Prev: Size
 '%Y'
      Type of the file as used with '-type'.  If the file is a symbolic
      link, it is dereferenced.  If the file is a broken symbolic link,
-     'N' is printed.  When determining the type of the symlink target,
-     and a loop is encountered, then 'L' is printed (e.g.  for a symlink
-     to itself); '?' is printed for any other error (like e.g.
-     'permission denied').
+     'N' is printed.  When determining the type of the target of a
+     symbolic link, and a loop is encountered, then 'L' is printed (e.g.
+     for a symbolic link to itself); '?' is printed for any other error
+     (like e.g.  'permission denied').
 
 
 File: find.info,  Node: Time Directives,  Next: Other Directives,  Prev: Location Directives,  Up: Format Directives
@@ -1786,10 +1854,11 @@ File: find.info,  Node: Time Formats,  Next: Formatting Flags,  Prev: Format Dir
 3.2.3 Time Formats
 ------------------
 
-Below are the formats for the directives '%A', '%C', and '%T', which
-print the file's timestamps.  Some of these formats might not be
-available on all systems, due to differences in the C 'strftime'
-function between systems.
+Below is an incomplete list of formats for the directives '%A', '%C',
+and '%T', which print the file's timestamps.  Please refer to the
+documentation of 'strftime' for the full list.  Some of these formats
+might not be available on all systems, due to differences in the
+implementation of the C 'strftime' function.
 
 * Menu:
 
@@ -1887,6 +1956,8 @@ components.
      seconds field.
 'D'
      date (mm/dd/yy)
+'F'
+     date (yyyy-mm-dd)
 'x'
      locale's date representation (mm/dd/yy)
 '+'
@@ -2367,15 +2438,15 @@ reduce performance.  If you don't want to tolerate the performance
 difference, simply arrange for each process to produce a separate output
 file (or otherwise use separate resources).
 
-   'xargs' also allows you to "turn up" or "turn down" its parallelism
-in the middle of a run.  Suppose you are keeping your four-processor
-system busy for hours, processing thousands of images using '-P 4'.
-Now, in the middle of the run, you or someone else wants you to reduce
-your load on the system, so that something else will run faster.  If you
-interrupt 'xargs', your job will be half-done, and it may take
-significant manual work to resume it only for the remaining images.  If
-you suspend 'xargs' using your shell's job controls (e.g.  'control-Z'),
-then it will get no work done while suspended.
+   'xargs' also allows "turning up" or "turning down" its parallelism in
+the middle of a run.  Suppose you are keeping your four-processor system
+busy for hours, processing thousands of images using '-P 4'.  Now, in
+the middle of the run, you or someone else wants you to reduce your load
+on the system, so that something else will run faster.  If you interrupt
+'xargs', your job will be half-done, and it may take significant manual
+work to resume it only for the remaining images.  If you suspend 'xargs'
+using your shell's job controls (e.g.  'control-Z'), then it will get no
+work done while suspended.
 
    Find out the process ID of the 'xargs' process, either from your
 shell or with the 'ps' command.  After you send it the signal 'SIGUSR2',
@@ -2847,12 +2918,12 @@ This is the case for both the old and the new format.
 used to generate the database though relies on the ability to sort the
 list of files before they are presented to 'frcode'.
 
-   If the system's sort command allows its input list of files to be
-separated with null characters via the '-z' option, this option is used
-and therefore 'updatedb' and 'locate' will both correctly handle file
-names containing newlines.  If the 'sort' command lacks support for
-this, the list of files is delimited with the newline character, meaning
-that parts of file names containing newlines will be incorrectly sorted.
+   If the system's sort command allows separating its input list of
+files with null characters via the '-z' option, this option is used and
+therefore 'updatedb' and 'locate' will both correctly handle file names
+containing newlines.  If the 'sort' command lacks support for this, the
+list of files is delimited with the newline character, meaning that
+parts of file names containing newlines will be incorrectly sorted.
 This can result in both incorrect matches and incorrect failures to
 match.
 
@@ -3314,17 +3385,17 @@ arguments to the various programs.  The C interface (via the
 
 * Menu:
 
-* General date syntax::            Common rules.
-* Calendar date items::            19 Dec 1994.
-* Time of day items::              9:20pm.
-* Time zone items::                EST, PDT, UTC, ...
-* Combined date and time of day items:: 1972-09-24T20:02:00,000000-0500.
-* Day of week items::              Monday and others.
-* Relative items in date strings:: next tuesday, 2 years ago.
-* Pure numbers in date strings::   19931219, 1440.
-* Seconds since the Epoch::        @1078100502.
-* Specifying time zone rules::     TZ="America/New_York", TZ="UTC0".
-* Authors of parse_datetime::      Bellovin, Eggert, Salz, Berets, et al.
+* General date syntax::          Common rules
+* Calendar date items::          21 Jul 2020
+* Time of day items::            9:20pm
+* Time zone items::              UTC, -0700, +0900, ...
+* Combined date and time of day items:: 2020-07-21T20:02:00,000000-0400
+* Day of week items::            Monday and others
+* Relative items in date strings:: next tuesday, 2 years ago
+* Pure numbers in date strings:: 20200721, 1440
+* Seconds since the Epoch::      @1595289600
+* Specifying time zone rules::   TZ="America/New_York", TZ="UTC0"
+* Authors of parse_datetime::    Bellovin, Eggert, Salz, Berets, et al.
 
 
 File: find.info,  Node: General date syntax,  Next: Calendar date items,  Up: Date input formats
@@ -3374,24 +3445,24 @@ date format that is independent of language and that does not use time
 zone items other than 'UTC' and 'Z'.  Here are some ways to do this:
 
      $ LC_ALL=C TZ=UTC0 date
-     Mon Mar  1 00:21:42 UTC 2004
+     Tue Jul 21 23:00:37 UTC 2020
      $ TZ=UTC0 date +'%Y-%m-%d %H:%M:%SZ'
-     2004-03-01 00:21:42Z
+     2020-07-21 23:00:37Z
      $ date --rfc-3339=ns  # --rfc-3339 is a GNU extension.
-     2004-02-29 16:21:42.692722128-08:00
+     2020-07-21 19:00:37.692722128-04:00
      $ date --rfc-2822  # a GNU extension
-     Sun, 29 Feb 2004 16:21:42 -0800
+     Tue, 21 Jul 2020 19:00:37 -0400
      $ date +'%Y-%m-%d %H:%M:%S %z'  # %z is a GNU extension.
-     2004-02-29 16:21:42 -0800
+     2020-07-21 19:00:37 -0400
      $ date +'@%s.%N'  # %s and %N are GNU extensions.
-     @1078100502.692722128
+     @1595372437.692722128
 
    Alphabetic case is completely ignored in dates.  Comments may be
 introduced between round parentheses, as long as included parentheses
 are properly nested.  Hyphens not followed by a digit are currently
 ignored.  Leading zeros on numbers are ignored.
 
-   Invalid dates like '2005-02-29' or times like '24:00' are rejected.
+   Invalid dates like '2019-02-29' or times like '24:00' are rejected.
 In the typical case of a host that does not support leap seconds, a time
 like '23:59:60' is rejected even if it corresponds to a valid leap
 second.
@@ -3406,23 +3477,21 @@ A "calendar date item" specifies a day of the year.  It is specified
 differently, depending on whether the month is specified numerically or
 literally.  All these strings specify the same calendar date:
 
-     1972-09-24     # ISO 8601.
-     72-9-24        # Assume 19xx for 69 through 99,
-                    # 20xx for 00 through 68.
-     72-09-24       # Leading zeros are ignored.
-     9/24/72        # Common U.S. writing.
-     24 September 1972
-     24 Sept 72     # September has a special abbreviation.
-     24 Sep 72      # Three-letter abbreviations always allowed.
-     Sep 24, 1972
-     24-sep-72
-     24sep72
+     2020-07-20     # ISO 8601.
+     20-7-20        # Assume 19xx for 69 through 99,
+                    # 20xx for 00 through 68 (not recommended).
+     7/20/2020      # Common U.S. writing.
+     20 July 2020
+     20 Jul 2020    # Three-letter abbreviations always allowed.
+     Jul 20, 2020
+     20-jul-2020
+     20jul2020
 
    The year can also be omitted.  In this case, the last specified year
 is used, or the current year if none.  For example:
 
-     9/24
-     sep 24
+     7/20
+     jul 20
 
    Here are the rules.
 
@@ -3515,9 +3584,10 @@ normally done only for 'UTC'; for example, 'UTC+05:30' is equivalent to
 
    Time zone items other than 'UTC' and 'Z' are obsolescent and are not
 recommended, because they are ambiguous; for example, 'EST' has a
-different meaning in Australia than in the United States.  Instead, it's
-better to use unambiguous numeric time zone corrections like '-0500', as
-described in the previous section.
+different meaning in Australia than in the United States, and 'A' has
+different meaning as a military time zone than as an obsolescent RFC 822
+time zone.  Instead, it's better to use unambiguous numeric time zone
+corrections like '-0500', as described in the previous section.
 
    If neither a time zone item nor a time zone correction is supplied,
 timestamps are interpreted using the rules of the default time zone
@@ -3613,13 +3683,13 @@ where the clocks were adjusted, typically for daylight saving time, the
 resulting date and time are adjusted accordingly.
 
    The fuzz in units can cause problems with relative items.  For
-example, '2003-07-31 -1 month' might evaluate to 2003-07-01, because
-2003-06-31 is an invalid date.  To determine the previous month more
+example, '2020-07-31 -1 month' might evaluate to 2020-07-01, because
+2020-06-31 is an invalid date.  To determine the previous month more
 reliably, you can ask for the month before the 15th of the current
 month.  For example:
 
      $ date -R
-     Thu, 31 Jul 2003 13:02:39 -0700
+     Thu, 31 Jul 2020 13:02:39 -0400
      $ date --date='-1 month' +'Last month was %B?'
      Last month was July?
      $ date --date="$(date +%Y-%m-15) -1 month" +'Last month was %B!'
@@ -3668,22 +3738,23 @@ be combined with any other date item, as it specifies a complete
 timestamp.
 
    Internally, computer times are represented as a count of seconds
-since an epoch--a well-defined point of time.  On GNU and POSIX systems,
-the epoch is 1970-01-01 00:00:00 UTC, so '@0' represents this time, '@1'
+since an Epoch--a well-defined point of time.  On GNU and POSIX systems,
+the Epoch is 1970-01-01 00:00:00 UTC, so '@0' represents this time, '@1'
 represents 1970-01-01 00:00:01 UTC, and so forth.  GNU and most other
 POSIX-compliant systems support such times as an extension to POSIX,
 using negative counts, so that '@-1' represents 1969-12-31 23:59:59 UTC.
 
-   Traditional Unix systems count seconds with 32-bit two's-complement
+   Most modern systems count seconds with 64-bit two's-complement
+integers of seconds with nanosecond subcounts, which is a range that
+includes the known lifetime of the universe with nanosecond resolution.
+Some obsolescent systems count seconds with 32-bit two's-complement
 integers and can represent times from 1901-12-13 20:45:52 through
-2038-01-19 03:14:07 UTC.  More modern systems use 64-bit counts of
-seconds with nanosecond subcounts, and can represent all the times in
-the known lifetime of the universe to a resolution of 1 nanosecond.
+2038-01-19 03:14:07 UTC.  A few systems sport other time ranges.
 
    On most hosts, these counts ignore the presence of leap seconds.  For
-example, on most hosts '@915148799' represents 1998-12-31 23:59:59 UTC,
-'@915148800' represents 1999-01-01 00:00:00 UTC, and there is no way to
-represent the intervening leap second 1998-12-31 23:59:60 UTC.
+example, on most hosts '@1483228799' represents 2016-12-31 23:59:59 UTC,
+'@1483228800' represents 2017-01-01 00:00:00 UTC, and there is no way to
+represent the intervening leap second 2016-12-31 23:59:60 UTC.
 
 
 File: find.info,  Node: Specifying time zone rules,  Next: Authors of parse_datetime,  Prev: Seconds since the Epoch,  Up: Date input formats
@@ -3701,26 +3772,26 @@ be escaped by a backslash.
 
    For example, with the GNU 'date' command you can answer the question
 "What time is it in New York when a Paris clock shows 6:30am on October
-31, 2004?"  by using a date beginning with 'TZ="Europe/Paris"' as shown
+31, 2019?"  by using a date beginning with 'TZ="Europe/Paris"' as shown
 in the following shell transcript:
 
      $ export TZ="America/New_York"
-     $ date --date='TZ="Europe/Paris" 2004-10-31 06:30'
-     Sun Oct 31 01:30:00 EDT 2004
+     $ date --date='TZ="Europe/Paris" 2019-10-31 06:30'
+     Sun Oct 31 01:30:00 EDT 2019
 
    In this example, the '--date' operand begins with its own 'TZ'
 setting, so the rest of that operand is processed according to
-'Europe/Paris' rules, treating the string '2004-10-31 06:30' as if it
+'Europe/Paris' rules, treating the string '2019-10-31 06:30' as if it
 were in Paris.  However, since the output of the 'date' command is
 processed according to the overall time zone rules, it uses New York
-time.  (Paris was normally six hours ahead of New York in 2004, but this
+time.  (Paris was normally six hours ahead of New York in 2019, but this
 example refers to a brief Halloween period when the gap was five hours.)
 
    A 'TZ' value is a rule that typically names a location in the 'tz'
-database (http://www.twinsun.com/tz/tz-link.htm).  A recent catalog of
+database (https://www.iana.org/time-zones).  A recent catalog of
 location names appears in the TWiki Date and Time Gateway
-(http://twiki.org/cgi-bin/xtra/tzdate).  A few non-GNU hosts require a
-colon before a location name in a 'TZ' setting, e.g.,
+(https://twiki.org/cgi-bin/xtra/tzdatepick.html).  A few non-GNU hosts
+require a colon before a location name in a 'TZ' setting, e.g.,
 'TZ=":America/New_York"'.
 
    The 'tz' database includes a wide variety of locations ranging from
@@ -3751,7 +3822,7 @@ parse more locale-specific dates using 'strptime', but relies on an
 environment variable and external file, and lacks the thread-safety of
 'parse_datetime'.
 
-   This chapter was originally produced by Franc,ois Pinard
+   This chapter was originally produced by François Pinard
 (<pinard@iro.umontreal.ca>) from the 'parse_datetime.y' source code, and
 then edited by K. Berry (<kb@cs.umb.edu>).
 
@@ -3774,7 +3845,6 @@ which are not obvious are explained here.
 
 * Leaf Optimisation::        Take advantage of Unix file system semantics.
 * d_type Optimisation::      Take advantage of file type information.
-* fts::                      A non-recursive file system search.
 
 
 File: find.info,  Node: Leaf Optimisation,  Next: d_type Optimisation,  Up: Configuration
@@ -3789,7 +3859,7 @@ names point to the same inode.  Directories in Unix filssytems have a
 entry of the root directory also points to the root.  This means that
 'find' can deduce the number of subdirectories a directory has, simply
 by subtracting 2 from the directory's link count.  This allows 'find'
-the calls to 'stat' which would otherwise be needed to discover which
+saving 'stat' calls which would otherwise be needed to discover which
 directory entries are subdirectories.
 
    File systems which don't have these semantics should simply return a
@@ -3801,7 +3871,7 @@ to a successful call to 'stat'.
 to 'configure' to prevent this assumption being made.
 
 
-File: find.info,  Node: d_type Optimisation,  Next: fts,  Prev: Leaf Optimisation,  Up: Configuration
+File: find.info,  Node: d_type Optimisation,  Prev: Leaf Optimisation,  Up: Configuration
 
 7.2 d_type Optimisation
 =======================
@@ -3809,23 +3879,6 @@ File: find.info,  Node: d_type Optimisation,  Next: fts,  Prev: Leaf Optimisatio
 When this feature is enabled, 'find' takes advantage of the fact that on
 some systems 'readdir' will return the type of a file in 'struct
 dirent'.
-
-
-File: find.info,  Node: fts,  Prev: d_type Optimisation,  Up: Configuration
-
-7.3 fts
-=======
-
-The findutils source distribution contains two different implementations
-of 'find'.  The older implementation descends the file system
-recursively, while the newer one uses 'fts'.  Both are normally
-installed.
-
-   If the option '--without-fts' was passed to 'configure', the
-recursive implementation is installed as 'find' and the fts-based
-implementation is installed as 'ftsfind'.  Otherwise, the fts-based
-implementation is installed as 'find' and the recursive implementation
-is installed as 'oldfind'.
 
 
 File: find.info,  Node: Reference,  Next: Common Tasks,  Prev: Configuration,  Up: Top
@@ -4310,10 +4363,11 @@ program died due to a fatal signal.
 * Menu:
 
 * xargs options::
+* Conflicting xargs options::
 * Invoking the shell from xargs::
 
 
-File: find.info,  Node: xargs options,  Next: Invoking the shell from xargs,  Up: Invoking xargs
+File: find.info,  Node: xargs options,  Next: Conflicting xargs options,  Up: Invoking xargs
 
 8.4.1 xargs options
 -------------------
@@ -4453,9 +4507,37 @@ File: find.info,  Node: xargs options,  Next: Invoking the shell from xargs,  Up
      used in a rudimentary load distribution scheme, for example.
 
 
-File: find.info,  Node: Invoking the shell from xargs,  Prev: xargs options,  Up: Invoking xargs
+File: find.info,  Node: Conflicting xargs options,  Next: Invoking the shell from xargs,  Prev: xargs options,  Up: Invoking xargs
 
-8.4.2 Invoking the shell from xargs
+8.4.2 Conflicting options
+-------------------------
+
+The options '--max-lines' ('-L', '-l'), '--replace' ('-I', '-i') and
+'--max-args' ('-n') are mutually exclusive.
+
+   If some of them are specified at the same time, then 'xargs' will
+generally use the option specified last on the command line, i.e., it
+will reset the value of the offending option (given before) to its
+default value.  Additionally, 'xargs' will issue a warning diagnostic on
+'stderr'.
+
+     $ seq 4 | xargs -l2 -n3
+     xargs: warning: options --max-lines and --max-args/-n are \
+       mutually exclusive, ignoring previous --max-lines value
+     1 2 3
+     4
+
+   The exception to this rule is that the special MAX-ARGS value 1 is
+ignored after the '--replace' option and its short-option aliases '-I'
+and '-i', because it would not actually conflict.
+     $ seq 2 | xargs --replace -n1 echo a-{}-b
+     a-1-b
+     a-2-b
+
+
+File: find.info,  Node: Invoking the shell from xargs,  Prev: Conflicting xargs options,  Up: Invoking xargs
+
+8.4.3 Invoking the shell from xargs
 -----------------------------------
 
 Normally, 'xargs' will exec the command you specified directly, without
@@ -4478,8 +4560,8 @@ case use '-exec ... +' because the matched file names are added at the
 end of the command line, while the destination directory would need to
 be specified last.  We also can't use 'xargs' in the obvious way for the
 same reason.  One way of working around this problem is to make use of
-the special properties of GNU 'mv'; it has a '-t' option that allows the
-target directory to be specified before the list of files to be moved.
+the special properties of GNU 'mv'; it has a '-t' option that allows
+specifying the target directory before the list of files to be moved.
 However, while this technique works for GNU 'mv', it doesn't solve the
 more general problem.
 
@@ -4557,8 +4639,8 @@ expression used by 'find' and 'locate' is almost identical to that used
 in GNU Emacs.  The single difference is that in 'find' and 'locate', a
 '.' will match a newline character.
 
-   Both 'find' and 'locate' provide an option which allows you to select
-an alternative regular expression syntax; for 'find' this is the
+   Both 'find' and 'locate' provide an option which allows selecting an
+alternative regular expression syntax; for 'find' this is the
 '-regextype' option, and for 'locate' this is the '--regextype' option.
 
    These options take a single argument, which indicates the specific
@@ -5743,12 +5825,12 @@ instead:
 
    The above use of '-exec' causes 'find' to build up a long command
 line and then issue it.  This can be less efficient than some uses of
-'xargs'; for example 'xargs' allows new command lines to be built up
-while the previous command is still executing, and allows you to specify
-a number of commands to run in parallel.  However, the 'find ... -exec
-... +' construct has the advantage of wide portability.  GNU findutils
-did not support '-exec ... +' until version 4.2.12; one of the reasons
-for this is that it already had the '-print0' action in any case.
+'xargs'; for example 'xargs' allows building up new command lines while
+the previous command is still executing, and allows specifying a number
+of commands to run in parallel.  However, the 'find ... -exec ... +'
+construct has the advantage of wide portability.  GNU findutils did not
+support '-exec ... +' until version 4.2.12; one of the reasons for this
+is that it already had the '-print0' action in any case.
 
 10.1.5 A more secure version of '-exec'
 ---------------------------------------
@@ -6387,14 +6469,16 @@ on the method which is normally used if 'O_NOFOLLOW' is not supported.
 
    This will tell you the version number and which features are enabled.
 For example, if I run this on my system now, this gives:
-     find (GNU findutils) 4.5.11-git
-     Copyright (C) 2012 Free Software Foundation, Inc.
-     License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+     find (GNU findutils) 4.8.0
+     Copyright (C) 2021 Free Software Foundation, Inc.
+     License GPLv3+: GNU GPL version 3 or later \
+     <https://gnu.org/licenses/gpl.html>.
      This is free software: you are free to change and redistribute it.
      There is NO WARRANTY, to the extent permitted by law.
 
      Written by Eric B. Decker, James Youngman, and Kevin Dalley.
-     Features enabled: D_TYPE O_NOFOLLOW(enabled) LEAF_OPTIMISATION FTS(FTS_CWDFD) CBO(level=2)
+     Features enabled: D_TYPE O_NOFOLLOW(enabled) LEAF_OPTIMISATION \
+     FTS(FTS_CWDFD) CBO(level=2)
 
    Here, you can see that I am running a version of 'find' which was
 built from the development (git) code prior to the release of
@@ -6629,7 +6713,7 @@ File: find.info,  Node: Further Reading on Security,  Prev: Security Summary,  U
 While there are a number of books on computer security, there are also
 useful articles on the web that touch on the issues described above:
 
-<http://goo.gl/DAvh>
+<https://goo.gl/DAvh>
      This article describes some of the unfortunate effects of allowing
      free choice of file names.
 <https://cwe.mitre.org/data/definitions/78.html>
@@ -7261,7 +7345,7 @@ Appendix A GNU Free Documentation License
      the GNU Free Documentation License from time to time.  Such new
      versions will be similar in spirit to the present version, but may
      differ in detail to address new problems or concerns.  See
-     <https://www.gnu.org/copyleft/>.
+     <https://www.gnu.org/licenses/>.
 
      Each version of the License is given a distinguishing version
      number.  If the Document specifies that a particular numbered

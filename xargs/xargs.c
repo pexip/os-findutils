@@ -1,5 +1,5 @@
 /* xargs -- build and execute command lines from standard input
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -54,9 +54,11 @@
 /* gnulib headers. */
 #include "closein.h"
 #include "error.h"
+#include "fcntl--.h"
 #include "progname.h"
 #include "quotearg.h"
 #include "safe-read.h"
+#include "unistd--.h"
 #include "xalloc.h"
 
 /* find headers. */
@@ -384,6 +386,14 @@ static FILE* fopen_cloexec_for_read_only (const char *file_name)
 }
 
 
+static void warn_mutually_exclusive (const char *option, const char *offending)
+{
+  error (0, 0, _("warning: options %s and %s are mutually exclusive, "
+	 "ignoring previous %s value"),
+	 offending, option, offending);
+}
+
+
 int
 main (int argc, char **argv)
 {
@@ -542,15 +552,31 @@ main (int argc, char **argv)
 	  else
 	    bc_ctl.replace_pat = "{}";
 	  /* -i excludes -n -l.  */
-	  bc_ctl.args_per_exec = 0;
-	  bc_ctl.lines_per_exec = 0;
+	  if (bc_ctl.args_per_exec != 0)
+	    {
+	      warn_mutually_exclusive ("--replace/-I/-i", "--max-args");
+	      bc_ctl.args_per_exec = 0;
+	    }
+	  if (bc_ctl.lines_per_exec != 0)
+	    {
+	      warn_mutually_exclusive ("--replace/-I/-i", "--max-lines");
+	      bc_ctl.lines_per_exec = 0;
+	    }
 	  break;
 
 	case 'L':		/* POSIX */
 	  bc_ctl.lines_per_exec = parse_num (optarg, 'L', 1L, -1L, 1);
 	  /* -L excludes -i -n.  */
-	  bc_ctl.args_per_exec = 0;
-	  bc_ctl.replace_pat = NULL;
+	  if (bc_ctl.args_per_exec != 0)
+	    {
+	      warn_mutually_exclusive ("-L", "--max-args");
+	      bc_ctl.args_per_exec = 0;
+	    }
+	  if (bc_ctl.replace_pat != NULL)
+	    {
+	      warn_mutually_exclusive ("-L", "--replace");
+	      bc_ctl.replace_pat = NULL;
+	    }
 	  break;
 
 	case 'l':		/* deprecated */
@@ -559,19 +585,39 @@ main (int argc, char **argv)
 	  else
 	    bc_ctl.lines_per_exec = 1;
 	  /* -l excludes -i -n.  */
-	  bc_ctl.args_per_exec = 0;
-	  bc_ctl.replace_pat = NULL;
+	  if (bc_ctl.args_per_exec != 0)
+	    {
+	      warn_mutually_exclusive ("--max-lines/-l", "--max-args");
+	      bc_ctl.args_per_exec = 0;
+	    }
+	  if (bc_ctl.replace_pat != NULL)
+	    {
+	      warn_mutually_exclusive ("--max-lines/-l", "--replace");
+	      bc_ctl.replace_pat = NULL;
+	    }
 	  break;
 
 	case 'n':
 	  bc_ctl.args_per_exec = parse_num (optarg, 'n', 1L, -1L, 1);
 	  /* -n excludes -i -l.  */
-	  bc_ctl.lines_per_exec = 0;
-	  if (bc_ctl.args_per_exec == 1 && bc_ctl.replace_pat)
-	    /* ignore -n1 in '-i -n1' */
-	    bc_ctl.args_per_exec = 0;
-	  else
-	    bc_ctl.replace_pat = NULL;
+	  if (bc_ctl.lines_per_exec != 0)
+	    {
+	      warn_mutually_exclusive ("--max-args/-n", "--max-lines");
+	      bc_ctl.lines_per_exec = 0;
+	    }
+	  if (bc_ctl.replace_pat != NULL)
+	    {
+	      if (bc_ctl.args_per_exec == 1)
+		{
+		  /* ignore -n1 in '-i -n1' - https://sv.gnu.org/patch/?1500 */
+		  bc_ctl.args_per_exec = 0;
+		}
+	      else
+		{
+		  warn_mutually_exclusive ("--max-args/-n", "--replace");
+		  bc_ctl.replace_pat = NULL;
+		}
+	    }
 	  break;
 
 	  /* The POSIX standard specifies that it is not an error
@@ -1093,7 +1139,10 @@ print_args (bool ask)
 
   for (i = 0; i < bc_state.cmd_argc - 1; i++)
     {
-      if (fprintf (stderr, "%s ", bc_state.cmd_argv[i]) < 0)
+      if (fprintf (stderr, "%s%s",
+	           (i == 0 ? "" : " "),
+	           quotearg_n_style (0, shell_escape_quoting_style,
+		                     bc_state.cmd_argv[i])) < 0)
 	die (EXIT_FAILURE, errno, _("Failed to write to stderr"));
     }
 
@@ -1165,7 +1214,10 @@ set_slot_var (unsigned int n)
 static void
 prep_child_for_exec (void)
 {
-  complain_about_leaky_fds ();
+  if (fd_leak_check_is_enabled ())
+    {
+      complain_about_leaky_fds ();
+    }
 
   /* The parent will call add_proc to allocate a slot.  We do the same in the
      child to make sure we get the same value.
@@ -1675,8 +1727,8 @@ usage (int status)
          "                                 otherwise, there is no end-of-file string\n"));
   HTL (_("  -I R                         same as --replace=R\n"));
   HTL (_("  -i, --replace[=R]            replace R in INITIAL-ARGS with names read\n"
-         "                                 from standard input; if R is unspecified,\n"
-         "                                 assume {}\n"));
+         "                                 from standard input, split at newlines;\n"
+         "                                 if R is unspecified, assume {}\n"));
   HTL (_("  -L, --max-lines=MAX-LINES    use at most MAX-LINES non-blank input lines per\n"
          "                                 command line\n"));
   HTL (_("  -l[MAX-LINES]                similar to -L but defaults to at most one non-\n"

@@ -1,5 +1,5 @@
 /* buildcmd.c -- build command lines from a list of arguments.
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -486,7 +486,7 @@ bc_init_controlinfo (struct buildcmd_control *ctl,
 
   /* POSIX requires that _POSIX_ARG_MAX is 4096.  That is the lowest
    * possible value for ARG_MAX on a POSIX compliant system.  See
-   * http://www.opengroup.org/onlinepubs/009695399/basedefs/limits.h.html
+   * https://www.opengroup.org/onlinepubs/009695399/basedefs/limits.h.html
    */
   ctl->posix_arg_size_min = _POSIX_ARG_MAX;
   ctl->posix_arg_size_max = bc_get_arg_max ();

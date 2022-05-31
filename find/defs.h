@@ -1,5 +1,5 @@
 /* defs.h -- data types and declarations.
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -327,7 +327,7 @@ struct predicate
     struct samefile_file_id samefileid; /* samefile */
     bool types[FTYPE_COUNT];	/* file type(s) */
     struct format_val printf_vec; /* printf fprintf fprint ls fls print0 fprint0 print */
-    security_context_t scontext; /* security context */
+    char *scontext; /* security context */
   } args;
 
   /* The next predicate in the user input sequence,
@@ -498,7 +498,6 @@ struct predicate *get_new_pred_chk_op (const struct parser_table *entry,
 float  calculate_derived_rates (struct predicate *p);
 
 /* util.c */
-bool fd_leak_check_is_enabled (void);
 struct predicate *insert_primary (const struct parser_table *entry, const char *arg);
 struct predicate *insert_primary_noarg (const struct parser_table *entry);
 struct predicate *insert_primary_withpred (const struct parser_table *entry, PRED_FUNC fptr, const char *arg);
@@ -627,7 +626,7 @@ struct options
   int regex_options;
 
   /* function used to get file context */
-  int (*x_getfilecon) (int, const char *, security_context_t *);
+  int (*x_getfilecon) (int, const char *, char **);
 
   /* Optimisation level.  One is the default.
    */

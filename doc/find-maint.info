@@ -1,19 +1,19 @@
-This is find-maint.info, produced by makeinfo version 6.5 from
+This is find-maint.info, produced by makeinfo version 6.7 from
 find-maint.texi.
 
 This manual explains how GNU findutils is maintained, how changes should
 be made and tested, and what resources exist to help developers.
 
-   This is edition 4.6.0.225-235f, for findutils version 4.6.0.225-235f.
+   This document corresponds to version 4.8.0 of the GNU findutils.
 
-   Copyright (C) 2007-2019 Free Software Foundation, Inc.
+   Copyright (C) 2007-2021 Free Software Foundation, Inc.
 
-   Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled "GNU Free
-Documentation License".
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled "GNU Free Documentation License".
 INFO-DIR-SECTION GNU organization
 START-INFO-DIR-ENTRY
 * Maintaining Findutils: (find-maint).        Maintaining GNU findutils
@@ -28,16 +28,16 @@ Maintaining GNU Findutils
 This manual explains how GNU findutils is maintained, how changes should
 be made and tested, and what resources exist to help developers.
 
-   This is edition 4.6.0.225-235f, for findutils version 4.6.0.225-235f.
+   This document corresponds to version 4.8.0 of the GNU findutils.
 
-   Copyright (C) 2007-2019 Free Software Foundation, Inc.
+   Copyright (C) 2007-2021 Free Software Foundation, Inc.
 
-   Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled "GNU Free
-Documentation License".
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.3 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, no Front-Cover Texts, and
+     no Back-Cover Texts.  A copy of the license is included in the
+     section entitled "GNU Free Documentation License".
 
 * Menu:
 
@@ -588,6 +588,18 @@ pages are normally rather more terse than the Texinfo documentation.
 The manual pages are suitable for reference use, but the Texinfo manual
 should also include introductory and tutorial material.
 
+   We make the user documentation available on the web, on the GNU
+project web site.  These web pages are source-controlled via CVS
+(still!).  If you are a member of the 'findutils' project on Savannah
+you should be able to check the web pages out like this ('$USER' is a
+placeholder for your Savannah username):
+
+     cvs -d  :ext:$USER@cvs.savannah.gnu.org:/web/findutils checkout findutils/manual
+
+   You can automatically update the documentation in this repository
+using the script 'build-aux/update-online-manual.sh' in the findutils
+Git repository.
+
 7.3 Build Guidance
 ==================
 
@@ -1063,35 +1075,57 @@ being here is a terse description of the main steps:
 
   1. Commit changes; make sure your working directory has no uncommitted
      changes.
-  2. Test; make sure that all changes you have made have tests, and that
-     the tests pass.  Verify this with 'make distcheck'.
-  3. Bugs; make sure all Savannah bug entries fixed in this release are
-     fixed.
-  4. NEWS; make sure that the NEWS file is updated with the new release
-     number (and checked in).
-  5. Tag the release; findutils releases are tagged like this for
-     example: v4.5.5.  Previously a different format was in use:
-     FINDUTILS_4_3_8-1.  You can create a tag with the a command like
-     this: 'git tag -s -m "Findutils release v4.5.7" v4.5.7'.
-  6. Build the release tarball; do this with 'make distcheck'.  Copy the
+  2. Update translation files; re-run bootstrap to download the newest
+     '.po' files.
+  3. Make sure compiler warnings would block the release; re-run
+     'configure' with the options '--enable-compiler-warnings
+     --enable-compiler-warnings-are-errors'.
+  4. Test; make sure that all changes you have made have tests, and that
+     the tests pass.  Verify this with 'env RUN_EXPENSIVE_TESTS=yes make
+     distcheck'.
+  5. Bugs; make sure all Savannah bug entries fixed in this release are
+     marked as fixed in Savannah.  Optionally close them too to save
+     duplicate work (otherwise, close them after the release is
+     uploaded).
+  6. Add new release in Savannah field values; see the 'Bugs > Edit
+     Field Values' menu item.  Add a field value for the release you are
+     about to make so that users can report bugs in it.
+  7. Update version; make sure that the NEWS file is updated with the
+     new release number (and checked in).
+  8. Tag the release; findutils releases are tagged like this for
+     example: v4.5.5.  You can create a tag with the a command like
+     this:
+          git tag -s -m "Findutils release X.Y.Z" vX.Y.Z
+  9. Build the release tarball; do this with 'make distcheck'.  Copy the
      tarball somewhere safe.
-  7. Prepare the upload and upload it.  *Note Automated FTP Uploads:
-     (maintain)Automated FTP Uploads, for detailed upload instructions.
-  8. Make a release announcement; include an extract from the NEWS file
+  10. Merge; if the release (and signed tag) were made on a local
+     branch, merge the branch to your local master.
+  11. Push; push your master to origin/master.
+  12. Push the new release tag; assuming that the name of your remote is
+     'origin', this is:
+          git push origin tag vX.Y.Z
+  13. Prepare the upload and upload it.  You can do this with
+          build-aux/gnupload --to ftp.gnu.org:findutils findutils-X.Y.Z.tar.xz
+     Use 'alpha.gnu.org:findutils' for an alpha or beta release.  *Note
+     Automated FTP Uploads: (maintain)Automated FTP Uploads, for
+     detailed upload instructions.
+  14. Check the FTP upload worked; you can look for an email from the
+     robot or check the contents of the actual FTP site.
+  15. Make a release announcement; include an extract from the NEWS file
      which explains what's changed.  Announcements for test releases
      should just go to <bug-findutils@gnu.org>.  Announcements for
      stable releases should go to <info-gnu@gnu.org> as well.
-  9. Post-release administrativa: add a new dummy release header in
+  16. Post-release administrativa: add a new dummy release header in
      NEWS:
 
      '* Major changes in release ?.?.?, YYYY-MM-DD'
 
      and update the 'old_NEWS_hash' in 'cfg.mk' with 'make
      update-NEWS-hash'.  Commit both changes.
-  10. Close bugs; any bugs recorded on Savannah which were fixed in this
-     release should now be marked as closed.  Update the 'Fixed Release'
-     field of these bugs appropriately and make sure the 'Assigned to'
-     field is populated.
+  17. Close bugs; any bugs recorded on Savannah which were fixed in this
+     release should now be marked as closed if there were not already.
+     Update the 'Fixed Release' field of these bugs appropriately and
+     make sure the 'Assigned to' field is populated.
 
 
 File: find-maint.info,  Node: GNU Free Documentation License,  Prev: Making Releases,  Up: Top
@@ -1499,7 +1533,7 @@ Appendix A GNU Free Documentation License
      the GNU Free Documentation License from time to time.  Such new
      versions will be similar in spirit to the present version, but may
      differ in detail to address new problems or concerns.  See
-     <https://www.gnu.org/copyleft/>.
+     <https://www.gnu.org/licenses/>.
 
      Each version of the License is given a distinguishing version
      number.  If the Document specifies that a particular numbered
@@ -1578,25 +1612,30 @@ their use in free software.
 
 
 Tag Table:
-Node: Top872
-Node: Introduction1949
-Node: Maintaining GNU Programs2686
-Node: Design Issues3486
-Node: Coding Conventions7426
-Node: Make the Compiler Find the Bugs9394
-Node: Factor Out Repeated Code12948
-Node: Debugging is For Users Too15027
-Node: Don't Trust the File System Contents15758
-Node: The File System Is Being Modified17040
-Node: Tools18430
-Node: Using the GNU Portability Library19631
-Node: Documentation24092
-Node: Testing27376
-Node: Bugs27717
-Node: Distributions29460
-Node: Internationalisation30493
-Node: Security30979
-Node: Making Releases42396
-Node: GNU Free Documentation License44337
+Node: Top894
+Node: Introduction1993
+Node: Maintaining GNU Programs2730
+Node: Design Issues3530
+Node: Coding Conventions7470
+Node: Make the Compiler Find the Bugs9438
+Node: Factor Out Repeated Code12992
+Node: Debugging is For Users Too15071
+Node: Don't Trust the File System Contents15802
+Node: The File System Is Being Modified17084
+Node: Tools18474
+Node: Using the GNU Portability Library19675
+Node: Documentation24136
+Node: Testing27977
+Node: Bugs28318
+Node: Distributions30061
+Node: Internationalisation31094
+Node: Security31580
+Node: Making Releases42997
+Node: GNU Free Documentation License46140
 
 End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

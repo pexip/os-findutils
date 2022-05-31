@@ -2,7 +2,7 @@
 # Make sure all of these programs work properly
 # when invoked with --help or --version.
 
-# Copyright (C) 2019 Free Software Foundation, Inc.
+# Copyright (C) 2019-2021 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-. "${srcdir=.}/tests/init.sh"
+. "${srcdir=.}/tests/init.sh"; fu_path_prepend_
 
 # Terminate any background processes
 cleanup_() { kill $pid 2>/dev/null && wait $pid; }

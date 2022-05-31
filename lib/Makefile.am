@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in.
 
-## Copyright (C) 1996-2019 Free Software Foundation, Inc.
+## Copyright (C) 1996-2021 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ noinst_LIBRARIES = libfind.a
 check_PROGRAMS = regexprops test_splitstring
 check_SCRIPTS = check-regexprops
 regexprops_SOURCES = regexprops.c regextype.c
+regexprops_LDADD = $(LDADD) $(LIB_SETLOCALE_NULL) $(LIB_MBRTOWC)
 
 TESTS =
 if CROSS_COMPILING

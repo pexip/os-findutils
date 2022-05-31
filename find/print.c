@@ -1,5 +1,5 @@
 /* print.c -- print/printf-related code.
-   Copyright (C) 1990-2019 Free Software Foundation, Inc.
+   Copyright (C) 1990-2021 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@
 #undef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-static void checked_fprintf (struct format_val *dest, const char *fmt, ...) _GL_ATTRIBUTE_FORMAT_PRINTF(2, 3);
+static void checked_fprintf (struct format_val *dest, const char *fmt, ...)
+  _GL_ATTRIBUTE_FORMAT_PRINTF_STANDARD(2, 3);
 
 
 /* Create a new fprintf segment in *SEGMENT, with type KIND,
@@ -958,7 +959,7 @@ do_fprintf (struct format_val *dest,
         case 'h':               /* leading directories part of path */
           /* sanitised */
           {
-            char *pname = strdup (pathname);
+            char *pname = xstrdup (pathname);
 
             /* Remove trailing slashes - unless it's the root '/' directory.  */
             char *s = pname + strlen (pname) -1;
@@ -1224,7 +1225,7 @@ do_fprintf (struct format_val *dest,
 
         case 'Z':               /* SELinux security context */
           {
-            security_context_t scontext;
+            char *scontext;
             int rv = (*options.x_getfilecon) (state.cwd_dir_fd, state.rel_pathname,
                                               &scontext);
             if (rv < 0)

@@ -3,7 +3,7 @@
 # Between findutils-4.3.1 and 4.6, find dumped core ($? = 139).
 # See Savannah bug #48180.
 
-# Copyright (C) 2016-2019 Free Software Foundation, Inc.
+# Copyright (C) 2016-2021 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-. "${srcdir=.}/tests/init.sh"
+. "${srcdir=.}/tests/init.sh"; fu_path_prepend_
 print_ver_ find oldfind
 
 # Exercise both the previous name of the pseudo-option '-noop',

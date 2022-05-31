@@ -1,4 +1,4 @@
-# Copyright (C) 1996-2019 Free Software Foundation, Inc.
+# Copyright (C) 1996-2021 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,8 +20,10 @@ BUILT_SOURCES = dblocation.texi
 nodist_find_TEXINFOS = dblocation.texi
 find_maint_TEXINFOS = fdl.texi
 MOSTLYCLEANFILES = find.cps
-CLEANFILES = find.txt find_mono.html findutils.texi_html_node.tar.gz dblocation.texi
-
+CLEANFILES = find.txt find_mono.html findutils.texi_html_node.tar.gz dblocation.texi \
+	find_mono.html findutils.texi_html_node.tar.gz \
+	find-info.tar.gz find.texi.tar.gz \
+	find.txt  tmp-doc-install find_mono.html.gz
 MAKEINFOTXT = $(MAKEINFO) --plaintext
 
 find.txt: find.texi $(srcdir)/version.texi $(find_TEXINFOS)
@@ -50,7 +52,7 @@ find.txt: find.texi $(srcdir)/version.texi $(find_TEXINFOS)
 find_mono.html: find.texi
 	rm -rf $(@:.html=.htp)
 	if $(MAKEINFOHTML) --no-split $(AM_MAKEINFOHTMLFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $(@:.html=.htp) $<; \
+	 -o $(@:.html=.htp) find.texi; \
 	then \
 	  rm -rf $@; \
 	  if test ! -d $(@:.html=.htp) && test -d $(@:.html=); then \
@@ -68,8 +70,25 @@ find_mono.html: find.texi
 # by the maintainer, and we don't need to build the file
 # for "make all" or "make install" (or even "make check").
 findutils.texi_html_node.tar.gz: find.html
-	tar zcf $@ $<
+	tar zcf $@ find.html
 
 
 dblocation.texi: ../locate/dblocation.texi
 	$(LN_S) ../locate/dblocation.texi $@
+
+find-info.tar.gz:
+	$(MKDIR_P) tmp-doc-install/info
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="tmp-doc-install" distdir="tmp-doc-install/info" \
+	  dist-info
+	( cd tmp-doc-install && tar -c -f - info ) | GZIP=$(GZIP_ENV) gzip -c >| $@
+	rm -rf tmp-doc-install/info
+	rmdir tmp-doc-install
+
+find.texi.tar.gz: $(TEXINFOS) $(find_TEXINFOS) $(nodist_find_TEXINFOS) $(info_TEXINFOS) $(find_maint_TEXINFOS)  $(srcdir)/version.texi $(srcdir)/versionmaint.texi Makefile
+	$(MKDIR_P) tmp-doc-install/texi
+	for f in $(TEXINFOS) $(find_TEXINFOS) $(info_TEXINFOS) $(find_maint_TEXINFOS)  version.texi versionmaint.texi ; \
+	do cp $(srcdir)/"$$f" tmp-doc-install/texi/ || break; done && cp dblocation.texi tmp-doc-install/texi/
+	( cd tmp-doc-install/texi/ && tar -c -f - *.texi ) | GZIP=$(GZIP_ENV) gzip -c >| $@
+	rm -rf tmp-doc-install/texi
+	rmdir tmp-doc-install
