@@ -2,7 +2,7 @@
 /* regextype.c -- Decode the name of a regular expression syntax into am
                   option name.
 
-   Copyright (C) 2005-2021 Free Software Foundation, Inc.
+   Copyright (C) 2005-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ struct tagRegexTypeMap
   int  option_val;
 };
 
-struct tagRegexTypeMap regex_map[] =
+static struct tagRegexTypeMap regex_map[] =
   {
    { "findutils-default",     CONTEXT_FINDUTILS, RE_SYNTAX_EMACS|RE_DOT_NEWLINE  },
    { "ed",                    CONTEXT_GENERIC,   RE_SYNTAX_ED                    },

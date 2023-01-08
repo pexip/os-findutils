@@ -1,12 +1,12 @@
 #! /bin/sh
 # Generate the ChangeLog for findutils.
 
-# Copyright (C) 2015-2021 Free Software Foundation, Inc.
+# Copyright (C) 2015-2022 Free Software Foundation, Inc.
 # Written by James Youngman.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
@@ -24,6 +24,7 @@ top_srcdir="$1"
     --srcdir="${top_srcdir}" \
     --amend="${top_srcdir}/build-aux/git-log-fix" \
     --ignore-matching='IGNORE_THIS' \
+    --no-cluster \
     --since='2014-01-01' \
     --strip-cherry-pick \
   && cat "${top_srcdir}/ChangeLog-2013"

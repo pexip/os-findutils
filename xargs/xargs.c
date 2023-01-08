@@ -1,5 +1,5 @@
 /* xargs -- build and execute command lines from standard input
-   Copyright (C) 1990-2021 Free Software Foundation, Inc.
+   Copyright (C) 1990-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -200,7 +200,7 @@ static struct option const longopts[] =
 */
 enum XargsStatusValues {
   XARGS_EXIT_CLIENT_EXIT_NONZERO = 123, /* utility exited with nonzero status */
-  XARGS_EXIT_CLIENT_EXIT_255 = 124,     /* utility exites with status 255 */
+  XARGS_EXIT_CLIENT_EXIT_255 = 124,     /* utility exited with status 255 */
   XARGS_EXIT_CLIENT_FATAL_SIG = 125,    /* utility died from a fatal signal */
   XARGS_EXIT_COMMAND_CANNOT_BE_RUN = 126, /* canot run the command */
   XARGS_EXIT_COMMAND_NOT_FOUND = 127,	  /* cannot find the command */
@@ -539,7 +539,7 @@ main (int argc, char **argv)
 	  if (optarg && (strlen (optarg) > 0))
 	    eof_str = optarg;
 	  else
-	    eof_str = 0;
+	    eof_str = NULL;
 	  break;
 
 	case 'h':

@@ -1,3 +1,501 @@
+2022-02-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	NEWS: update before release
+	* NEWS: Prepare for the 4.9.0 release: minor re-ordering, and update
+	entries with bug numbers.
+
+2022-02-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest' in order to use the latest version
+	for the imminent release.
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+
+2022-01-31  Andreas Metzler  <ametzler@bebt.de>
+	    Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: improve description of 'find -delete'
+	* doc/find.texi (Action -delete): Improve and re-structure:
+	Mention that -delete is able to remove directories (if they are empty),
+	that failure to delete a file changes the exit code to nonzero, and
+	clarify better the relation between -delete, -depth and -prune.
+	* find/find.1 (-delete): Align with the above mentioned section in the
+	Texinfo manual.
+
+	Fixes https://savannah.gnu.org/bugs/?61774
+	Originally reported by Chris Davies in
+	  https://bugs.debian.org/1003339
+
+2022-01-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid warnings from sparse tool
+	https://sparse.docs.kernel.org/
+	Running the tool against unviled the following warnings:
+
+	  find/parser.c:328:7: warning: Using plain integer as NULL pointer
+	  find/parser.c:328:10: warning: Using plain integer as NULL pointer
+	  find/parser.c:328:13: warning: Using plain integer as NULL pointer
+	  find/parser.c:466:49: warning: Using plain integer as NULL pointer
+	  find/parser.c:656:45: warning: Using plain integer as NULL pointer
+	  find/print.c:1024:30: warning: Using plain integer as NULL pointer
+	  lib/regexprops.c:531:7: warning: symbol 'options' shadows an earlier one
+	  lib/regextype.c:48:24: warning: symbol 'regex_map' was not declared. Should it be static?
+	  locate/locate.c:131:25: warning: symbol 'check_existence' was not declared. Should it be static?
+	  locate/locate.c:207:12: warning: symbol 'metacharacters' was not declared. Should it be static?
+	  xargs/xargs.c:902:24: warning: symbol 'state' shadows an earlier one
+	  xargs/xargs.c:542:23: warning: Using plain integer as NULL pointer
+
+	The fixes for these findings are all trivial, so let's apply them.
+
+	* find/parser.c (parse_table): Initialize pointer-type members of
+	the last element with NULL instead of 0.
+	(get_noop): Compare to NULL as end condition of for-loop.
+	(find_parser): Likewise.
+	* find/print.c (do_fprintf): Initialize linkname with NULL instead of 0.
+	* lib/regexprops.c (describe_all): Rename local variable options
+	to regopts to avoid name shadowing.
+	* lib/regextype.c (regex_map): Declare static.
+	* locate/locate.c (check_existence): Likewise.
+	(metacharacters): Likewise.
+	* xargs/xargs.c (main): Set eof_str to NULL instead of 0.
+
+2022-01-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest', mainly due to:
+
+	  > license: fix GPLv3 texts to use a comma instead of semicolon.
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+
+2022-01-05  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix GPLv3 texts to use a comma instead of semicolon
+	See: https://www.gnu.org/licenses/gpl-3.0.html#howto
+	Run:
+	  $ git grep -l 'Foundation; either version 3' \
+	      | xargs sed -i '/Foundation; either version 3/ s/n; e/n, e/'
+
+	* bootstrap.conf: Adjust GPLv3 header via the above command.
+	* build-aux/gen-changelog.sh: Likewise.
+	* lib/die.h: Likewise.
+
+2022-01-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update copyright year number ranges
+	Run 'make update-copyright'.
+
+	* lib/regexprops.c (copying): Update the year number manually.
+	The format of the copyright year number range in Texinfo files is
+	"YEAR1--YEAR2" now, i.e., with 2x '-'.
+	* tests/sample-test: Adjust to use the single most recent year.
+	* All other files: Update copyright years via the above make run.
+
+2022-01-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest', mainly to update the copyright
+	year numbers with:
+
+	  > maint: run 'make update-copyright'
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+	* tests/init.sh: Sync from 'gnulib/tests/init.sh'.
+
+2021-12-31  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix 'xargs --open-tty' example
+	doc/find.texi (xargs options): Change 'grep -lz' to 'grep -lZ' as
+	input for 'xargs -0o' as only the latter will write a NUL after
+	each file name.  Add -n1 to the xargs call.
+
+	Reported by Robin A. Meade in
+	https://savannah.gnu.org/bugs/?61341
+
+2021-12-31  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: avoid FP from 'find -files0-from DIR' on certain platforms
+	On most modern systems like GNU/Linux, read(2)-ing from a directory file
+	descriptor will fail with EISDIR, but it succeeds e.g. on GNU/Hurd and
+	AIX-7.1/AIX-7.2.
+
+	tests/find/files0-from.sh: Skip the test case excercising a directory
+	argument for the -files0-from option when the system allows reading
+	from a directory.
+
+2021-12-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest'.
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+
+2021-12-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: fix visiting of files with inode number Zero
+	On GNU/Hurd, the value 0 is a valid inode number, and is e.g. used
+	for /dev/console and /dev/tty.  The find(1) program aborted on this
+	platform when the user specified the -inum test and when the search
+	visited such a file.
+
+	  $ find /dev/null /dev/tty -inum 40799 -printf '%i:%p\n'
+	  40799:/dev/null
+	  find: util.c:330: get_info: Assertion `p->st_ino' failed.
+	  Aborted
+
+	Likewise, 'find -printf %i' aborted when hitting such a file.
+
+	* find/defs.h (get_info): Remove declaration.
+	* find/pred.c (pred_inum): Remove the redundant assert for ST_INO
+	as parse_inum sets need_inum=true which ensures that the inode number
+	is known.
+	* find/util.c (get_info): Declare static, and simplify: remove the
+	assertions for the inode number and file type.
+	While at it, add condition !state.have_stat in the need_stat case
+	for consistency.
+	* tests/find/inode-zero.sh: Add test.
+	* tests/local.mk (all_tests): Reference it.
+
+	Problem introduced by the inum optimisation in commit 2bf001636e6.
+
+	Reported by Andrea Monaco <andrea.monaco@autistici.org> in
+	https://lists.gnu.org/r/bug-findutils/2021-12/msg00008.html
+
+2021-12-25  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: avoid '-D stat' side effect on SELinux handling with -L or -H
+	With the '-D stat' debugging option turned on, 'find -L' determined the
+	SELinux context information as if the -L (or -H) option was not given:
+
+	  $ strace -ve getxattr,lgetxattr find -L . -maxdepth 0 -printf '%Z:%p\n'
+	  getxattr(".", "security.selinux", 0x55b29a2b2d40, 255) = -1 ENODATA (No data available)
+	  ...
+
+	  $ strace -ve getxattr,lgetxattr find -D stat -L . -maxdepth 0 -printf '%Z:%p\n'
+	  lgetxattr(".", "security.selinux", 0x5649c91d8d40, 255) = -1 ENODATA (No data available)
+	  ...
+
+	* find/parser.c (set_follow_state): Move the DebugStat handling after
+	the switch statement, thus eliminating the if/else.
+
+	Bug present since adding the SELinux implementation in v4.5.5-42-g1a05af6a.
+
+2021-11-28  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: add description for birth time in 'find -printf' format
+	find(1) supports both searching for and printing of the birth time
+	of a file since 2007, but the documenation lacked the description
+	for the latter.
+
+	* doc/find.texi (node Time Directives): Add item for %B.
+	(node Time Formats): Mention that the described formats also apply to
+	the %B directive.
+	* find/find.1 (-printf format): Add description of %B.
+	* NEWS (Documentation Changes): Mention the change.
+
+	Fixes https://savannah.gnu.org/bugs/?61327
+
+2021-11-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: allow -files0-from input file to be empty
+	Do no longer output an error diagnostic when the input file of
+	the -files0-from option is empty.
+
+	* find/ftsfind.c (process_all_startpoints): Remove error diagnostic.
+	* doc/find.texi (node Starting points): Adjust documentation.
+	* find/find.1: Likewise.
+	* tests/find/files0-from.sh: Adjust test.
+
+	Suggested by Stephane Chazelas in
+	https://savannah.gnu.org/bugs/?60383#comment11
+
+2021-11-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: fix error diagnostic
+	* find/testsuite/config/unix.exp (safe_path): Change $PATH to PATH
+	as the message refers to the name of the environment variable, i.e.,
+	not its value.
+
+2021-11-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: skip -execdir test if PATH contains unsafe directory
+	* find/testsuite/find.gnu/sv-bug-27563-execdir.exp: Guard test by
+	'safe_path' condition to avoid false-positive failures in case the
+	PATH variable contains the current directory '.' ... which lets the
+	`find -execdir` action fail with an error diagnostic.
+
+	Reported by Paxsali <akis.kapo@googlemail.com> in
+	https://savannah.gnu.org/bugs/?60383
+
+2021-11-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest' - thus pulling in 357 commits,
+	including the following which was also discussed in:
+	  https://savannah.gnu.org/bugs/?60383
+	  > test-framework-sh: remove unsafe entries from PATH
+
+	* gnulib: Update to latest.
+	* cfg.mk (local-checks-to-skip): Add and therefore disable sc_indent
+	as auto indent is too invasive for now.
+	* m4/mkinstalldirs.m4: Fix repeated word: s/can can/can/.  Reported by
+	a new rule in sc_prohibit_doubled_word.
+	* m4/noreturn.m4: Likewise.
+	* tests/init.sh: Likewise.
+
+2021-10-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: improve maintainer description of the online manual
+	* doc/find-maint.texi (User Documentation): Add details how to
+	update the online manual from Git via the CVS web repository.
+
+2021-10-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: copy online docs from 'doc/manual' to apply the GNU stylesheet
+	The script to copy the documentation for the web to the CVS checkout
+	directory took the files from 'doc'.  But as those files do not
+	reference the GNU stylesheet, the resulting online documentation
+	didn't look as fancy as usual.
+	Instead, copy the files from 'doc/manual' which gets created by the make
+	target 'web-manual'.
+
+	* build-aux/update-online-manual.sh: Call the 'web-manual' make target
+	instead of building the documentation files in 'doc/' explicitly.
+	Adjust the commands to copy the just-generated files accordingly.
+	Remove the PostScript format as that does not get generated by the
+	'web-manual' target; it is probably no longer used nowadays anyway.
+
+	* NEWS (Documentation Changes): Mention the change.
+
+	Reported by Charles Burkitt <cecburkitt@gmail.com> in
+	https://lists.gnu.org/r/bug-findutils/2021-10/msg00008.html
+
+2021-10-10  Renaud Pacalet  <renaud.pacalet@telecom-paristech.fr>  (tiny change)
+
+	doc: fix typo in "Full Name Patterns"
+	* doc/find.texi (subsection Full Name Patterns): Change 2nd '-wholename'
+	to '-iwholename' to complete the enumeration of related options.
+	Fixes https://savannah.gnu.org/bugs/?61303
+
+2021-09-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	oldfind: remove
+	The FTS-based find is the default for a long time; oldfind has not been
+	installed since 4.5.18 (2015), and was only just used in tests.
+
+	* NEWS: Document the change.
+	* doc/find-maint.texi (Factor Out Repeated Code): Remove mentioning of
+	oldfind.
+	* find/.gitignore (/oldfind): Remove entry.
+	* find/Makefile.am (check_PROGRAMS): Remove.
+	(oldfind_SOURCES): Remove.
+	* find/defs.h (struct dir_id): Remove, it was only used in oldfind.c.
+	(symlink_handling): Likewise.
+	Adjust comments wrt oldfind otherwise.
+	* find/oldfind.c: Remove.
+	* find/testsuite/config/unix.exp: Remove the code to search for and
+	to run tests with oldfind.
+	* find/testsuite/find.posix/dotdotfiles.exp: Adjust comment.
+	* po/POTFILES.in (find/oldfind.c): Remove entry.
+	* tests/find/debug-missing-arg.sh: Remove run with oldfind.
+	* tests/find/exec-plus-last-file.sh: Likewise.
+	* tests/find/execdir-fd-leak.sh: Likewise.
+	* tests/find/many-dir-entries-vs-OOM.sh: Likewise.
+	* tests/find/name-lbracket-literal.sh: Likewise.
+	* tests/find/printf_escape_c.sh: Likewise.
+	* tests/find/printf_escapechars.sh: Likewise.
+	* tests/find/printf_inode.sh: Likewise.
+	* tests/find/refuse-noop.sh: Likewise.
+	* tests/find/type_list.sh: Likewise.
+	* tests/local.mk (built_programs): Remove oldfind from list.
+
+2021-09-19  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: improve readability of --help output
+	* find/util.c (usage): Start sentences with upper case.
+	Add extra newlines to put each section (operators, options, tests, and
+	actions) on its own line.
+	Move the typical generic options --help and --version to the end.
+	* NEWS (Documentation Changes): Mention the change.
+
+2021-09-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: generate ChangeLog with --no-cluster
+	* build-aux/gen-changelog.sh: Call gitlog-to-changelog with the
+	--no-cluster option.  The resulting ChangeLog reads better, because
+	each commit get its own date/author line.
+
+2021-09-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: remove redundant function error_severity and avoid magic numbers
+	The struct state field exit_status is only set to 0 (EXIT_SUCCESS) or
+	to 1 (EXIT_FAILURE) throughout the code.
+	Therefore, remove the more complicated wrapper function error_severity
+	which was only used in very few cases anyway.
+	While at it, replace the above magic numbers by EXIT_OKAY/EXIT_SUCCESS.
+
+	* find/defs.h (error_severity): Remove.
+	* find/util.c (error_severity): Remove, and update all callers by replacing
+	it by the direct assignment to state.exit_status.
+	(get_statinfo): Use the above better names.
+	(report_file_err): Likewise.
+	* find/exec.c (launch): Likewise.
+	* find/ftsfind.c (consider_visiting): Likewise.
+	(find): Likewise.
+	(process_all_startpoints): Likewise.
+	(main): Likewise.
+	* find/pred.c (pred_delete): Likewise.
+	(pred_empty): Likewise.
+	(match_lname): Likewise.
+	(pred_xtype): Likewise.
+	* find/print.c (do_fprintf): Likewise.
+
+2021-09-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typos in comments
+	* find/tree.c (get_expr): Add missing closing paren.
+	* find/util.c (insert_primary): s/insure/ensure/
+	(fatal_nontarget_file_error): s/isssue/issue/
+	* xargs/xargs.c (XargsStatusValues): s/exites/exited/
+
+2021-08-18  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tree.c: avoid segfault with closing parenthesis ')' after -files0-from
+	Prompted by the following warning of GCC-11.1.1:
+
+	  tree.c: In function 'get_expr':
+	  tree.c:140:31: warning: dereference of NULL 'prev_pred' [CWE-476] \
+	  [-Wanalyzer-null-dereference]
+	    140 |       if ((UNI_OP == prev_pred->p_type
+	        |                      ~~~~~~~~~^~~~~~~~
+
+	Former versions of find are not vulnerable to this, because a closing
+	parenthesis ')' without anything before was treated as a pathname
+	rather than an option.
+	But this is possible now with the recent introduction of the -files0-from
+	option (see commit 11576f4e6a) - yet still an invalid invocation.
+	Reproducer for a crash:
+	  $ find -files0-from FILE ')' -print
+	  Segmentation fault (core dumped)
+
+	In the similar case when the user didn't specify any action, and find(1)
+	adds the default action via '( user-expr ) -print', the error diagnostic
+	was very confusing, too:
+	  $ find -files0-from FILE ')'
+	  find: invalid expression; empty parentheses are not allowed.
+
+	* find/tree.c (get_expr): Handle the cases when there's no predicate
+	before CLOSE_PAREN, and output a useful error diagnostic.
+	* tests/find/files0-from.sh: Add a test case for it.
+
+2021-06-25  James Youngman  <james@youngman.org>
+
+	Fix Savannah bug 60823: unescaped `@' in find.texi code example.
+
+2021-05-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: add -files0-from option
+	* bootstrap.conf (gnulib_modules): Add argv-iter and same-inode.
+	* find/defs.h (struct options): Add files0_from and ok_prompt_stdin
+	members.
+	* find/ftsfind.c (argv-iter.h, same-inode.h, xalloc.h): Add #include
+	for gnulib headers.
+	(process_all_startpoints): Change loop over starting point arguments
+	to a loop using the argv_iter gnulib module.
+	* find/parser.c (parse_table): Add option.
+	(parse_files0_from): Declare and define function.
+	(insert_exec_ok): Set options flag ok_prompt_stdin to true for
+	the -ok and -okdir action.
+	* find/util.c (usage): Add new option.
+	(set_option_defaults): Initialize new struct members.
+	* doc/find.texi (node Starting points): Add new section describing
+	the regular processing of starting points, and that with the new
+	option.  Also mention in the description of -ok and -okdir that they
+	conflict with the new option.
+	* find/find.1: Document the new option here as well.
+	* tests/find/files0-from.sh: Add test.
+	* tests/local.mk (all_tests): Reference it.
+	* NEWS (New features in find): Mention the new option.
+
+2021-05-08  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest'.
+
+	* bootstrap: Sync from gnulib/build-aux/bootstrap.
+	* gnulib: Update to latest.
+
+2021-05-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typo in comment
+	* xargs/testsuite/xargs.posix/rc-125.exp: s/compinent/component/
+
+2021-05-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	README: add GNU Project notice
+	* README: Add section to attract more people towards the GNU project.
+	Inspired by a suggestion from Jose E. Marchesi <jemarch@gnu.org> on
+	the gnu-prog-discuss mailing list.
+
+2021-04-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix typo in comments in parser.c
+	* find/parser.c: s/fnd/find/; s/consiming/consuming/
+
+2021-02-23  Andrew Gaul  <gaul@gaul.org>  (tiny change)
+
+	updatedb: exclude s3fs filesystems by default
+	s3fs is a popular way to access S3-compatible object storage.
+	Its users have reported many bugs being surprised that updatedb crawls
+	these remote storage systems which causes poor performance:
+	https://github.com/s3fs-fuse/s3fs-fuse/issues?q=is%3Aissue+updatedb
+
+	* locate/updatedb.sh (PRUNEFS): Add 'fuse.s3fs'.
+
+2021-01-31  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: show environment variables in a consistent style
+	In manual pages, set environment variables in bold;
+	in the texinfo manual, use the @env{} macro consistently.
+	Additionally, talk about PATH instead of $PATH in all manuals.
+
+	* doc/find.texi: Do the above.
+	* find/find.1: Likewise.
+	* NEWS (Documentation Changes): Mention the fix.
+
+	Reported by Helge Kreutzmann in
+	https://savannah.gnu.org/bugs/?59963
+
+2021-01-31  Helge Kreutzmann  <debian@helgefjell.de>  (tiny change)
+
+	find.1: fix some formatting issues
+	* find/find.1 (Safer `...` approach): When referring to stat(2), change
+	the formatting so that only the function name 'stat' is set in bold,
+	not the '(2)'.
+	(Pruning ...): Change formatting of the tilde backup suffix in the example
+	to use simple quoting without additional markup.
+
+	Fixes https://savannah.gnu.org/bugs/?59963
+
+2021-01-31  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs.1: clarify 'echo' as the default command
+	The default command changed from '/bin/echo' to 'echo' in version 4.5.11,
+	but the commit 804ff7b90e only adjusted the Texinfo manual.
+
+	* xargs/xargs.1 (.SH DESCRIPTION): Change the default command here
+	in the man page as well.
+
+2021-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: post-release administrativa
+	* NEWS: Add new dummy release header.
+
 2021-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	build: fix linking on AIX7.2
@@ -22,6 +520,8 @@
 	NEWS: update before release
 	* NEWS: Prepare for the 4.8.0 release: minor re-ordering, and update
 	entries with bug numbers.
+
+2021-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: fix GCC format attribute of checked_fprintf
 	* gnulib-local/lib/gcc-function-attributes.h: Rename
@@ -393,6 +893,8 @@
 	updatedb.1: fix formatting
 	* locate/updatedb.1 (--prunepaths): Use apostrophe instead of acute accent.
 
+2020-10-25  Andreas Metzler  <ametzler@bebt.de>
+
 	find.1: fix typo "onthe"
 	* find/find.1 (-quit): Change to "on the".
 
@@ -565,8 +1067,12 @@
 	As a side effect, this also avoids passive voice in some cases;
 	active voice is usually clearer.
 
+2020-08-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	maint: fix typo in comment
 	* find/ftsfind.c (inside_dir): s/currentl/currently/
+
+2020-08-13  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: modernize example list of filesystem types for -fstype
 	* doc/find.texi (-fstype): Mention more common types.
@@ -961,13 +1467,19 @@
 
 	doc: add missing newline in find.1, making some text non-bold.
 
+2019-09-01  James Youngman  <jay@gnu.org>
+
 	doc: Add instructions on how to access source via git in README.
+
+2019-09-01  James Youngman  <jay@gnu.org>
 
 	find: Clarify description of %f and %h.
 	Fix https://savannah.gnu.org/bugs/index.php?35253
 	* doc/find.texi (Name Directives): Clarify description of %f and %h.
 	* find/find.1 (-printf): Likewise.
 	* NEWS: mention this change.
+
+2019-09-01  James Youngman  <jay@gnu.org>
 
 	Fix Savannah bug 54730: additional examples for -quit.
 	* doc/find.texi (-quit): add another example.
@@ -992,9 +1504,13 @@
 
 	gnulib: update to current.
 
+2019-08-30  James Youngman  <jay@gnu.org>
+
 	gnulib: use nstrftime module instead of strftime.
 	These modules are actually synonymous, it's just that the module name
 	strftime is deprecated in favour of nstrftime.
+
+2019-08-30  James Youngman  <jay@gnu.org>
 
 	doc: updates to release instructions.
 	Some additions to the release instructions:
@@ -1032,6 +1548,8 @@
 	maint: post-release administrativa
 	* NEWS: Add new dummy release header.
 
+2019-08-29  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	NEWS: update version to 4.7.0
 
 2019-08-29  Bernhard Voelker  <mail@bernhard-voelker.de>
@@ -1056,6 +1574,8 @@
 	release update on a branch it needs to be merged and in any case that
 	these changes need to be pushed to origin/master.  Also prompt the
 	maintainer to check that the FTP upload actually worked.
+
+2019-08-29  James Youngman  <jay@gnu.org>
 
 	Fix missing word in NEWS.
 	NEWS: add missing "the" in description of GNU_FINDUTILS_FD_LEAK_CHECK
@@ -1255,6 +1775,8 @@
 	to this test ...
 	* tests/local.mk (all_tests): .. and add it here.
 
+2019-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	tests: migrate 'refuse-noop' to the new testsuite
 	* find/testsuite/sv-48180-refuse-noop.sh: Move to ...
 	* tests/find/refuse-noop.sh: ... this, and apply the above.
@@ -1262,6 +1784,8 @@
 	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
 	to this test ...
 	* tests/local.mk (all_tests): .. and add it here.
+
+2019-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: migrate 'exec-plus-last-file' to the new testsuite
 	* find/testsuite/sv-48030-exec-plus-bug.sh: Move to ...
@@ -1271,6 +1795,8 @@
 	to this test ...
 	* tests/local.mk (all_tests): .. and add it here.
 
+2019-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	tests: migrate 'execdir-fd-leak' to the new testsuite
 	* find/testsuite/sv-34976-execdir-fd-leak.sh: Move to ...
 	* tests/find/execdir-fd-leak.sh: ... this, and apply the above.
@@ -1279,12 +1805,16 @@
 	to this test ...
 	* tests/local.mk (all_tests): .. and add it here.
 
+2019-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	tests: migrate 'printf_inode' to the new testsuite
 	* find/testsuite/test_inode.sh: Move to ...
 	* tests/find/printf_inode.sh: ... this, and apply the above.  Simplify.
 	* find/testsuite/Makefile.am (tests_shell_progs): Remove the reference
 	to this test ...
 	* tests/local.mk (all_tests): .. and add it here.
+
+2019-01-09  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	tests: migrate 'printf_escape_c' to the new testsuite
 	* find/testsuite/test_escape_c.sh: Move to ...
@@ -1448,6 +1978,8 @@
 	(insert_num): Likewise.
 	* xargs/xargs.c (xargs_do_exec): Change %zu to PRIuMAX.
 
+2018-12-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	maint: avoid continued strings
 	* lib/bugreports.c (explain_how_to_report_bugs): Avoid continued strings
 	by using multi-part strings, one per line.
@@ -1527,6 +2059,8 @@
 	the files we keep in sync.
 	* doc/find-maint.texi (How to update Gnulib to latest): Add section.
 
+2018-11-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	find: add '-D all' to enable all debug flags
 	* find/defs.h (DebugOption): Add DebugAll, which includes all other
 	debug options but DebugHelp.
@@ -1535,6 +2069,8 @@
 	* doc/find.texi (node Debug Options): Document the new option.
 	* find/find.1: Likewise.
 	* NEWS (Improvements): Likewise.
+
+2018-11-02  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: use portable 'tail' call in texinfo example
 	* doc/find.texi (node Updating A Timestamp File): Use more portable
@@ -1564,6 +2100,8 @@
 
 	doc: don't mention indirect blocks.  Clarify how -size is measured.
 	This fixes Savannah bug 36763.
+
+2018-09-23  James Youngman  <jay@gnu.org>
 
 	README: refer user to README-hacking when there is no INSTALL file.
 
@@ -2012,6 +2550,8 @@
 	build: colorize test output on capable terminals
 	* configure.ac (AM_INIT_AUTOMAKE): Add 'color-tests' option.
 
+2018-03-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	build: make --enable-silent-rules the default
 	* configure.ac (AM_SILENT_RULES): Use this, with it's undocumented
 	[yes] argument.  Those who want verbose build output may configure
@@ -2155,6 +2695,8 @@
 	* lib/regexprops.c (describe_all): Pass the new context parameter.
 	* doc/regexprops.texi: regenerate this file.
 
+2017-11-14  James Youngman  <jay@gnu.org>
+
 	regexprops: fix dangling reference to the `ed' regular expression dialect.
 	* lib/regextype.c (regex_map): Permute the entries to list POSIX
 	dialects before other ones, so that we don't end up with a
@@ -2167,6 +2709,8 @@
 	expressions: in findutils "." will match newline.
 	* find/find.1: Likewise.
 	* locate/locate.1: Likewise.  Also document the --regextype option.
+
+2017-11-14  James Youngman  <jay@gnu.org>
 
 	po: delete po/remove-potcdate.sed so that "make distcheck" works.
 	* po/remove-potcdate.sed: the presence of this generated file
@@ -2197,6 +2741,8 @@
 	maint: update gnulib to latest
 	* gnulib: Update - mainly for the recent year2038 changes.
 	* bootstrap: Update from gnulib/build-aux/bootstrap.
+
+2017-11-13  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: document the https change in NEWS
 	* NEWS (Documentation Changes): Mention the switch from http to https
@@ -2486,6 +3032,8 @@
 	* locate/updatedb.1: Likewise.
 	* xargs/xargs.1: Likewise.
 
+2017-10-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	maint: add copyright header to more files
 	* Makefile.am: Add copyright header.
 	* README: Likewise.
@@ -2496,6 +3044,8 @@
 	* lib/Makefile.am: Likewise.
 	* locate/Makefile.am: Likewise.
 	* xargs/Makefile.am: Likewise.
+
+2017-10-23  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: align copyright header line
 	* lib/extendbuf.c: s/Copyright/Copyright (C)/
@@ -2645,6 +3195,8 @@
 
 	po/*.po: update line numbers.
 
+2017-07-29  James Youngman  <jay@gnu.org>
+
 	gnulib: update to f42d5af5ba76970309c5704db1c229143043bcc0.
 	* build-aux/.gitignore: arg-nonnull.h, ar-lib, c++defs.h.
 
@@ -2656,12 +3208,16 @@
 	instead.  This fixes a bug manifesting on HP Tru64 UNIX V5.1B.
 	Reported by Steven M. Schweda <sms@antinode.info>.
 
+2017-07-23  James Youngman  <jay@gnu.org>
+
 	ChangeLog: fix some incorrectly-formatted messages.
 	* build-aux/git-log-fix: Ignore a recent incorrectly-formatted
 	change-log message (5e56fe96bc5cf5c0b616dc0251dddebb7e480074)
 	which is replaced by another
 	(f146a243400c211a19c9b76e5f598b6d7c57b1b0).  Also don't copy the
 	resulting merge commit message into the ChangeLog.
+
+2017-07-23  James Youngman  <jay@gnu.org>
 
 	locate: don't warn about slocate databases any more.
 	* locate/locate.c (search_one_database): Remove warning about
@@ -2674,6 +3230,8 @@
 	POSIX standard from the 2003 Edition to the 2016 Edition.
 	In the list of supported primaries, add the missing ones:
 	-exec, -ok and -path.  Remove the stray duplicates from the list.
+
+2017-06-29  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: clarify 'find -size' values prefixed with '+' and '-'
 	* doc/find.texi (node Size): Add a sentence to make even clearer that
@@ -2800,6 +3358,8 @@
 	of commit v4.6.0-90-gc155689, now as this issue is also reported
 	as a bug.
 
+2017-02-16  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	gnulib: update to latest
 	* gnulib: Do the above.
 
@@ -2831,10 +3391,14 @@
 	* find/fstype.c: ... here.
 	* find/defs.h (is_used_fs_type): Add declaration.
 
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	maint: inline now last use of must_read_fs_list
 	* find/fstype.c (must_read_fs_list): Remove function and inline body ...
 	(file_system_type_uncached): ... here where its last use was.
 	(get_mounted_devices): Remove it from a comment.
+
+2017-02-06  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: remove unused get_mounted_filesystems
 	* find/fstype.c (get_mounted_filesystems): Remove unused function ...
@@ -3033,6 +3597,8 @@
 	* po/bg.po: Updated the Bulgarian translation.
 	* NEWS: Mention this.
 
+2016-07-17  James Youngman  <jay@gnu.org>
+
 	README-hacking: "./configure", not "configure".
 	* README-hacking: "./configure", not "configure".  Also fix a
 	grammatical error (missing "to") and point out that the "trivial
@@ -3049,6 +3615,8 @@
 	the "" was being eaten by macro argument processing.  We use \(aq
 	to ensure that quotes qre rendered correctly where double quotes
 	is needed, and `these quotes' where they are not.
+
+2016-07-16  James Youngman  <jay@gnu.org>
 
 	gnulib: update to current master
 
@@ -3230,9 +3798,13 @@
 	Update gnulib to the current head.
 	* gnulib: Update submodule to current git head.
 
+2016-03-24  James Youngman  <jay@gnu.org>
+
 	Update Greek translation from the Translation Project.
 	* po/el.po: Update Greek translation from the Translation Project.
 	* NEWS: Mention this change.
+
+2016-03-24  James Youngman  <jay@gnu.org>
 
 	Adopt the use of the gnulib module "gendocs".
 	* doc/.gitignore: Ignore gendocs_template and gendocs_template_min,
@@ -3262,6 +3834,8 @@
 	build: stop distributing gzip'd releases;  xz is enough
 	* configure.ac (AM_INIT_AUTOMAKE): Add no-dist-gzip and dist-xz.
 	* NEWS (Build-related): Mention that we're dropping .tar.gz.
+
+2016-02-16  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: improve description of the -D option in find.1
 	* find/find.1 (-D): Change argument name from "debugoptions" to
@@ -3315,6 +3889,8 @@
 	* find/.gitignore: Use pattern for *.o, and sort the file.
 	* xargs/.gitignore: Likewise.
 
+2016-02-16  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	maint: add new bugreports.c to POTFILES.in
 	* po/POTFILES.in (lib/bugreports.c): Add entry.
 
@@ -3341,6 +3917,8 @@
 	* po/da.po: Update Danish translation from the Translation Project.
 	* NEWS: Mention this change.
 
+2016-01-26  James Youngman  <jay@gnu.org>
+
 	updatedb: use the common definitions of the bug-report URL etc.
 	* locate/Makefile.am (updatedb): Substitute PACKAGE_BUGREPORT,
 	PACKAGE_BUGREPORT_URL and PACKAGE_URL.  We do this in the Makefile
@@ -3354,6 +3932,8 @@
 	AC_SUBST and AC_DEFINE_UNQUOTED (replacing the previous call to
 	AC_DEFINE).
 	* locate/updatedb.sh (usage): Use PACKAGE_URL and PACKAGE_BUGREPORT_URL.
+
+2016-01-26  James Youngman  <jay@gnu.org>
 
 	Better and more consistent guidance on how to report bugs.
 	* configure.ac (PACKAGE_BUGREPORT_URL): Define this macro to point
@@ -3426,6 +4006,8 @@
 	* locate/testsuite/locate.gnu/oldformat.xo: Likewise.
 	* TODO: manpages for bigram and code are no longer needed.
 	* NEWS: Mention these changes.
+
+2016-01-10  James Youngman  <jay@gnu.org>
 
 	updatedb: the order of file name is changed, but still unspecified.
 	* locate/updatedb.sh: fix typo in comment pointed out by Bernhard
@@ -3500,6 +4082,8 @@
 	doc: fix typo in find.1
 	* find/find.1 (GLOBAL OPTIONS): s/occurr/occur/
 
+2016-01-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	maint: fix file name in message of findutils-check-pofiles
 	* Makefile.am (findutils-check-pofiles): s/configure\.in/configure.ac/,
 	as that file has been renamed long ago (FINDUTILS_4_3_8-1-50-gc4ef190).
@@ -3507,6 +4091,8 @@
 	(coverage-clean): Re-indent likewise.
 	(gen-ChangeLog): While at it, replace leading blanks by a tab here for
 	a proper make syntax; introduced in previous commit (v4.6.0-17-g48bf0d0).
+
+2016-01-04  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: update .gitignore files, remove obsolete .cvsignore files
 	* .gitignore (tool-versions.txt): Add entry.
@@ -3539,6 +4125,8 @@
 	* po/.cvsignore: Likewise.
 	* xargs/.cvsignore: Likewise.
 	* xargs/testsuite/.cvsignore: Likewise.
+
+2016-01-04  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: remove po/Makevars as it is created during bootstrap
 	* po/Makevars: Remove.  This also avoids an sc_trailing_blank failure
@@ -3575,6 +4163,8 @@
 	* .x-update-copyright: new file, a list of files to exclude
 	from automated copyright updates.
 
+2016-01-04  James Youngman  <jay@gnu.org>
+
 	regexprops: Fix compiler warnings and update copyright years.
 	* lib/regexprops.c (newpara): Function parameter list should be
 	declared as void in the function definition, instead of leaving it
@@ -3601,11 +4191,15 @@
 	turning GCC compiler warnings into errors.  This is off by
 	default.
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	find: Avoid dynamic format strings.
 	* find/print.c (do_fprintf): Don't use a dynamic format string,
 	even when we know it contains no formatting directives, because
 	this confuses whatever produces the GCC warning
 	-Wformat-security.
+
+2016-01-03  James Youngman  <jay@gnu.org>
 
 	find: fix some compiler warnings.
 	* find/util.c (check_nofollow): Avoid compiler warnings about
@@ -3636,6 +4230,8 @@
 	* find/pred.c (struct pred_assoc): make the pred_name member const.
 	* find/defs.h: Declare pred_quit as _GL_ATTRIBUTE_NORETURN.
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	locate: Fix compiler warnings.
 	* locate/word_io.c (decode_value): Fix typo in comment.
 	(getword): Remove unused parameter minvalue.
@@ -3645,6 +4241,8 @@
 	(visit_old_format): Don't pass a minvalue parameter to getword()
 	since it no longer wants it.
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	lib: Update the width of the st_nlink field and fix some compiler warnings.
 	* lib/listfile.h (list_file): Make the relname parameter const.
 	* lib/listfile.c (list_file): Make the relname parameter const.
@@ -3653,10 +4251,14 @@
 	print the field using the maximum width (as we do for other
 	fields).
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	xargs: Avoid unused-macro warnings.
 	* xargs/xargs.c (main): Use __STDC_LIMIT_MACROS to avoid a
 	compiler warning about an unused macro.  Don't define N_() at all, since
 	we don't use it.
+
+2016-01-03  James Youngman  <jay@gnu.org>
 
 	find: Fix a number of compiler warnings (mostly const-correctness).
 	* find/find.c (get_current_dirfd): remove unused function.
@@ -3683,6 +4285,8 @@
 	lacking birth time fields (and on which this function therefore
 	does nothing).
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	maint: Don't define the gettext-related macro N_ where it is not needed.
 	* lib/buildcmd.c: Don't define the macro N_(), since we don't use
 	it.
@@ -3703,12 +4307,16 @@
 	* find/print.c: Likewise.
 	* find/ftsfind.c: Likewise.
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	maint: Remove --I../intl from AM_CPPFLAGS; the directory is gone.
 	* find/Makefile.am (AM_CPPFLAGS): Remove -I../intl, since that
 	directory does not exist; it was removed in 2006 by Paul Eggert
 	(commit 9499a434f9da547373fa9d236cb397717ebb0c50).
 	* locate/Makefile.am (AM_CPPFLAGS): Likewise.
 	* xargs/Makefile.am (AM_CPPFLAGS): Likewise.
+
+2016-01-03  James Youngman  <jay@gnu.org>
 
 	Make use of suggested GCC function attributes.
 	* gnulib-local/lib/gcc-function-attributes.h: New header file,
@@ -3724,6 +4332,8 @@
 	pred_quit.
 	* find/print.c (checked_fprintf): add attribute
 	_GL_ATTRIBUTE_FORMAT_PRINTF to the function declaration.
+
+2016-01-03  James Youngman  <jay@gnu.org>
 
 	lib: FINDLIB_REPLACE_FUNCS has become obsolete, so delete findlib.
 	* configure.ac: gnulib supplies waitpid and C89 supplies strspn.
@@ -3741,6 +4351,8 @@
 	FINDLIBOBJS is empty now, there is no need to copy that to
 	libfind_a_LIBADD.
 
+2016-01-03  James Youngman  <jay@gnu.org>
+
 	gnulib: update to current head.
 
 2016-01-02  James Youngman  <jay@gnu.org>
@@ -3755,10 +4367,14 @@
 	* Makefile.am (gen-ChangeLog): Simplify the gen-ChangeLog rule by
 	calling gen-changelog.sh.
 
+2016-01-02  James Youngman  <jay@gnu.org>
+
 	Update the German and Dutch translations.
 	* po/de.po: Update from the Translation Project.
 	* po/nl.po: Likewise.
 	* NEWS: Mention this change.
+
+2016-01-02  James Youngman  <jay@gnu.org>
 
 	Update estimated success rates from a survey of a real file system.
 	* find/pred.c (print_optlist): output now distinguishes more
@@ -3777,6 +4393,8 @@
 	* find/testsuite/sv-34976-execdir-fd-leak.sh (make_test_data):
 	Don't assume that there is an xargs binary already on the path.
 
+2016-01-01  James Youngman  <jay@gnu.org>
+
 	Retire configure --enable-debug in favour of find -D ...
 	* find/defs.h (enum DebugOption): add DebugTime.
 	* find/util.c (debugassoc): -D time sets the DebugTime debug flag.
@@ -3792,6 +4410,8 @@
 	preprocessor macro DEBUG.
 	* NEWS: Mention this change.
 
+2016-01-01  James Youngman  <jay@gnu.org>
+
 	Eliminate the need for the DEBUG_STAT preprocessor macro.
 	* configure.ac: We no longer need to #define DEBUG_STAT with
 	--enable-debug, since the relevant debug messages are controlled
@@ -3805,12 +4425,16 @@
 	configured with --enable-debug.
 	(parse_version): DEBUG_STAT is no longer a (distinct) feature.
 
+2016-01-01  James Youngman  <jay@gnu.org>
+
 	Remove the --enable-id-cache configure option.
 	* configure.ac: Remove the --enable-id-cache option.  This option
 	became a no-op in findutils-4.5.15.  Before that it did something
 	but the code was buggy.  See https://savannah.gnu.org/bugs/?45062
 	for details.
 	* NEWS: State that this configure option is removed.
+
+2016-01-01  James Youngman  <jay@gnu.org>
 
 	Update the Hungarian translation
 
@@ -3819,6 +4443,8 @@
 	Add/elaborate on warning about find -size -1M.
 	* find/find.1: Elaborate on warning about find -size -1M.
 	* find.texi: Copy warning about find -size -1M from manpage.
+
+2016-01-01  Andreas Metzler  <ametzler@bebt.de>
 
 	Document that %AT/%AX prints nanoseconds.
 	* doc/find.texi: Both %AT and %AX printf format specifiers print
@@ -3830,6 +4456,8 @@
 	Remove unused spell-checker LocalWords from TODO.
 	* TODO (LocalWords): Remove words which aren't actually used in
 	the document.
+
+2015-12-31  James Youngman  <jay@gnu.org>
 
 	Update the Slovak translation.
 	* po/sk.po: Update from the Translation Project.
@@ -3845,6 +4473,8 @@
 	* configure.ac: Remove rw from ALL_LINGUAS.
 	* po/rw.po: Delete.
 
+2015-12-30  James Youngman  <jay@gnu.org>
+
 	Update release number to indicate that the Git tree no longer matches 4.6.0.
 	* configure.ac: Update version number to indicate that the Git
 	repository has moved on from 4.6.0 (the trunk will be 4.7.x release
@@ -3856,11 +4486,15 @@
 	doc: mention 'make syntax-check' in README-hacking
 	* README-hacking (Submitting patches): Add the above.
 
+2015-12-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
 	doc: mention copyright assignment check prior to 'git push'
 	* README-hacking (Required format for check-in messages): Add a paragraph
 	aiming at maintainers to check that the author of the commit has proper
 	copyright assignment in place, or otherwise how to document that this
 	is not needed.
+
+2015-12-30  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	doc: fix typos in README-hacking
 	* README-hacking (Required format for check-in messages): s/maded/made/;
@@ -3874,9 +4508,13 @@
 	Summarize the changes since the previous stable release.  Explain
 	that all bugs fixed in 4.4.x are also fixed in this release.
 
+2015-12-28  James Youngman  <jay@gnu.org>
+
 	Update the Danish translation.
 	* po/da.po: Update the Danish translation.
 	* NEWS: Mention this update.
+
+2015-12-28  James Youngman  <jay@gnu.org>
 
 	Fix a typo in bootstrap.conf.
 	* bootstrap.conf (maintainer_modules): Fix typo 'consder'.
@@ -3896,9 +4534,13 @@
 	4.5.19 release.
 	* NEWS: Likewise.
 
+2015-12-28  James Youngman  <jay@gnu.org>
+
 	Release findutils version 4.5.19.
 	* configure.ac: Update version number to 4.5.19.
 	* NEWS: Likewise, and also specify the release date.
+
+2015-12-28  James Youngman  <jay@gnu.org>
 
 	Previous spelling fix was from a Savannah-managed patch, not a bug report.
 	* NEWS: Correct the description of the previous change.
@@ -3919,6 +4561,8 @@
 	* find/find.1: A full stop (.) that starts or ends a string and is a
 	part of it, is now protected with \& and the space between some
 	sentences has been reduced or increased.
+
+2015-12-28  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>  (tiny change)
 
 	Typo and grammar fixes.
 	Issue and patch via http://bugs.debian.org/726870
@@ -3944,6 +4588,8 @@
 	"sys/resource.h" header file.
 	* lib/fdleak.c: Include "sys/resource.h" when HAVE_GETRLIMIT is set.
 	(get_max_fd): s/HAVE_GETRUSAGE/HAVE_GETRLIMIT/.
+
+2015-12-28  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	maint: avoid syntax-check failures
 	* Makefile.am (gen-ChangeLog): Replace 8 spaces by a tab to avoid
@@ -3985,9 +4631,13 @@
 	* configure.ac: Update version number to 4.5.18.
 	* NEWS: Likewise, and set the release date to 2015-12-27.
 
+2015-12-27  James Youngman  <jay@gnu.org>
+
 	Updated po files as a side effect of "make dist".
 	* po/*.po: updated by "make dist".
 	* po/findutils.pot: updated by "make dist".
+
+2015-12-27  James Youngman  <jay@gnu.org>
 
 	Rename find/find.c to find/oldfind.c.
 	* find/Makefile.am (oldfind_SOURCES): rename find.c to oldfind.c.
@@ -4000,6 +4650,8 @@
 	renamed file).
 	* find/testsuite/config/unix.exp: Look for ftsfind.o instead of find.o
 	when checking that we're really looking at the build directory.
+
+2015-12-27  James Youngman  <jay@gnu.org>
 
 	Remove support for installing oldfind.
 	This fulfills a reqeust made as Savannah bug #46714.
@@ -4018,6 +4670,8 @@
 	longer two binaries.
 	* find/testsuite/config/unix.exp: Assume --with-fts; hence the binaries
 	are always called oldfind and find (and there is no ftsfind binary).
+
+2015-12-27  James Youngman  <jay@gnu.org>
 
 	Updated the Slovenian translation
 
@@ -4044,16 +4698,24 @@
 	Fix typo in NEWS file entry for 4.5.17.
 	* NEWS: Fix typo.
 
+2015-12-24  James Youngman  <jay@gnu.org>
+
 	Update version number indicating the code post-dates findutils-4.5.17.
 	* NEWS: Update version number.
 	* configure.ac (AC_INIT): Update version.
+
+2015-12-24  James Youngman  <jay@gnu.org>
 
 	Update version number in preparation for release of findutils-4.5.17.
 	* NEWS: Update version number.
 	* configure.ac (AC_INIT): Update version.
 
+2015-12-24  James Youngman  <jay@gnu.org>
+
 	Mention upcoming changes to release signing keys.
 	* NEWS: Mention upcoming changes to release signing keys.
+
+2015-12-24  James Youngman  <jay@gnu.org>
 
 	Documentation fix for bug #36960 and greater effect of POSIXLY_CORRECT.
 	* find/parser.c (parse_table): -warn is now parsed as a positional
@@ -4075,19 +4737,27 @@
 	and POSIXLY_CORRECT.  * NEWS: Describe the changes to the find manual
 	page and warnings.
 
+2015-12-24  James Youngman  <jay@gnu.org>
+
 	Update some control files in po/ for new version of gettext.
 	* po/Rules-quot: Updated as a result of updating gettext.
 	* po/Makevars.template: Likewise.
 	* po/Makevars: Likewise.
+
+2015-12-24  James Youngman  <jay@gnu.org>
 
 	Avoid an fd leak in fopen_cloexec_for_read_only.
 	* xargs/xargs.c (fopen_cloexec_for_read_only): when fdopen fails,
 	close the file descriptor instead of leaking it.  Also, use GNU-style
 	brace positioning. Both problems were noticed by Paul Eggert.
 
+2015-12-24  James Youngman  <jay@gnu.org>
+
 	Tweak 2015-12-23 ChangeLog entry to remove a spurious newline.
 	* build-aux/git-log-fix: Remove a spurious extra newline in the
 	change log entry for the 2015-12-23 change by Dmitry V. Levin.
+
+2015-12-24  James Youngman  <jay@gnu.org>
 
 	Fix wording in the NEWS for 4.5.16.
 	* NEWS: fix wording: add missing "to" in the changes for 4.5.16.
@@ -4107,9 +4777,13 @@
 	that file close-on-exec, too.
 	* NEWS: mention this bugfix.
 
+2015-12-23  James Youngman  <jay@gnu.org>
+
 	Update the Serbian translation.
 	* po/sr.po: Update the Serbian translation.
 	* NEWS: mention this.
+
+2015-12-23  James Youngman  <jay@gnu.org>
 
 	Update the Brazilian Portuguese translation.
 	* po/pt_BR.po: Updated Brazilian Portuguese translation.
@@ -4132,20 +4806,30 @@
 	* doc/find-maint.texi (Coding Conventions): Re-order menu items to
 	match the section ordering.
 
+2015-12-23  James Youngman  <jay@gnu.org>
+
 	Document the functions declared in regextype.h.
 	* lib/regextype.h: Document the semantics of the functions
 	declared in this header.
+
+2015-12-23  James Youngman  <jay@gnu.org>
 
 	Update version number to make clear the current code is newer than 4.5.16.
 	* configure.ac: Update the version number to 4.5.17-git.
 	* NEWS: Likewise, begin a new section for 4.5.17.
 
+2015-12-23  James Youngman  <jay@gnu.org>
+
 	Release findutils 4.5.16.
 	* NEWS: Update version number to 4.5.16.
 	* configure.ac: Likewise.
 
+2015-12-23  James Youngman  <jay@gnu.org>
+
 	Point out that the gnulib update also fixes bug #40146.
 	* NEWS: mention that this bug is fixed.
+
+2015-12-23  James Youngman  <jay@gnu.org>
 
 	gnulib: bring up-to-date with current git head of gnulib.
 	This fixes Savannah bug #46715 ("testsuite error with perl 5.22,
@@ -4187,6 +4871,12 @@
 	entries, and remove the ChangeLog entries which would otherwise
 	have reflected the git changes needed to make the corrections.
 
+2015-12-18  James Youngman  <jay@gnu.org>
+
+2015-12-18  James Youngman  <jay@gnu.org>
+
+2015-12-18  James Youngman  <jay@gnu.org>
+
 	Explain how child exit status affects find's exit status.
 	* doc/find.texi (Run Commands): Add a new subsection and menu
 	item, Child Exit Status.
@@ -4199,14 +4889,22 @@
 	(EXIT STATUS): Likewise.
 	* NEWS: mention these changes.
 
+2015-12-18  James Youngman  <jay@gnu.org>
+
+2015-12-18  James Youngman  <jay@gnu.org>
+
 	Update version number to make clear the current code is newer than 4.5.15.
 	* configure.ac: Update the version number to 4.5.16-git.
 	* NEWS: Likewise, begin a new section for 4.5.16.
+
+2015-12-18  James Youngman  <jay@gnu.org>
 
 	Release findutils 4.5.15.
 	* configure.ac: Update the version number to 4.5.15.
 	* NEWS: Likewise, and set the release date.
 	* po/*: Update with 'make dist'.
+
+2015-12-18  James Youngman  <jay@gnu.org>
 
 	Mention the bugfix for bug #42903.
 	* NEWS: mention the bugfix for bug #42903.
@@ -4219,14 +4917,20 @@
 	describing an option.
 	* NEWS: Mention this change.
 
+2015-11-01  James Youngman  <jay@gnu.org>
+
 	Remove spurious backslash.
 	* find/find.1: Remove spurious backslash before ";".
+
+2015-11-01  James Youngman  <jay@gnu.org>
 
 	Document the behaviour reported in Savannah bug 46305.
 	* doc/find.texi (Symbolic Links): Explain that -L can give
 	surprising behaviour when symbolic links can become broken during
 	the execution of find.
 	* find/find.1 (-L): Likewise.
+
+2015-11-01  James Youngman  <jay@gnu.org>
 
 	Add copyright headers to some files which lack them.
 	* find/testsuite/excuses.txt: remove spurious character (a typo).
@@ -4244,9 +4948,13 @@
 	* find/print.h: Likewise.
 	* lib/check-regexprops.sh: Likewise.
 
+2015-11-01  James Youngman  <jay@gnu.org>
+
 	Update po/*.po, po/findutils.pot with "make dist".
 	po/*.po: update with "make dist".
 	po/findutils.pot: likewise.
+
+2015-11-01  James Youngman  <jay@gnu.org>
 
 	find: adaptive column alignment (resolves Savannah bug #45780)
 	* lib/listfile.c (list_file): For aligned fields, use the number
@@ -4275,13 +4983,19 @@
 	Fix warning from makeinfo: add missing comman in @xref
 	docs/find.texi: add missing comma in @xref.
 
+2015-10-25  James Youngman  <jay@gnu.org>
+
 	Fix bug #45585: unclear description of -newerXY in manual page.
 	* find/find.1 (-newerXY): Use the clearer wording from the Texinfo
 	documentation.
 	* NEWS: Mention this bugfix.
 
+2015-10-25  James Youngman  <jay@gnu.org>
+
 	Mention that the German translation was updated.
 	NEWS: mention the update to po/de.po.
+
+2015-10-25  James Youngman  <jay@gnu.org>
 
 	Update the German translation from the Translation Project.
 	* po/de.po: Update from the Translation Project.
@@ -4314,18 +5028,26 @@
 	* build-aux/git-log-fix: Fix incorrect formatting of the ChangeLog
 	entry for 2015-02-22.
 
+2015-05-10  James Youngman  <jay@gnu.org>
+
 	Don't try to distribute nonexistent import-gnulib.sh
 	* Makefile.am (EXTRA_DIST): Don't try to distribute
 	import-gnulib.sh or import-gnulib.config since they have been
 	deleted.
 
+2015-05-10  James Youngman  <jay@gnu.org>
+
 	Stop ignoring the now-nonexistent gnulib-version.c.
 	* lib/.gitignore: remove gnulib-version.c since we no longer
 	create it.
 
+2015-05-10  James Youngman  <jay@gnu.org>
+
 	Remove import-gnulib.sh and its configuration file.
 	* import-gnulib.sh: remove.
 	* import-gnulib.config: remove.
+
+2015-05-10  James Youngman  <jay@gnu.org>
 
 	Tell people to use bootstrap instead of import-gnulib.config
 	* Makefile.am (EXTRA_DIST): Distribute "bootstrap".
@@ -4349,6 +5071,8 @@
 	Fix bug #45065: find prints leading 0 in ctime ns fields
 	* find/print.c (ctime_format): Don't print a leading zero before
 	the nanoseconds value.
+
+2015-05-10  James Youngman  <jay@gnu.org>
 
 	Print the modification time of the database for --statistics.
 	* locate/locate.c: Include stat-time.h.
@@ -4385,6 +5109,8 @@
 	* ftsfind.c (main): Fix typo in error message (reported by Benno
 	Schulenberg).
 
+2015-05-09  James Youngman  <jay@gnu.org>
+
 	Don't include dblocation.texi from original spot, symlink it.
 	* doc/Makefile.am (dblocation.texi): Create this as a symbolic
 	link.  We do this because Automake now invokes texi2dvi in "tidy"
@@ -4398,10 +5124,14 @@
 	* configure.ac: use AC_PROG_LN_S.
 	* locate/Makefile.am (EXTRA_DIST): Don't distribute dblocation.texi.
 
+2015-05-09  James Youngman  <jay@gnu.org>
+
 	Don't attempt to copy a symbolic link over its target.
 	* import-gnulib.sh (copyhack): don't attempt to cp a source file
 	to a destination file if one is a symbolic link to the other,
 	because cp fails when you do that.
+
+2015-05-09  James Youngman  <jay@gnu.org>
 
 	Updated Danish translation from the Translation Project.
 
@@ -4434,6 +5164,8 @@
 	how check-in messages should be formatted.
 	* doc/find-maint.texi (Documentation): Describe the format of git
 	check-in messages.  Refer to README-hacking.
+
+2014-08-25  James Youngman  <jay@gnu.org>
 
 	maint: Don't configure the changelog driver, we don't need it.
 	* import-gnulib.sh (usage): Remove check_merge_driver. Update
@@ -4497,10 +5229,14 @@
 	Remove TODO about the largeness of depcomp; at 22KiB, it's much
 	smaller than this ChangeLog file, for example.
 
+2014-08-23  James Youngman  <jay@gnu.org>
+
 	Remove obsolete TOLOWER/TOUPPER macros.
 	* locate/locate.c: The TOLOWER and TOUPPER macros are no longer
 	used.   Do not define them.
 	* TODO: Remove obsolete entry for TOLOWER/TOUPPER.
+
+2014-08-23  James Youngman  <jay@gnu.org>
 
 	Don't overflow sig_atomic_t for --max-procs.
 	* xargs/xargs.c (__STDC_LIMIT_MACROS): Define __STDC_LIMIT_MACROS
@@ -4519,6 +5255,8 @@
 	limit on the amount of parallelism.
 	(xargs options): Document the limit on the value you can specify
 	for --max-procs.
+
+2014-08-23  James Youngman  <jay@gnu.org>
 
 	Prepare for later generating the ChangeLog file from the git log.
 	* ChangeLog-2008: Split this file out from the main ChangeLog file.
@@ -4567,6 +5305,8 @@
 	* NEWS: Likewise, and add today's date.
 	* po/*: Update with 'make dist'.
 
+2014-07-19  James Youngman  <jay@gnu.org>
+
 	Standardize on "initialize".
 	* find/exec.c (initialise_wd_for_exec): rename to
 	initialize_wd_for_exec, since "initialize" is the preferred form
@@ -4584,15 +5324,23 @@
 	* find/print.c (format_date): Likewise.
 	* doc/find-maint.texi (Tools): Update spelling.
 
+2014-07-19  James Youngman  <jay@gnu.org>
+
 	Did 'make dist'
+
+2014-07-19  James Youngman  <jay@gnu.org>
 
 	Bug #42793: mention the bugfix in NEWS.
 	* NEWS: mention the bugfix.
+
+2014-07-19  James Youngman  <jay@gnu.org>
 
 	Fix bug #42793: "Failed to write output" with -ls.
 	* lib/listfile.c (print_name_with_quoting): Avoid using the
 	variable fprintf_result before it is initialised.  I hope this
 	fixes Savannah bug #42793.
+
+2014-07-19  James Youngman  <jay@gnu.org>
 
 	Update the version number following the recent release.
 	* configure.ac: Move on from 4.5.13.
@@ -4624,10 +5372,14 @@
 	Automake-driven tests scroll offscreen.
 	(TEST_EXTENSIONS): Add .sh and .py.
 
+2014-05-31  James Youngman  <jay@gnu.org>
+
 	Enable parallel tests.
 	* find/testsuite/Makefile.am (AUTOMAKE_OPTIONS): Enable
 	parallel-tests.  This will only include tests known directly via
 	$(TESTS), not DejaGnu tests.
+
+2014-05-31  James Youngman  <jay@gnu.org>
 
 	Locate the Python and faketime binaries
 
@@ -4642,6 +5394,8 @@
 	* po/de.po: Update German translation from the Translation
 	Project.
 
+2014-05-12  James Youngman  <jay@gnu.org>
+
 	Several updates and clarifications to README-hacking.
 	* README-hacking: Explain that tool-versions.txt is not checked
 	into git.  The repository has grown from 14MB to 16MB.  Gnulib is
@@ -4655,6 +5409,8 @@
 2014-05-11  James Youngman  <jay@gnu.org>
 
 	* gnulib: Update submodule to current version at origin/master.
+
+2014-05-11  James Youngman  <jay@gnu.org>
 
 	Fix inadequte quoting in AC_ARG_ENABLE usage.
 	* configure.ac: Quote second argument of AC_ARG_ENABLE.

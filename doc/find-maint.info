@@ -4,9 +4,9 @@ find-maint.texi.
 This manual explains how GNU findutils is maintained, how changes should
 be made and tested, and what resources exist to help developers.
 
-   This document corresponds to version 4.8.0 of the GNU findutils.
+   This document corresponds to version 4.9.0 of the GNU findutils.
 
-   Copyright (C) 2007-2021 Free Software Foundation, Inc.
+   Copyright (C) 2007-2022 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -28,9 +28,9 @@ Maintaining GNU Findutils
 This manual explains how GNU findutils is maintained, how changes should
 be made and tested, and what resources exist to help developers.
 
-   This document corresponds to version 4.8.0 of the GNU findutils.
+   This document corresponds to version 4.9.0 of the GNU findutils.
 
-   Copyright (C) 2007-2021 Free Software Foundation, Inc.
+   Copyright (C) 2007-2022 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -333,9 +333,7 @@ the nature of the input arguments which is in fact not true for the
 context of the now duplicated code.
 
    A good example of the use of refactoring in findutils is the
-'collect_arg' function in 'find/parser.c'.  A less clear-cut but larger
-example is the factoring out of code which would otherwise have been
-duplicated between 'find/oldfind.c' and 'find/ftsfind.c'.
+'collect_arg' function in 'find/parser.c'.
 
    The findutils test suite is comprehensive enough that refactoring
 code should not generally be a daunting prospect from a testing point of
@@ -594,11 +592,21 @@ project web site.  These web pages are source-controlled via CVS
 you should be able to check the web pages out like this ('$USER' is a
 placeholder for your Savannah username):
 
-     cvs -d  :ext:$USER@cvs.savannah.gnu.org:/web/findutils checkout findutils/manual
+     cvs -d :ext:$USER@cvs.savannah.gnu.org:/web/findutils checkout findutils/manual
 
-   You can automatically update the documentation in this repository
-using the script 'build-aux/update-online-manual.sh' in the findutils
-Git repository.
+   You can automatically update the documentation in this repository by
+using the script 'build-aux/update-online-manual.sh' with the path to
+the findutils Git repository as parameter.
+
+     build-aux/update-online-manual.sh $HOME/git/findutils
+
+   That script will generate the documentation in the directory
+'doc/manual/' by calling the 'make' target 'web-manual'; then it will
+copy over the files into the CVS checkout.
+
+   There you can check the documentation once again before committing to
+CVS. The Savannah CVS server will automatically initiate the transfer to
+the web server.
 
 7.3 Build Guidance
 ==================
@@ -1619,19 +1627,19 @@ Node: Design Issues3530
 Node: Coding Conventions7470
 Node: Make the Compiler Find the Bugs9438
 Node: Factor Out Repeated Code12992
-Node: Debugging is For Users Too15071
-Node: Don't Trust the File System Contents15802
-Node: The File System Is Being Modified17084
-Node: Tools18474
-Node: Using the GNU Portability Library19675
-Node: Documentation24136
-Node: Testing27977
-Node: Bugs28318
-Node: Distributions30061
-Node: Internationalisation31094
-Node: Security31580
-Node: Making Releases42997
-Node: GNU Free Documentation License46140
+Node: Debugging is For Users Too14915
+Node: Don't Trust the File System Contents15646
+Node: The File System Is Being Modified16928
+Node: Tools18318
+Node: Using the GNU Portability Library19519
+Node: Documentation23980
+Node: Testing28251
+Node: Bugs28592
+Node: Distributions30335
+Node: Internationalisation31368
+Node: Security31854
+Node: Making Releases43271
+Node: GNU Free Documentation License46414
 
 End Tag Table
 

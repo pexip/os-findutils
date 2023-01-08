@@ -3,7 +3,7 @@
 # Between findutils-4.3.1 and 4.6, find dumped core ($? = 139).
 # See Savannah bug #48180.
 
-# Copyright (C) 2016-2021 Free Software Foundation, Inc.
+# Copyright (C) 2016-2022 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,18 +19,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 . "${srcdir=.}/tests/init.sh"; fu_path_prepend_
-print_ver_ find oldfind
+print_ver_ find
 
 # Exercise both the previous name of the pseudo-option '-noop',
-# and the now renamed '---noop' option for both find executables.
-for exe in find oldfind; do
-  for opt in 'noop' '--noop'; do
-    rm -f out err || framework_failure_
-    returns_ 1 "$exe" "-${opt}" > out 2> err || fail=1
-    compare /dev/null out || fail=1
-    grep "find: unknown predicate .-${opt}." err \
-      || { cat err; fail=1; }
-  done
+# and the now renamed '---noop' option.
+for opt in 'noop' '--noop'; do
+  rm -f out err || framework_failure_
+  returns_ 1 find "-${opt}" > out 2> err || fail=1
+  compare /dev/null out || fail=1
+  grep "find: unknown predicate .-${opt}." err \
+    || { cat err; fail=1; }
 done
 
 Exit $fail

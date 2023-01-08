@@ -1,9 +1,9 @@
 /* Test of free() function.
-   Copyright (C) 2020-2021 Free Software Foundation, Inc.
+   Copyright (C) 2020-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -108,8 +108,10 @@ main ()
      /proc/sys/vm/max_map_count exists.  This file contains the limit
        - for Linux >= 2.4.19: 65536 (DEFAULT_MAX_MAP_COUNT in linux/include/linux/sched.h)
        - for Linux >= 2.6.31: 65530 (DEFAULT_MAX_MAP_COUNT in linux/include/linux/mm.h).
+     But do not test it with glibc < 2.15, since that triggers a glibc internal
+     abort: "malloc.c:3551: munmap_chunk: Assertion `ret == 0' failed."
    */
-  #if defined __linux__
+  #if defined __linux__ && !(__GLIBC__ == 2 && __GLIBC_MINOR__ < 15)
   if (open ("/proc/sys/vm/max_map_count", O_RDONLY) >= 0)
     {
       /* Preparations.  */
