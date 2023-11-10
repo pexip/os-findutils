@@ -1,9 +1,9 @@
 /* Test of fcntl(2).
-   Copyright (C) 2009-2021 Free Software Foundation, Inc.
+   Copyright (C) 2009-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -414,6 +414,16 @@ main (int argc, char *argv[])
   /* Cleanup.  */
   ASSERT (close (fd) == 0);
   ASSERT (unlink (file) == 0);
+
+  /* Close file descriptors that may have been inherited from the parent
+     process and that would cause failures below.
+     Such file descriptors have been seen:
+       - with GNU make, when invoked as 'make -j N' with j > 1,
+       - in some versions of the KDE desktop environment,
+       - on NetBSD,
+       - in MacPorts with the "trace mode" enabled.
+   */
+  (void) close (10);
 
   /* Test whether F_DUPFD_CLOEXEC is effective.  */
   ASSERT (fcntl (1, F_DUPFD_CLOEXEC, 10) >= 0);

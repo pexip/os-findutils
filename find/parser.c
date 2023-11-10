@@ -1,5 +1,5 @@
 /* parser.c -- convert the command line args into an expression tree.
-   Copyright (C) 1990-2021 Free Software Foundation, Inc.
+   Copyright (C) 1990-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -90,6 +90,7 @@ static bool parse_empty         (const struct parser_table*, char *argv[], int *
 static bool parse_exec          (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_execdir       (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_false         (const struct parser_table*, char *argv[], int *arg_ptr);
+static bool parse_files0_from   (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_fls           (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_fprintf       (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_follow        (const struct parser_table*, char *argv[], int *arg_ptr);
@@ -241,6 +242,7 @@ static struct parser_table const parse_table[] =
   {ARG_ACTION,      "exec",    parse_exec, pred_exec}, /* POSIX */
   {ARG_TEST,        "executable",            parse_accesscheck, pred_executable}, /* GNU, 4.3.0+ */
   PARSE_ACTION     ("execdir",               execdir), /* *BSD, GNU */
+  PARSE_OPTION     ("files0-from",           files0_from),   /* GNU */
   PARSE_ACTION     ("fls",                   fls),	     /* GNU */
   PARSE_POSOPT     ("follow",                follow),  /* GNU, Unix */
   PARSE_ACTION     ("fprint",                fprint),	     /* GNU */
@@ -323,7 +325,7 @@ static struct parser_table const parse_table[] =
   {ARG_TEST, "-help",                 parse_help,    NULL},       /* GNU */
   {ARG_TEST, "version",               parse_version, NULL},	  /* GNU */
   {ARG_TEST, "-version",              parse_version, NULL},	  /* GNU */
-  {0, 0, 0, 0}
+  {0, NULL, NULL, NULL}
 };
 
 
@@ -431,7 +433,7 @@ check_option_combinations (const struct predicate *p)
       /* The user specified both -delete and -prune.  One might test
        * this by first doing
        *    find dirs   .... -prune ..... -print
-       * to fnd out what's going to get deleted, and then switch to
+       * to find out what's going to get deleted, and then switch to
        *    find dirs   .... -prune ..... -delete
        * once we are happy.  Unfortunately, the -delete action also
        * implicitly turns on -depth, which will affect the behaviour
@@ -461,7 +463,7 @@ get_noop (void)
   int i;
   if (NULL == noop)
     {
-      for (i = 0; parse_table[i].parser_name != 0; i++)
+      for (i = 0; parse_table[i].parser_name != NULL; i++)
 	{
 	  if (ARG_NOOP ==parse_table[i].type)
 	    {
@@ -501,6 +503,30 @@ get_stat_Ytime (const struct stat *p,
 void
 set_follow_state (enum SymlinkOption opt)
 {
+  switch (opt)
+    {
+    case SYMLINK_ALWAYS_DEREF:  /* -L */
+      options.xstat = optionl_stat;
+      options.x_getfilecon = optionl_getfilecon;
+      options.no_leaf_check = true;
+      break;
+
+    case SYMLINK_NEVER_DEREF:	/* -P (default) */
+      options.xstat = optionp_stat;
+      options.x_getfilecon = optionp_getfilecon;
+      /* Can't turn no_leaf_check off because the user might have specified
+       * -noleaf anyway
+       */
+      break;
+
+    case SYMLINK_DEREF_ARGSONLY: /* -H */
+      options.xstat = optionh_stat;
+      options.x_getfilecon = optionh_getfilecon;
+      options.no_leaf_check = true;
+    }
+
+  options.symlink_handling = opt;
+
   if (options.debug_options & DebugStat)
     {
       /* For DebugStat, the choice is made at runtime within debug_stat()
@@ -508,31 +534,6 @@ set_follow_state (enum SymlinkOption opt)
        */
       options.xstat = debug_stat;
     }
-  else
-    {
-      switch (opt)
-	{
-	case SYMLINK_ALWAYS_DEREF:  /* -L */
-	  options.xstat = optionl_stat;
-	  options.x_getfilecon = optionl_getfilecon;
-	  options.no_leaf_check = true;
-	  break;
-
-	case SYMLINK_NEVER_DEREF:	/* -P (default) */
-	  options.xstat = optionp_stat;
-	  options.x_getfilecon = optionp_getfilecon;
-	  /* Can't turn no_leaf_check off because the user might have specified
-	   * -noleaf anyway
-	   */
-	  break;
-
-	case SYMLINK_DEREF_ARGSONLY: /* -H */
-	  options.xstat = optionh_stat;
-	  options.x_getfilecon = optionh_getfilecon;
-	  options.no_leaf_check = true;
-	}
-    }
-  options.symlink_handling = opt;
 }
 
 
@@ -652,7 +653,7 @@ find_parser (const char *search_name)
   if (*search_name == '-')
     search_name++;
 
-  for (i = 0; parse_table[i].parser_name != 0; i++)
+  for (i = 0; parse_table[i].parser_name != NULL; i++)
     {
       if (strcmp (parse_table[i].parser_name, search_name) == 0)
 	{
@@ -961,6 +962,18 @@ parse_false (const struct parser_table* entry, char **argv, int *arg_ptr)
   (void) argv;
   (void) arg_ptr;
   return insert_false ();
+}
+
+static bool
+parse_files0_from (const struct parser_table* entry, char **argv, int *arg_ptr)
+{
+  const char *filename;
+  if (collect_arg (argv, arg_ptr, &filename))
+    {
+      options.files0_from = filename;
+      return true;
+    }
+  return false;
 }
 
 static bool
@@ -2903,8 +2916,10 @@ insert_exec_ok (const char *action,
   else
     {
       allow_plus = false;
+      /* The -ok* family need user confirmations via stdin.  */
+      options.ok_prompt_stdin = true;
       /* If find reads stdin (i.e. for -ok and similar), close stdin
-       * in the child to prevent some script from consiming the output
+       * in the child to prevent some script from consuming the output
        * intended for find.
        */
       execp->close_stdin = true;

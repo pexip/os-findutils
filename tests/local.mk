@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in -*-Makefile-*-.
 
-## Copyright (C) 2007-2021 Free Software Foundation, Inc.
+## Copyright (C) 2007-2022 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 ## You should have received a copy of the GNU General Public License
 ## along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-built_programs = find oldfind xargs frcode locate updatedb
+built_programs = find xargs frcode locate updatedb
 
 # Indirections required so that we'll still be able to know the
 # complete list of our tests even if the user overrides TESTS
@@ -107,6 +107,7 @@ check-root:
 all_tests = \
   tests/misc/help-version.sh \
   tests/find/depth-unreadable-dir.sh \
+  tests/find/inode-zero.sh \
   tests/find/many-dir-entries-vs-OOM.sh \
   tests/find/name-lbracket-literal.sh \
   tests/find/printf_escapechars.sh \
@@ -114,6 +115,7 @@ all_tests = \
   tests/find/printf_inode.sh \
   tests/find/execdir-fd-leak.sh \
   tests/find/exec-plus-last-file.sh \
+  tests/find/files0-from.sh \
   tests/find/refuse-noop.sh \
   tests/find/debug-missing-arg.sh \
   tests/find/used.sh \
