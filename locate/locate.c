@@ -1,5 +1,5 @@
 /* locate -- search databases for filenames that match patterns
-   Copyright (C) 1994-2021 Free Software Foundation, Inc.
+   Copyright (C) 1994-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ enum ExistenceCheckType
   };
 
 /* Check for existence of files before printing them out? */
-enum ExistenceCheckType check_existence = ACCEPT_EITHER;
+static enum ExistenceCheckType check_existence = ACCEPT_EITHER;
 
 static int follow_symlinks = 1;
 
@@ -204,7 +204,7 @@ get_short (FILE *fp)
   return x;
 }
 
-const char * const metacharacters = "*?[]\\";
+static const char * const metacharacters = "*?[]\\";
 
 /* Return nonzero if S contains any shell glob characters.
  */

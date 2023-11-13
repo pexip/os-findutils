@@ -1,5 +1,5 @@
 /* tree.c -- helper functions to build and evaluate the expression tree.
-   Copyright (C) 1990-2021 Free Software Foundation, Inc.
+   Copyright (C) 1990-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -128,11 +128,19 @@ get_expr (struct predicate **input,
       break;
 
     case CLOSE_PAREN:
+      if (prev_pred == NULL)
+	{
+	  /* Happens with e.g. "find -files0-from - ')' -print" */
+	  die (EXIT_FAILURE, 0,
+	       _("invalid expression: expected expression before closing parentheses '%s'."),
+	       this_pred->p_name);
+	}
+
       if ((UNI_OP == prev_pred->p_type
 	  || BI_OP == prev_pred->p_type)
 	  && !this_pred->artificial)
 	{
-	  /* e.g. "find \( -not \)" or "find \( -true -a \" */
+	  /* e.g. "find \( -not \)" or "find \( -true -a \)" */
 	  die (EXIT_FAILURE, 0,
 	       _("expected an expression between '%s' and ')'"),
 	       prev_pred->p_name);
@@ -180,6 +188,12 @@ get_expr (struct predicate **input,
       *input = (*input)->pred_next;
       if ( (*input)->p_type == CLOSE_PAREN )
 	{
+	  if (prev_pred->artificial)
+	    {
+	      die (EXIT_FAILURE, 0,
+		   _("invalid expression: expected expression before closing parentheses '%s'."),
+		   (*input)->p_name);
+	    }
 	  die (EXIT_FAILURE, 0,
 	       _("invalid expression; empty parentheses are not allowed."));
 	}

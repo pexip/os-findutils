@@ -2,7 +2,7 @@
 # Test that find -name treats the unquoted '[' argument literally.
 # See Savannah bug #32043.
 
-# Copyright (C) 2011-2021 Free Software Foundation, Inc.
+# Copyright (C) 2011-2022 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 . "${srcdir=.}/tests/init.sh"; fu_path_prepend_
-print_ver_ find oldfind
+print_ver_ find
 
 # Prepare a file named '['.
 touch '[' || framework_failure_
@@ -26,8 +26,5 @@ echo './[' > exp || framework_failure_
 
 find -name '[' -print > out || fail=1
 compare exp out || fail=1
-
-oldfind -name '[' -print > out2 || fail=1
-compare exp out2 || fail=1
 
 Exit $fail

@@ -1,10 +1,10 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
 ## Process this file with automake to produce Makefile.in.
-# Copyright (C) 2002-2021 Free Software Foundation, Inc.
+# Copyright (C) 2002-2022 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This file is distributed in the hope that it will be useful,
@@ -43,6 +43,9 @@ CLEANFILES =
 DISTCLEANFILES =
 MAINTAINERCLEANFILES =
 
+CFLAGS = @GL_CFLAG_ALLOW_WARNINGS@ $(GL_CFLAG_GNULIB_WARNINGS) @CFLAGS@
+CXXFLAGS = @GL_CXXFLAG_ALLOW_WARNINGS@ @CXXFLAGS@
+
 AM_CPPFLAGS = \
   -D@gltests_WITNESS@=1 \
   -I. -I$(srcdir) \
@@ -61,10 +64,11 @@ TESTS_ENVIRONMENT += EXEEXT='@EXEEXT@' srcdir='$(srcdir)'
 
 ## begin gnulib module accept
 
+if GL_COND_OBJ_ACCEPT
+libtests_a_SOURCES += accept.c
+endif
 
-EXTRA_DIST += accept.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += accept.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module accept
 
@@ -113,6 +117,15 @@ EXTRA_DIST += test-argmatch.c macros.h
 
 ## end   gnulib module argmatch-tests
 
+## begin gnulib module argv-iter-tests
+
+TESTS += test-argv-iter
+check_PROGRAMS += test-argv-iter
+test_argv_iter_LDADD = $(LDADD) $(LIB_GETRANDOM)
+EXTRA_DIST += test-argv-iter.c macros.h
+
+## end   gnulib module argv-iter-tests
+
 ## begin gnulib module arpa_inet
 
 BUILT_SOURCES += arpa/inet.h
@@ -120,18 +133,17 @@ BUILT_SOURCES += arpa/inet.h
 # We need the following in order to create <arpa/inet.h> when the system
 # doesn't have one.
 arpa/inet.h: arpa_inet.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H) $(ARG_NONNULL_H)
-	$(AM_V_at)$(MKDIR_P) arpa
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(AM_V_GEN)$(MKDIR_P) '%reldir%/arpa'
+	$(AM_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''HAVE_FEATURES_H''@|$(HAVE_FEATURES_H)|g' \
 	      -e 's|@''NEXT_ARPA_INET_H''@|$(NEXT_ARPA_INET_H)|g' \
 	      -e 's|@''HAVE_ARPA_INET_H''@|$(HAVE_ARPA_INET_H)|g' \
-	      -e 's/@''GNULIB_INET_NTOP''@/$(GNULIB_INET_NTOP)/g' \
-	      -e 's/@''GNULIB_INET_PTON''@/$(GNULIB_INET_PTON)/g' \
+	      -e 's/@''GNULIB_INET_NTOP''@/$(GL_GNULIB_INET_NTOP)/g' \
+	      -e 's/@''GNULIB_INET_PTON''@/$(GL_GNULIB_INET_PTON)/g' \
 	      -e 's|@''HAVE_WS2TCPIP_H''@|$(HAVE_WS2TCPIP_H)|g' \
 	      -e 's|@''HAVE_DECL_INET_NTOP''@|$(HAVE_DECL_INET_NTOP)|g' \
 	      -e 's|@''HAVE_DECL_INET_PTON''@|$(HAVE_DECL_INET_PTON)|g' \
@@ -140,9 +152,8 @@ arpa/inet.h: arpa_inet.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
 	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/arpa_inet.in.h; \
-	} > $@-t && \
-	mv $@-t $@
+	      $(srcdir)/arpa_inet.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
 MOSTLYCLEANFILES += arpa/inet.h arpa/inet.h-t
 MOSTLYCLEANDIRS += arpa
 
@@ -160,10 +171,9 @@ EXTRA_DIST += test-arpa_inet.c
 
 ## begin gnulib module atoll
 
-
-EXTRA_DIST += atoll.c
-
-EXTRA_libtests_a_SOURCES += atoll.c
+if GL_COND_OBJ_ATOLL
+libtests_a_SOURCES += atoll.c
+endif
 
 ## end   gnulib module atoll
 
@@ -184,10 +194,11 @@ EXTRA_DIST += test-binary-io.sh test-binary-io.c macros.h
 
 ## begin gnulib module bind
 
+if GL_COND_OBJ_BIND
+libtests_a_SOURCES += bind.c
+endif
 
-EXTRA_DIST += bind.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += bind.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module bind
 
@@ -264,6 +275,14 @@ EXTRA_DIST += test-c-strstr.c macros.h
 
 ## end   gnulib module c-strstr-tests
 
+## begin gnulib module calloc-gnu-tests
+
+TESTS += test-calloc-gnu
+check_PROGRAMS += test-calloc-gnu
+EXTRA_DIST += test-calloc-gnu.c macros.h
+
+## end   gnulib module calloc-gnu-tests
+
 ## begin gnulib module canonicalize-tests
 
 TESTS += test-canonicalize
@@ -308,10 +327,11 @@ EXTRA_DIST += test-closein.sh test-closein.c
 
 ## begin gnulib module connect
 
+if GL_COND_OBJ_CONNECT
+libtests_a_SOURCES += connect.c
+endif
 
-EXTRA_DIST += connect.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += connect.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module connect
 
@@ -382,6 +402,14 @@ EXTRA_DIST += test-dup2.c signature.h macros.h
 
 ## end   gnulib module dup2-tests
 
+## begin gnulib module dynarray-tests
+
+TESTS += test-dynarray
+check_PROGRAMS += test-dynarray
+EXTRA_DIST += test-dynarray.c macros.h
+
+## end   gnulib module dynarray-tests
+
 ## begin gnulib module environ-tests
 
 TESTS += test-environ
@@ -418,6 +446,14 @@ EXTRA_DIST += test-fchdir.c signature.h macros.h
 
 ## end   gnulib module fchdir-tests
 
+## begin gnulib module fclose-tests
+
+TESTS += test-fclose
+check_PROGRAMS += test-fclose
+EXTRA_DIST += test-fclose.c
+
+## end   gnulib module fclose-tests
+
 ## begin gnulib module fcntl-h-tests
 
 TESTS += test-fcntl-h
@@ -444,10 +480,9 @@ EXTRA_DIST += test-fcntl.c signature.h macros.h
 
 ## begin gnulib module fdopen
 
-
-EXTRA_DIST += fdopen.c
-
-EXTRA_libtests_a_SOURCES += fdopen.c
+if GL_COND_OBJ_FDOPEN
+libtests_a_SOURCES += fdopen.c
+endif
 
 ## end   gnulib module fdopen
 
@@ -654,10 +689,9 @@ EXTRA_DIST += test-ftello.c test-ftello.sh test-ftello2.sh test-ftello3.c test-f
 
 ## begin gnulib module ftruncate
 
-
-EXTRA_DIST += ftruncate.c
-
-EXTRA_libtests_a_SOURCES += ftruncate.c
+if GL_COND_OBJ_FTRUNCATE
+libtests_a_SOURCES += ftruncate.c
+endif
 
 ## end   gnulib module ftruncate
 
@@ -677,6 +711,25 @@ EXTRA_DIST += test-fwrite.c signature.h macros.h
 
 ## end   gnulib module fwrite-tests
 
+## begin gnulib module gen-header
+
+# In 'sed', replace the pattern space with a "DO NOT EDIT" comment.
+SED_HEADER_NOEDIT = s,.*,/* DO NOT EDIT! GENERATED AUTOMATICALLY! */,
+
+# '$(SED_HEADER_STDOUT) -e "..."' runs 'sed' but first outputs "DO NOT EDIT".
+SED_HEADER_STDOUT = sed -e 1h -e '1$(SED_HEADER_NOEDIT)' -e 1G
+
+# '$(SED_HEADER_TO_AT_t) FILE' copies FILE to $@-t, prepending a leading
+# "DO_NOT_EDIT".  Although this could be done more simply via:
+#	SED_HEADER_TO_AT_t = $(SED_HEADER_STDOUT) > $@-t
+# the -n and 'w' avoid a fork+exec, at least when GNU Make is used.
+SED_HEADER_TO_AT_t = $(SED_HEADER_STDOUT) -n -e 'w $@-t'
+
+# Use $(gl_V_at) instead of $(AM_V_GEN) or $(AM_V_at) on a line that
+gl_V_at = $(AM_V_GEN)
+
+## end   gnulib module gen-header
+
 ## begin gnulib module getcwd-lgpl-tests
 
 TESTS += test-getcwd-lgpl
@@ -691,7 +744,7 @@ EXTRA_DIST += test-getcwd-lgpl.c signature.h macros.h
 TESTS += test-getcwd.sh
 check_PROGRAMS += test-getcwd
 test_getcwd_LDADD = $(LDADD) @LIBINTL@
-EXTRA_DIST += test-getcwd.c test-getcwd.sh
+EXTRA_DIST += test-getcwd.sh test-getcwd.c qemu.h
 
 ## end   gnulib module getcwd-tests
 
@@ -758,10 +811,9 @@ EXTRA_DIST += macros.h signature.h test-getopt-posix.c test-getopt-main.h test-g
 
 ## begin gnulib module getpagesize
 
-
-EXTRA_DIST += getpagesize.c
-
-EXTRA_libtests_a_SOURCES += getpagesize.c
+if GL_COND_OBJ_GETPAGESIZE
+libtests_a_SOURCES += getpagesize.c
+endif
 
 ## end   gnulib module getpagesize
 
@@ -774,6 +826,23 @@ test_getprogname_LDADD = $(LDADD)
 EXTRA_DIST += test-getprogname.c
 
 ## end   gnulib module getprogname-tests
+
+## begin gnulib module getrandom
+
+if GL_COND_OBJ_GETRANDOM
+libtests_a_SOURCES += getrandom.c
+endif
+
+## end   gnulib module getrandom
+
+## begin gnulib module getrandom-tests
+
+TESTS += test-getrandom
+check_PROGRAMS += test-getrandom
+test_getrandom_LDADD = $(LDADD) @LIB_GETRANDOM@
+EXTRA_DIST += test-getrandom.c signature.h macros.h
+
+## end   gnulib module getrandom-tests
 
 ## begin gnulib module gettimeofday-tests
 
@@ -830,10 +899,9 @@ EXTRA_DIST += test-ignore-value.c
 
 ## begin gnulib module inet_pton
 
-
-EXTRA_DIST += inet_pton.c
-
-EXTRA_libtests_a_SOURCES += inet_pton.c
+if GL_COND_OBJ_INET_PTON
+libtests_a_SOURCES += inet_pton.c
+endif
 
 ## end   gnulib module inet_pton
 
@@ -882,10 +950,11 @@ EXTRA_DIST += test-inttypes.c
 
 ## begin gnulib module ioctl
 
+if GL_COND_OBJ_IOCTL
+libtests_a_SOURCES += ioctl.c
+endif
 
-EXTRA_DIST += ioctl.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += ioctl.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module ioctl
 
@@ -1004,10 +1073,11 @@ EXTRA_DIST += test-limits-h.c
 
 ## begin gnulib module listen
 
+if GL_COND_OBJ_LISTEN
+libtests_a_SOURCES += listen.c
+endif
 
-EXTRA_DIST += listen.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += listen.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module listen
 
@@ -1096,7 +1166,7 @@ EXTRA_DIST += test-lstat.h test-lstat.c signature.h macros.h
 
 TESTS += test-malloc-gnu
 check_PROGRAMS += test-malloc-gnu
-EXTRA_DIST += test-malloc-gnu.c
+EXTRA_DIST += test-malloc-gnu.c macros.h
 
 ## end   gnulib module malloc-gnu-tests
 
@@ -1201,6 +1271,22 @@ EXTRA_DIST += test-memrchr.c zerosize-ptr.h signature.h macros.h
 
 ## end   gnulib module memrchr-tests
 
+## begin gnulib module mkdir
+
+if GL_COND_OBJ_MKDIR
+libtests_a_SOURCES += mkdir.c
+endif
+
+## end   gnulib module mkdir
+
+## begin gnulib module mkdir-tests
+
+TESTS += test-mkdir
+check_PROGRAMS += test-mkdir
+EXTRA_DIST += test-mkdir.h test-mkdir.c signature.h macros.h
+
+## end   gnulib module mkdir-tests
+
 ## begin gnulib module modf-tests
 
 TESTS += test-modf
@@ -1213,10 +1299,9 @@ EXTRA_DIST += test-modf.c test-modf.h signature.h macros.h randomd.c
 
 ## begin gnulib module nanosleep
 
-
-EXTRA_DIST += nanosleep.c
-
-EXTRA_libtests_a_SOURCES += nanosleep.c
+if GL_COND_OBJ_NANOSLEEP
+libtests_a_SOURCES += nanosleep.c
+endif
 
 ## end   gnulib module nanosleep
 
@@ -1237,18 +1322,16 @@ BUILT_SOURCES += $(NETINET_IN_H)
 # doesn't have one.
 if GL_GENERATE_NETINET_IN_H
 netinet/in.h: netinet_in.in.h $(top_builddir)/config.status
-	$(AM_V_at)$(MKDIR_P) netinet
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(AM_V_GEN)$(MKDIR_P) '%reldir%/netinet'
+	$(AM_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_NETINET_IN_H''@|$(NEXT_NETINET_IN_H)|g' \
 	      -e 's|@''HAVE_NETINET_IN_H''@|$(HAVE_NETINET_IN_H)|g' \
-	      < $(srcdir)/netinet_in.in.h; \
-	} > $@-t && \
-	mv $@-t $@
+	      $(srcdir)/netinet_in.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
 else
 netinet/in.h: $(top_builddir)/config.status
 	rm -f $@
@@ -1369,22 +1452,21 @@ BUILT_SOURCES += pthread.h
 # We need the following in order to create <pthread.h> when the system
 # doesn't have one that works with the given compiler.
 pthread.h: pthread.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(_NORETURN_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(gl_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''HAVE_PTHREAD_H''@|$(HAVE_PTHREAD_H)|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_PTHREAD_H''@|$(NEXT_PTHREAD_H)|g' \
-	      -e 's/@''GNULIB_PTHREAD_THREAD''@/$(GNULIB_PTHREAD_THREAD)/g' \
-	      -e 's/@''GNULIB_PTHREAD_ONCE''@/$(GNULIB_PTHREAD_ONCE)/g' \
-	      -e 's/@''GNULIB_PTHREAD_MUTEX''@/$(GNULIB_PTHREAD_MUTEX)/g' \
-	      -e 's/@''GNULIB_PTHREAD_RWLOCK''@/$(GNULIB_PTHREAD_RWLOCK)/g' \
-	      -e 's/@''GNULIB_PTHREAD_COND''@/$(GNULIB_PTHREAD_COND)/g' \
-	      -e 's/@''GNULIB_PTHREAD_TSS''@/$(GNULIB_PTHREAD_TSS)/g' \
-	      -e 's/@''GNULIB_PTHREAD_SPIN''@/$(GNULIB_PTHREAD_SPIN)/g' \
-	      -e 's/@''GNULIB_PTHREAD_MUTEX_TIMEDLOCK''@/$(GNULIB_PTHREAD_MUTEX_TIMEDLOCK)/g' \
+	      -e 's/@''GNULIB_PTHREAD_THREAD''@/$(GL_GNULIB_PTHREAD_THREAD)/g' \
+	      -e 's/@''GNULIB_PTHREAD_ONCE''@/$(GL_GNULIB_PTHREAD_ONCE)/g' \
+	      -e 's/@''GNULIB_PTHREAD_MUTEX''@/$(GL_GNULIB_PTHREAD_MUTEX)/g' \
+	      -e 's/@''GNULIB_PTHREAD_RWLOCK''@/$(GL_GNULIB_PTHREAD_RWLOCK)/g' \
+	      -e 's/@''GNULIB_PTHREAD_COND''@/$(GL_GNULIB_PTHREAD_COND)/g' \
+	      -e 's/@''GNULIB_PTHREAD_TSS''@/$(GL_GNULIB_PTHREAD_TSS)/g' \
+	      -e 's/@''GNULIB_PTHREAD_SPIN''@/$(GL_GNULIB_PTHREAD_SPIN)/g' \
+	      -e 's/@''GNULIB_PTHREAD_MUTEX_TIMEDLOCK''@/$(GL_GNULIB_PTHREAD_MUTEX_TIMEDLOCK)/g' \
 	      -e 's|@''HAVE_PTHREAD_T''@|$(HAVE_PTHREAD_T)|g' \
 	      -e 's|@''HAVE_PTHREAD_SPINLOCK_T''@|$(HAVE_PTHREAD_SPINLOCK_T)|g' \
 	      -e 's|@''HAVE_PTHREAD_CREATE_DETACHED''@|$(HAVE_PTHREAD_CREATE_DETACHED)|g' \
@@ -1497,9 +1579,9 @@ pthread.h: pthread.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(_NORETURN_H
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _Noreturn/r $(_NORETURN_H)' \
 	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
-	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)'; \
-	} > $@-t && \
-	mv $@-t $@
+	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
+	      > $@-t
+	$(AM_V_at)mv $@-t $@
 MOSTLYCLEANFILES += pthread.h pthread.h-t
 
 EXTRA_DIST += pthread.in.h
@@ -1516,10 +1598,9 @@ EXTRA_DIST += test-pthread.c
 
 ## begin gnulib module pthread-thread
 
-
-EXTRA_DIST += pthread-thread.c
-
-EXTRA_libtests_a_SOURCES += pthread-thread.c
+if GL_COND_OBJ_PTHREAD_THREAD
+libtests_a_SOURCES += pthread-thread.c
+endif
 
 ## end   gnulib module pthread-thread
 
@@ -1534,10 +1615,9 @@ EXTRA_DIST += test-pthread-thread.c macros.h
 
 ## begin gnulib module pthread_sigmask
 
-
-EXTRA_DIST += pthread_sigmask.c
-
-EXTRA_libtests_a_SOURCES += pthread_sigmask.c
+if GL_COND_OBJ_PTHREAD_SIGMASK
+libtests_a_SOURCES += pthread_sigmask.c
+endif
 
 ## end   gnulib module pthread_sigmask
 
@@ -1553,10 +1633,9 @@ EXTRA_DIST += test-pthread_sigmask1.c test-pthread_sigmask2.c signature.h macros
 
 ## begin gnulib module putenv
 
-
-EXTRA_DIST += putenv.c
-
-EXTRA_libtests_a_SOURCES += putenv.c
+if GL_COND_OBJ_PUTENV
+libtests_a_SOURCES += putenv.c
+endif
 
 ## end   gnulib module putenv
 
@@ -1571,10 +1650,9 @@ EXTRA_DIST += test-quotearg-simple.c test-quotearg.h macros.h zerosize-ptr.h
 
 ## begin gnulib module raise
 
-
-EXTRA_DIST += raise.c
-
-EXTRA_libtests_a_SOURCES += raise.c
+if GL_COND_OBJ_RAISE
+libtests_a_SOURCES += raise.c
+endif
 
 ## end   gnulib module raise
 
@@ -1623,9 +1701,17 @@ EXTRA_DIST += test-readlink.h test-readlinkat.c signature.h macros.h
 
 TESTS += test-realloc-gnu
 check_PROGRAMS += test-realloc-gnu
-EXTRA_DIST += test-realloc-gnu.c
+EXTRA_DIST += test-realloc-gnu.c macros.h
 
 ## end   gnulib module realloc-gnu-tests
+
+## begin gnulib module reallocarray-tests
+
+TESTS += test-reallocarray
+check_PROGRAMS += test-reallocarray
+EXTRA_DIST += test-reallocarray.c signature.h macros.h
+
+## end   gnulib module reallocarray-tests
 
 ## begin gnulib module regex-tests
 
@@ -1651,9 +1737,8 @@ BUILT_SOURCES += sched.h
 # We need the following in order to create a replacement for <sched.h> when
 # the system doesn't have one.
 sched.h: sched.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(gl_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''HAVE_SCHED_H''@|$(HAVE_SCHED_H)|g' \
 	      -e 's|@''HAVE_SYS_CDEFS_H''@|$(HAVE_SYS_CDEFS_H)|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
@@ -1661,14 +1746,13 @@ sched.h: sched.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_SCHED_H''@|$(NEXT_SCHED_H)|g' \
 	      -e 's|@''HAVE_STRUCT_SCHED_PARAM''@|$(HAVE_STRUCT_SCHED_PARAM)|g' \
-	      -e 's/@''GNULIB_SCHED_YIELD''@/$(GNULIB_SCHED_YIELD)/g' \
+	      -e 's/@''GNULIB_SCHED_YIELD''@/$(GL_GNULIB_SCHED_YIELD)/g' \
 	      -e 's|@''HAVE_SCHED_YIELD''@|$(HAVE_SCHED_YIELD)|g' \
 	      -e 's|@''REPLACE_SCHED_YIELD''@|$(REPLACE_SCHED_YIELD)|g' \
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/sched.in.h; \
-	} > $@-t && \
-	mv $@-t $@
+	      $(srcdir)/sched.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
 MOSTLYCLEANFILES += sched.h sched.h-t
 
 EXTRA_DIST += sched.in.h
@@ -1683,6 +1767,14 @@ EXTRA_DIST += test-sched.c
 
 ## end   gnulib module sched-tests
 
+## begin gnulib module sched_yield
+
+if GL_COND_OBJ_SCHED_YIELD
+libtests_a_SOURCES += sched_yield.c
+endif
+
+## end   gnulib module sched_yield
+
 ## begin gnulib module scratch_buffer-tests
 
 TESTS += test-scratch-buffer
@@ -1692,12 +1784,19 @@ EXTRA_DIST += test-scratch-buffer.c macros.h
 
 ## end   gnulib module scratch_buffer-tests
 
+## begin gnulib module secure_getenv
+
+if GL_COND_OBJ_SECURE_GETENV
+libtests_a_SOURCES += secure_getenv.c
+endif
+
+## end   gnulib module secure_getenv
+
 ## begin gnulib module select
 
-
-EXTRA_DIST += select.c
-
-EXTRA_libtests_a_SOURCES += select.c
+if GL_COND_OBJ_SELECT
+libtests_a_SOURCES += select.c
+endif
 
 ## end   gnulib module select
 
@@ -1723,10 +1822,9 @@ EXTRA_DIST += test-setenv.c signature.h macros.h
 
 ## begin gnulib module setlocale
 
-
-EXTRA_DIST += setlocale.c
-
-EXTRA_libtests_a_SOURCES += setlocale.c
+if GL_COND_OBJ_SETLOCALE
+libtests_a_SOURCES += setlocale.c
+endif
 
 ## end   gnulib module setlocale
 
@@ -1764,10 +1862,11 @@ EXTRA_DIST += test-setlocale1.sh test-setlocale1.c test-setlocale2.sh test-setlo
 
 ## begin gnulib module setsockopt
 
+if GL_COND_OBJ_SETSOCKOPT
+libtests_a_SOURCES += setsockopt.c
+endif
 
-EXTRA_DIST += setsockopt.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += setsockopt.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module setsockopt
 
@@ -1782,11 +1881,12 @@ EXTRA_DIST += test-setsockopt.c signature.h macros.h
 
 ## begin gnulib module sigaction
 
+if GL_COND_OBJ_SIGACTION
+libtests_a_SOURCES += sigaction.c
+endif
 libtests_a_SOURCES += sig-handler.c
 
-EXTRA_DIST += sig-handler.h sigaction.c
-
-EXTRA_libtests_a_SOURCES += sigaction.c
+EXTRA_DIST += sig-handler.h
 
 ## end   gnulib module sigaction
 
@@ -1805,18 +1905,17 @@ BUILT_SOURCES += signal.h
 # We need the following in order to create <signal.h> when the system
 # doesn't have a complete one.
 signal.h: signal.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(gl_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_SIGNAL_H''@|$(NEXT_SIGNAL_H)|g' \
-	      -e 's/@''GNULIB_PTHREAD_SIGMASK''@/$(GNULIB_PTHREAD_SIGMASK)/g' \
-	      -e 's/@''GNULIB_RAISE''@/$(GNULIB_RAISE)/g' \
-	      -e 's/@''GNULIB_SIGNAL_H_SIGPIPE''@/$(GNULIB_SIGNAL_H_SIGPIPE)/g' \
-	      -e 's/@''GNULIB_SIGPROCMASK''@/$(GNULIB_SIGPROCMASK)/g' \
-	      -e 's/@''GNULIB_SIGACTION''@/$(GNULIB_SIGACTION)/g' \
+	      -e 's/@''GNULIB_PTHREAD_SIGMASK''@/$(GL_GNULIB_PTHREAD_SIGMASK)/g' \
+	      -e 's/@''GNULIB_RAISE''@/$(GL_GNULIB_RAISE)/g' \
+	      -e 's/@''GNULIB_SIGNAL_H_SIGPIPE''@/$(GL_GNULIB_SIGNAL_H_SIGPIPE)/g' \
+	      -e 's/@''GNULIB_SIGPROCMASK''@/$(GL_GNULIB_SIGPROCMASK)/g' \
+	      -e 's/@''GNULIB_SIGACTION''@/$(GL_GNULIB_SIGACTION)/g' \
 	      -e 's|@''HAVE_POSIX_SIGNALBLOCKING''@|$(HAVE_POSIX_SIGNALBLOCKING)|g' \
 	      -e 's|@''HAVE_PTHREAD_SIGMASK''@|$(HAVE_PTHREAD_SIGMASK)|g' \
 	      -e 's|@''HAVE_RAISE''@|$(HAVE_RAISE)|g' \
@@ -1831,9 +1930,8 @@ signal.h: signal.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
 	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/signal.in.h; \
-	} > $@-t && \
-	mv $@-t $@
+	      $(srcdir)/signal.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
 MOSTLYCLEANFILES += signal.h signal.h-t
 
 EXTRA_DIST += signal.in.h
@@ -1850,10 +1948,9 @@ EXTRA_DIST += test-signal-h.c
 
 ## begin gnulib module sigprocmask
 
-
-EXTRA_DIST += sigprocmask.c
-
-EXTRA_libtests_a_SOURCES += sigprocmask.c
+if GL_COND_OBJ_SIGPROCMASK
+libtests_a_SOURCES += sigprocmask.c
+endif
 
 ## end   gnulib module sigprocmask
 
@@ -1867,10 +1964,9 @@ EXTRA_DIST += test-sigprocmask.c signature.h macros.h
 
 ## begin gnulib module sleep
 
-
-EXTRA_DIST += sleep.c
-
-EXTRA_libtests_a_SOURCES += sleep.c
+if GL_COND_OBJ_SLEEP
+libtests_a_SOURCES += sleep.c
+endif
 
 ## end   gnulib module sleep
 
@@ -1918,18 +2014,6 @@ EXTRA_DIST += c++defs.h
 
 ## end   gnulib module snippet/c++defs
 
-## begin gnulib module snippet/unused-parameter
-
-# Because this Makefile snippet defines a variable used by other
-# gnulib Makefile snippets, it must be present in all makefiles that
-# need it. This is ensured by the applicability 'all' defined above.
-
-UNUSED_PARAMETER_H=$(srcdir)/unused-parameter.h
-
-EXTRA_DIST += unused-parameter.h
-
-## end   gnulib module snippet/unused-parameter
-
 ## begin gnulib module snippet/warn-on-use
 
 # Because this Makefile snippet defines a variable used by other
@@ -1953,10 +2037,11 @@ EXTRA_DIST += test-snprintf.c signature.h macros.h
 
 ## begin gnulib module socket
 
+if GL_COND_OBJ_SOCKET
+libtests_a_SOURCES += socket.c
+endif
 
-EXTRA_DIST += socket.c w32sock.h
-
-EXTRA_libtests_a_SOURCES += socket.c
+EXTRA_DIST += w32sock.h
 
 ## end   gnulib module socket
 
@@ -2103,10 +2188,13 @@ EXTRA_DIST += test-strstr.c zerosize-ptr.h signature.h macros.h
 
 ## begin gnulib module strtoll
 
+if GL_COND_OBJ_STRTOLL
+libtests_a_SOURCES += strtoll.c
+endif
 
-EXTRA_DIST += strtol.c strtoll.c
+EXTRA_DIST += strtol.c
 
-EXTRA_libtests_a_SOURCES += strtol.c strtoll.c
+EXTRA_libtests_a_SOURCES += strtol.c
 
 ## end   gnulib module strtoll
 
@@ -2136,10 +2224,9 @@ EXTRA_DIST += test-strtoumax.c signature.h macros.h
 
 ## begin gnulib module symlink
 
-
-EXTRA_DIST += symlink.c
-
-EXTRA_libtests_a_SOURCES += symlink.c
+if GL_COND_OBJ_SYMLINK
+libtests_a_SOURCES += symlink.c
+endif
 
 ## end   gnulib module symlink
 
@@ -2153,10 +2240,13 @@ EXTRA_DIST += test-symlink.h test-symlink.c signature.h macros.h
 
 ## begin gnulib module symlinkat
 
+if GL_COND_OBJ_SYMLINKAT
+libtests_a_SOURCES += symlinkat.c
+endif
 
-EXTRA_DIST += at-func.c symlinkat.c
+EXTRA_DIST += at-func.c
 
-EXTRA_libtests_a_SOURCES += at-func.c symlinkat.c
+EXTRA_libtests_a_SOURCES += at-func.c
 
 ## end   gnulib module symlinkat
 
@@ -2176,24 +2266,22 @@ BUILT_SOURCES += sys/ioctl.h
 # We need the following in order to create <sys/ioctl.h> when the system
 # does not have a complete one.
 sys/ioctl.h: sys_ioctl.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
-	$(AM_V_at)$(MKDIR_P) sys
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(AM_V_GEN)$(MKDIR_P) '%reldir%/sys'
+	$(AM_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''HAVE_SYS_IOCTL_H''@|$(HAVE_SYS_IOCTL_H)|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_SYS_IOCTL_H''@|$(NEXT_SYS_IOCTL_H)|g' \
-	      -e 's/@''GNULIB_IOCTL''@/$(GNULIB_IOCTL)/g' \
+	      -e 's/@''GNULIB_IOCTL''@/$(GL_GNULIB_IOCTL)/g' \
 	      -e 's|@''SYS_IOCTL_H_HAVE_WINSOCK2_H''@|$(SYS_IOCTL_H_HAVE_WINSOCK2_H)|g' \
 	      -e 's|@''SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS''@|$(SYS_IOCTL_H_HAVE_WINSOCK2_H_AND_USE_SOCKETS)|g' \
 	      -e 's|@''REPLACE_IOCTL''@|$(REPLACE_IOCTL)|g' \
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/sys_ioctl.in.h; \
-	} > $@-t && \
-	mv $@-t $@
+	      $(srcdir)/sys_ioctl.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
 MOSTLYCLEANFILES += sys/ioctl.h sys/ioctl.h-t
 MOSTLYCLEANDIRS += sys
 
@@ -2209,6 +2297,44 @@ EXTRA_DIST += test-sys_ioctl.c
 
 ## end   gnulib module sys_ioctl-tests
 
+## begin gnulib module sys_random
+
+BUILT_SOURCES += sys/random.h
+
+# We need the following in order to create <sys/random.h> when the system
+# doesn't have one.
+sys/random.h: sys_random.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(ARG_NONNULL_H) $(WARN_ON_USE_H)
+	$(AM_V_GEN)$(MKDIR_P) '%reldir%/sys'
+	$(AM_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
+	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
+	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
+	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
+	      -e 's|@''NEXT_SYS_RANDOM_H''@|$(NEXT_SYS_RANDOM_H)|g' \
+	      -e 's|@''HAVE_SYS_RANDOM_H''@|$(HAVE_SYS_RANDOM_H)|g' \
+	      -e 's/@''GNULIB_GETRANDOM''@/$(GL_GNULIB_GETRANDOM)/g' \
+	      -e 's/@''HAVE_GETRANDOM''@/$(HAVE_GETRANDOM)/g' \
+	      -e 's/@''REPLACE_GETRANDOM''@/$(REPLACE_GETRANDOM)/g' \
+	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
+	      -e '/definition of _GL_ARG_NONNULL/r $(ARG_NONNULL_H)' \
+	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
+	      $(srcdir)/sys_random.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
+MOSTLYCLEANFILES += sys/random.h sys/random.h-t
+MOSTLYCLEANDIRS += sys
+
+EXTRA_DIST += sys_random.in.h
+
+## end   gnulib module sys_random
+
+## begin gnulib module sys_random-tests
+
+TESTS += test-sys_random
+check_PROGRAMS += test-sys_random
+EXTRA_DIST += test-sys_random.c
+
+## end   gnulib module sys_random-tests
+
 ## begin gnulib module sys_select
 
 BUILT_SOURCES += sys/select.h
@@ -2216,26 +2342,24 @@ BUILT_SOURCES += sys/select.h
 # We need the following in order to create <sys/select.h> when the system
 # doesn't have one that works with the given compiler.
 sys/select.h: sys_select.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
-	$(AM_V_at)$(MKDIR_P) sys
-	$(AM_V_GEN)rm -f $@-t $@ && \
-	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \
-	  sed -e 's|@''GUARD_PREFIX''@|GL|g' \
+	$(AM_V_GEN)$(MKDIR_P) '%reldir%/sys'
+	$(AM_V_at)$(SED_HEADER_STDOUT) \
+	      -e 's|@''GUARD_PREFIX''@|GL|g' \
 	      -e 's|@''INCLUDE_NEXT''@|$(INCLUDE_NEXT)|g' \
 	      -e 's|@''PRAGMA_SYSTEM_HEADER''@|@PRAGMA_SYSTEM_HEADER@|g' \
 	      -e 's|@''PRAGMA_COLUMNS''@|@PRAGMA_COLUMNS@|g' \
 	      -e 's|@''NEXT_SYS_SELECT_H''@|$(NEXT_SYS_SELECT_H)|g' \
 	      -e 's|@''HAVE_SYS_SELECT_H''@|$(HAVE_SYS_SELECT_H)|g' \
-	      -e 's/@''GNULIB_PSELECT''@/$(GNULIB_PSELECT)/g' \
-	      -e 's/@''GNULIB_SELECT''@/$(GNULIB_SELECT)/g' \
+	      -e 's/@''GNULIB_PSELECT''@/$(GL_GNULIB_PSELECT)/g' \
+	      -e 's/@''GNULIB_SELECT''@/$(GL_GNULIB_SELECT)/g' \
 	      -e 's|@''HAVE_WINSOCK2_H''@|$(HAVE_WINSOCK2_H)|g' \
 	      -e 's|@''HAVE_PSELECT''@|$(HAVE_PSELECT)|g' \
 	      -e 's|@''REPLACE_PSELECT''@|$(REPLACE_PSELECT)|g' \
 	      -e 's|@''REPLACE_SELECT''@|$(REPLACE_SELECT)|g' \
 	      -e '/definitions of _GL_FUNCDECL_RPL/r $(CXXDEFS_H)' \
 	      -e '/definition of _GL_WARN_ON_USE/r $(WARN_ON_USE_H)' \
-	      < $(srcdir)/sys_select.in.h; \
-	} > $@-t && \
-	mv $@-t $@
+	      $(srcdir)/sys_select.in.h > $@-t
+	$(AM_V_at)mv $@-t $@
 MOSTLYCLEANFILES += sys/select.h sys/select.h-t
 MOSTLYCLEANDIRS += sys
 
@@ -2307,6 +2431,14 @@ EXTRA_DIST += test-sys_wait.c test-sys_wait.h
 
 ## end   gnulib module sys_wait-tests
 
+## begin gnulib module tempname
+
+libtests_a_SOURCES += tempname.c
+
+EXTRA_DIST += tempname.h
+
+## end   gnulib module tempname
+
 ## begin gnulib module test-framework-sh-tests
 
 TESTS += test-init.sh
@@ -2365,6 +2497,20 @@ check_PROGRAMS += test-timespec
 EXTRA_DIST += test-timespec.c macros.h
 
 ## end   gnulib module timespec-tests
+
+## begin gnulib module tmpdir
+
+libtests_a_SOURCES += tmpdir.h tmpdir.c
+
+## end   gnulib module tmpdir
+
+## begin gnulib module tmpfile
+
+if GL_COND_OBJ_TMPFILE
+libtests_a_SOURCES += tmpfile.c
+endif
+
+## end   gnulib module tmpfile
 
 ## begin gnulib module trunc-tests
 
@@ -2456,10 +2602,9 @@ EXTRA_DIST += test-update-copyright.sh
 
 ## begin gnulib module usleep
 
-
-EXTRA_DIST += usleep.c
-
-EXTRA_libtests_a_SOURCES += usleep.c
+if GL_COND_OBJ_USLEEP
+libtests_a_SOURCES += usleep.c
+endif
 
 ## end   gnulib module usleep
 
@@ -2543,19 +2688,19 @@ EXTRA_DIST += test-wcrtomb.sh test-wcrtomb.c test-wcrtomb-w32-1.sh test-wcrtomb-
 
 ## begin gnulib module wctob
 
-
-EXTRA_DIST += wctob.c
-
-EXTRA_libtests_a_SOURCES += wctob.c
+if GL_COND_OBJ_WCTOB
+libtests_a_SOURCES += wctob.c
+endif
 
 ## end   gnulib module wctob
 
 ## begin gnulib module wctomb
 
+if GL_COND_OBJ_WCTOMB
+libtests_a_SOURCES += wctomb.c
+endif
 
-EXTRA_DIST += wctomb-impl.h wctomb.c
-
-EXTRA_libtests_a_SOURCES += wctomb.c
+EXTRA_DIST += wctomb-impl.h
 
 ## end   gnulib module wctomb
 
@@ -2578,19 +2723,21 @@ EXTRA_DIST += test-wcwidth.c signature.h macros.h
 
 ## begin gnulib module windows-thread
 
+if GL_COND_OBJ_WINDOWS_THREAD
+libtests_a_SOURCES += windows-thread.c
+endif
 
-EXTRA_DIST += windows-thread.c windows-thread.h
-
-EXTRA_libtests_a_SOURCES += windows-thread.c
+EXTRA_DIST += windows-thread.h
 
 ## end   gnulib module windows-thread
 
 ## begin gnulib module windows-tls
 
+if GL_COND_OBJ_WINDOWS_TLS
+libtests_a_SOURCES += windows-tls.c
+endif
 
-EXTRA_DIST += windows-tls.c windows-tls.h
-
-EXTRA_libtests_a_SOURCES += windows-tls.c
+EXTRA_DIST += windows-tls.h
 
 ## end   gnulib module windows-tls
 
@@ -2636,6 +2783,20 @@ EXTRA_DIST += test-yesno.c test-yesno.sh
 libtests_a_SOURCES += glthread/yield.h
 
 ## end   gnulib module yield
+
+all: all-notice
+all-notice:
+	@echo '## ---------------------------------------------------- ##'
+	@echo '## ------------------- Gnulib tests ------------------- ##'
+	@echo '## You can ignore compiler warnings in this directory.  ##'
+	@echo '## ---------------------------------------------------- ##'
+
+check-am: check-notice
+check-notice:
+	@echo '## ---------------------------------------------------------------------- ##'
+	@echo '## ---------------------------- Gnulib tests ---------------------------- ##'
+	@echo '## Please report test failures in this directory to <bug-gnulib@gnu.org>. ##'
+	@echo '## ---------------------------------------------------------------------- ##'
 
 # Clean up after Solaris cc.
 clean-local:

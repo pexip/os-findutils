@@ -1,5 +1,5 @@
 /* util.c -- functions for initializing new tree elements, and other things.
-   Copyright (C) 1990-2021 Free Software Foundation, Inc.
+   Copyright (C) 1990-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -114,7 +114,7 @@ insert_primary_withpred (const struct parser_table *entry,
    p_prec	    NO_PREC
 
    Other cells that need to be filled in are defaulted by
-   get_new_pred_chk_op, which is used to insure that the prior node is
+   get_new_pred_chk_op, which is used to ensure that the prior node is
    either not there at all (we are the very first node) or is an
    operator. */
 struct predicate *
@@ -171,35 +171,40 @@ Usage: %s [-H] [-L] [-P] [-Olevel] [-D debugopts] [path...] [expression]\n"),
            program_name);
 
   HTL (_("\n\
-default path is the current directory; default expression is -print\n\
-expression may consist of: operators, options, tests, and actions:\n"));
-  HTL (_("\
-operators (decreasing precedence; -and is implicit where no others are given):\n\
+Default path is the current directory; default expression is -print.\n\
+Expression may consist of: operators, options, tests, and actions.\n"));
+  HTL (_("\n\
+Operators (decreasing precedence; -and is implicit where no others are given):\n\
       ( EXPR )   ! EXPR   -not EXPR   EXPR1 -a EXPR2   EXPR1 -and EXPR2\n\
       EXPR1 -o EXPR2   EXPR1 -or EXPR2   EXPR1 , EXPR2\n"));
-  HTL (_("\
-positional options (always true): -daystart -follow -regextype\n\n\
-normal options (always true, specified before other expressions):\n\
-      -depth --help -maxdepth LEVELS -mindepth LEVELS -mount -noleaf\n\
-      --version -xdev -ignore_readdir_race -noignore_readdir_race\n"));
-  HTL (_("\
-tests (N can be +N or -N or N): -amin N -anewer FILE -atime N -cmin N\n\
-      -cnewer FILE -ctime N -empty -false -fstype TYPE -gid N -group NAME\n\
-      -ilname PATTERN -iname PATTERN -inum N -iwholename PATTERN -iregex PATTERN\n\
-      -links N -lname PATTERN -mmin N -mtime N -name PATTERN -newer FILE"));
   HTL (_("\n\
+Positional options (always true):\n\
+      -daystart -follow -nowarn -regextype -warn\n"));
+  HTL (_("\n\
+Normal options (always true, specified before other expressions):\n\
+      -depth -files0-from FILE -maxdepth LEVELS -mindepth LEVELS\n\
+       -mount -noleaf -xdev -ignore_readdir_race -noignore_readdir_race\n"));
+  HTL (_("\n\
+Tests (N can be +N or -N or N):\n\
+      -amin N -anewer FILE -atime N -cmin N -cnewer FILE -context CONTEXT\n\
+      -ctime N -empty -false -fstype TYPE -gid N -group NAME -ilname PATTERN\n\
+      -iname PATTERN -inum N -iwholename PATTERN -iregex PATTERN\n\
+      -links N -lname PATTERN -mmin N -mtime N -name PATTERN -newer FILE\n\
       -nouser -nogroup -path PATTERN -perm [-/]MODE -regex PATTERN\n\
       -readable -writable -executable\n\
       -wholename PATTERN -size N[bcwkMG] -true -type [bcdpflsD] -uid N\n\
-      -used N -user NAME -xtype [bcdpfls]"));
-  HTL (_("\
-      -context CONTEXT\n"));
+      -used N -user NAME -xtype [bcdpfls]\n"));
   HTL (_("\n\
-actions: -delete -print0 -printf FORMAT -fprintf FILE FORMAT -print \n\
+Actions:\n\
+      -delete -print0 -printf FORMAT -fprintf FILE FORMAT -print \n\
       -fprint0 FILE -fprint FILE -ls -fls FILE -prune -quit\n\
       -exec COMMAND ; -exec COMMAND {} + -ok COMMAND ;\n\
-      -execdir COMMAND ; -execdir COMMAND {} + -okdir COMMAND ;\n\
-\n"));
+      -execdir COMMAND ; -execdir COMMAND {} + -okdir COMMAND ;\n"));
+
+  HTL (_("\n\
+Other common options:\n"));
+  HTL (_("      --help                   display this help and exit\n"));
+  HTL (_("      --version                output version information and exit\n\n"));
 
   show_valid_debug_options (0);
   HTL (_("\n\
@@ -253,7 +258,7 @@ get_statinfo (const char *pathname, const char *name, struct stat *p)
 	      /* Savannah bug #16378. */
 	      error (0, 0, _("WARNING: file %s appears to have mode 0000"),
 		     quotearg_n_style (0, options.err_quoting_style, name));
-	      error_severity (1);
+	      state.exit_status = EXIT_FAILURE;
 	    }
 	}
       else
@@ -275,7 +280,7 @@ get_statinfo (const char *pathname, const char *name, struct stat *p)
 /* Get the stat/type/inode information for a file, if it is not
  * already known.   Returns 0 on success (or if we did nothing).
  */
-int
+static int
 get_info (const char *pathname,
 	  struct stat *p,
 	  struct predicate *pred_ptr)
@@ -285,7 +290,7 @@ get_info (const char *pathname,
   /* If we need the full stat info, or we need the type info but don't
    * already have it, stat the file now.
    */
-  if (pred_ptr->need_stat)
+  if (pred_ptr->need_stat && !state.have_stat)
     {
       todo = true;		/* need full stat info */
     }
@@ -311,31 +316,10 @@ get_info (const char *pathname,
     }
   if (todo)
     {
-      int result = get_statinfo (pathname, state.rel_pathname, p);
-      if (result != 0)
-	{
-	  return -1;		/* failure. */
-	}
-      else
-	{
-	  /* Verify some postconditions.  We can't check st_mode for
-	     non-zero-ness because of Savannah bug #16378 (which is
-	     that broken NFS servers can return st_mode==0). */
-	  if (pred_ptr->need_type)
-	    {
-	      assert (state.have_type);
-	    }
-	  if (pred_ptr->need_inum)
-	    {
-	      assert (p->st_ino);
-	    }
-	  return 0;		/* success. */
-	}
+      if (get_statinfo (pathname, state.rel_pathname, p) != 0)
+	return -1;		/* failure. */
     }
-  else
-    {
-      return 0;			/* success; nothing to do. */
-    }
+  return 0;			/* success, or nothing to do. */
 }
 
 /* Determine if we can use O_NOFOLLOW.
@@ -1073,6 +1057,9 @@ set_option_defaults (struct options *p)
   set_follow_state (SYMLINK_NEVER_DEREF); /* The default is equivalent to -P. */
 
   p->err_quoting_style = locale_quoting_style;
+
+  p->files0_from = NULL;
+  p->ok_prompt_stdin = false;
 }
 
 
@@ -1120,19 +1107,6 @@ safely_quote_err_filename (int n, char const *arg)
   return quotearg_n_style (n, options.err_quoting_style, arg);
 }
 
-/* We have encountered an error which should affect the exit status.
- * This is normally used to change the exit status from 0 to 1.
- * However, if the exit status is already 2 for example, we don't want to
- * reduce it to 1.
- */
-void
-error_severity (int level)
-{
-  if (state.exit_status < level)
-    state.exit_status = level;
-}
-
-
 /* report_file_err
  */
 static void
@@ -1146,7 +1120,7 @@ report_file_err(int exitval, int errno_value,
   if (!is_target_file || !state.already_issued_stat_error_msg)
     {
       error (exitval, errno_value, "%s", safely_quote_err_filename (0, name));
-      error_severity (1);
+      state.exit_status = EXIT_FAILURE;
     }
   if (is_target_file)
     {
@@ -1191,7 +1165,7 @@ nonfatal_nontarget_file_error (int errno_value, const char *name)
 void
 fatal_nontarget_file_error(int errno_value, const char *name)
 {
-  /* We're going to exit fatally, so make sure we always isssue the error
+  /* We're going to exit fatally, so make sure we always issue the error
    * message, even if it will be duplicate.   Motivation: otherwise it may
    * not be clear what went wrong.
    */

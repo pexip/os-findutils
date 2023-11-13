@@ -1,10 +1,9 @@
-/* Duplicate a bounded initial segment of a string, with out-of-memory
-   checking.
-   Copyright (C) 2003, 2009-2021 Free Software Foundation, Inc.
+/* Test of <sys/random.h> substitute.
+   Copyright (C) 2020-2022 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -15,9 +14,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <stddef.h>
+#include <config.h>
 
-/* Return a newly allocated copy of at most N bytes of STRING.
-   In other words, return a copy of the initial segment of length N of
-   STRING.  */
-extern char *xstrndup (const char *string, size_t n) _GL_ATTRIBUTE_MALLOC;
+#include <sys/random.h>
+
+/* Check that the necessary constants are defined.  */
+int flags[] =
+  {
+    GRND_RANDOM,
+    GRND_NONBLOCK
+  };
+
+int
+main (void)
+{
+  return 0;
+}

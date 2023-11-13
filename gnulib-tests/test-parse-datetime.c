@@ -1,9 +1,9 @@
 /* Test of parse_datetime() function.
-   Copyright (C) 2008-2021 Free Software Foundation, Inc.
+   Copyright (C) 2008-2022 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3, or (at your option)
+   the Free Software Foundation, either version 3, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -111,7 +111,7 @@ gmt_offset (time_t s)
 }
 
 int
-main (int argc _GL_UNUSED, char **argv)
+main (_GL_UNUSED int argc, char **argv)
 {
   struct timespec result;
   struct timespec result2;
@@ -431,8 +431,12 @@ main (int argc _GL_UNUSED, char **argv)
   ASSERT (   parse_datetime (&result, "TZ=\"\"", &now));
   ASSERT (   parse_datetime (&result, "TZ=\"\" ", &now));
   ASSERT (   parse_datetime (&result, " TZ=\"\"", &now));
+  /* Exercise patterns which may be valid or invalid, depending on the
+     platform.  */
+#if !defined __NetBSD__
   ASSERT (   parse_datetime (&result, "TZ=\"\\\\\"", &now));
   ASSERT (   parse_datetime (&result, "TZ=\"\\\"\"", &now));
+#endif
 
   /* Outlandishly-long time zone abbreviations should not cause problems.  */
   {

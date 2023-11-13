@@ -1,5 +1,5 @@
 # List of source files containing translatable strings.
-# Copyright (C) 2000-2021 Free Software Foundation, Inc.
+# Copyright (C) 2000-2022 Free Software Foundation, Inc.
 
 # Copying and distribution of this file, with or without
 # modification, are permitted provided the copyright notice
@@ -9,7 +9,6 @@
 find/exec.c
 find/fstype.c
 find/ftsfind.c
-find/oldfind.c
 find/parser.c
 find/pred.c
 find/print.c

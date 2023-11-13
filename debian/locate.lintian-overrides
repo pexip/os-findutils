@@ -1,0 +1,2 @@
+# ${RANDOM} is used if available, but not necessary.
+locate: bash-term-in-posix-shell *RANDOM* *usr/bin/updatedb.findutils*

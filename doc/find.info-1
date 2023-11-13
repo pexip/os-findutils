@@ -1,10 +1,10 @@
 This is find.info, produced by makeinfo version 6.7 from find.texi.
 
-This manual documents version 4.8.0 of the GNU utilities for finding
+This manual documents version 4.9.0 of the GNU utilities for finding
 files that match certain criteria and performing various operations on
 them.
 
-   Copyright (C) 1994-2021 Free Software Foundation, Inc.
+   Copyright (C) 1994-2022 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -31,11 +31,11 @@ File: find.info,  Node: Top,  Next: Introduction,  Up: (dir)
 GNU Findutils
 *************
 
-This manual documents version 4.8.0 of the GNU utilities for finding
+This manual documents version 4.9.0 of the GNU utilities for finding
 files that match certain criteria and performing various operations on
 them.
 
-   Copyright (C) 1994-2021 Free Software Foundation, Inc.
+   Copyright (C) 1994-2022 Free Software Foundation, Inc.
 
      Permission is granted to copy, distribute and/or modify this
      document under the terms of the GNU Free Documentation License,
@@ -238,6 +238,7 @@ information about the matching files.
 * Menu:
 
 * find Expressions::
+* Starting points::
 * Name::
 * Links::
 * Time::
@@ -251,7 +252,7 @@ information about the matching files.
 * Combining Primaries With Operators::
 
 
-File: find.info,  Node: find Expressions,  Next: Name,  Up: Finding Files
+File: find.info,  Node: find Expressions,  Next: Starting points,  Up: Finding Files
 
 2.1 'find' Expressions
 ======================
@@ -302,9 +303,96 @@ arguments can be specified as
      for exactly N.
 
 
-File: find.info,  Node: Name,  Next: Links,  Prev: find Expressions,  Up: Finding Files
+File: find.info,  Node: Starting points,  Next: Name,  Prev: find Expressions,  Up: Finding Files
 
-2.2 Name
+2.2 Starting points
+===================
+
+GNU 'find' searches the directory tree rooted at each given
+starting-point by evaluating the given expression from left to right,
+according to the rules of operator precedence, until the outcome is
+known (the left hand side is false for 'and' operations, true for 'or'),
+at which point 'find' moves on to the next file name.
+
+   If no starting-point is specified, the current directory '.' is
+assumed.
+
+   A double dash '--' could theoretically be used to signal that any
+remaining arguments are not options, but this does not really work due
+to the way 'find' determines the end of the list of starting point
+arguments: it does that by reading until an expression argument comes
+(which also starts with a '-').  Now, if a starting point argument would
+begin with a '-', then 'find' would treat it as expression argument
+instead.  Thus, to ensure that all start points are taken as such, and
+especially to prevent that wildcard patterns expanded by the calling
+shell are not mistakenly treated as expression arguments, it is
+generally safer to prefix wildcards or dubious path names with either
+'./', or to use absolute path names starting with '/'.
+
+   Alternatively, it is generally safe though non-portable to use the
+GNU option '-files0-from' to pass arbitrary starting points to 'find'.
+
+ -- Option: -files0-from file
+ -- Option: -files0-from file
+
+     Read the starting points from 'file' instead of getting them on the
+     command line.  In contrast to the known limitations of passing
+     starting points via arguments on the command line, namely the
+     limitation of the amount of file names, and the inherent ambiguity
+     of file names clashing with option names, using this option allows
+     to safely pass an arbitrary number of starting points to 'find'.
+
+     Using this option and passing starting points on the command line
+     is mutually exclusive, and is therefore not allowed at the same
+     time.
+
+     The 'file' argument is mandatory.  One can use '-files0-from -' to
+     read the list of starting points from the standard input stream,
+     and e.g.  from a pipe.  In this case, the actions '-ok' and
+     '-okdir' are not allowed, because they would obviously interfere
+     with reading from standard input in order to get a user
+     confirmation.
+
+     The starting points in 'file' have to be separated by ASCII NUL
+     characters.  Two consecutive NUL characters, i.e., a starting point
+     with a Zero-length file name is not allowed and will lead to an
+     error diagnostic followed by a non-Zero exit code later.
+
+     In the case the given 'file' is empty, 'find' does not process any
+     starting point and therefore will exit immediately after parsing
+     the program arguments.  This is unlike the standard invocation
+     where 'find' assumes the current directory as starting point if no
+     path argument is passed.
+
+     The processing of the starting points is otherwise as usual, e.g.
+     'find' will recurse into subdirectories unless otherwise prevented.
+     To process only the starting points, one can additionally pass
+     '-maxdepth 0'.
+
+     Further notes: if a file is listed more than once in the input
+     file, it is unspecified whether it is visited more than once.  If
+     the 'file' is mutated during the operation of 'find', the result is
+     unspecified as well.  Finally, the seek position within the named
+     'file' at the time 'find' exits, be it with '-quit' or in any other
+     way, is also unspecified.  By "unspecified" here is meant that it
+     may or may not work or do any specific thing, and that the behavior
+     may change from platform to platform, or from findutils release to
+     release.
+
+     Example: Given that another program 'proggy' pre-filters and
+     creates a huge NUL-separated list of files, process those as
+     starting points, and find all regular, empty files among them:
+          $ proggy | find -files0-from - -maxdepth 0 -type f -empty
+     The use of '-files0-from -' means to read the names of the starting
+     points from standard input, i.e., from the pipe; and '-maxdepth 0'
+     ensures that only explicitly those entries are examined without
+     recursing into directories (in the case one of the starting points
+     is one).
+
+
+File: find.info,  Node: Name,  Next: Links,  Prev: Starting points,  Up: Finding Files
+
+2.3 Name
 ========
 
 Here are ways to search for files whose name matches a certain pattern.
@@ -326,7 +414,7 @@ names 'Foo', 'FOO', 'foo', 'fOo', etc.
 
 File: find.info,  Node: Base Name Patterns,  Next: Full Name Patterns,  Up: Name
 
-2.2.1 Base Name Patterns
+2.3.1 Base Name Patterns
 ------------------------
 
  -- Test: -name pattern
@@ -363,7 +451,7 @@ implementation, we use that and otherwise we use the one from gnulib
 
 File: find.info,  Node: Full Name Patterns,  Next: Fast Full Name Search,  Prev: Base Name Patterns,  Up: Name
 
-2.2.2 Full Name Patterns
+2.3.2 Full Name Patterns
 ------------------------
 
  -- Test: -path pattern
@@ -393,10 +481,10 @@ File: find.info,  Node: Full Name Patterns,  Next: Fast Full Name Search,  Prev:
      case-insensitive.
 
    In the context of the tests '-path', '-wholename', '-ipath' and
-'-wholename', a "full path" is the name of all the directories traversed
-from 'find''s start point to the file being tested, followed by the base
-name of the file itself.  These paths are often not absolute paths; for
-example
+'-iwholename', a "full path" is the name of all the directories
+traversed from 'find''s start point to the file being tested, followed
+by the base name of the file itself.  These paths are often not absolute
+paths; for example
 
      $ cd /tmp
      $ mkdir -p foo/bar/baz
@@ -461,7 +549,7 @@ will match both '/' and leading dots in file names:
 
 File: find.info,  Node: Fast Full Name Search,  Next: Shell Pattern Matching,  Prev: Full Name Patterns,  Up: Name
 
-2.2.3 Fast Full Name Search
+2.3.3 Fast Full Name Search
 ---------------------------
 
 To search for files by name without having to actually scan the
@@ -528,7 +616,7 @@ of its '--dbformat' and '--output' options.
 
 File: find.info,  Node: Shell Pattern Matching,  Prev: Fast Full Name Search,  Up: Name
 
-2.2.4 Shell Pattern Matching
+2.3.4 Shell Pattern Matching
 ----------------------------
 
 'find' and 'locate' can compare file names, or parts of file names, to
@@ -580,7 +668,7 @@ total number of matches.
 
 File: find.info,  Node: Links,  Next: Time,  Prev: Name,  Up: Finding Files
 
-2.3 Links
+2.4 Links
 =========
 
 There are two ways that files can be linked together.  "Symbolic links"
@@ -597,7 +685,7 @@ disk.
 
 File: find.info,  Node: Symbolic Links,  Next: Hard Links,  Up: Links
 
-2.3.1 Symbolic Links
+2.4.1 Symbolic Links
 --------------------
 
 Symbolic links are names that reference other files.  GNU 'find' will
@@ -698,7 +786,7 @@ otherwise the timestamp from the symbolic link is used).
 
 File: find.info,  Node: Hard Links,  Prev: Symbolic Links,  Up: Links
 
-2.3.2 Hard Links
+2.4.2 Hard Links
 ----------------
 
 Hard links allow more than one name to refer to the same file on a file
@@ -775,7 +863,7 @@ they are mentioned on the 'find' command line.
 
 File: find.info,  Node: Time,  Next: Size,  Prev: Links,  Up: Finding Files
 
-2.4 Time
+2.5 Time
 ========
 
 Each file has three timestamps, which record the last time that certain
@@ -804,7 +892,7 @@ range, or compare them to other timestamps.
 
 File: find.info,  Node: Age Ranges,  Next: Comparing Timestamps,  Up: Time
 
-2.4.1 Age Ranges
+2.5.1 Age Ranges
 ----------------
 
 These tests are mainly useful with ranges ('+N' and '-N').
@@ -846,7 +934,7 @@ These tests are mainly useful with ranges ('+N' and '-N').
 
 File: find.info,  Node: Comparing Timestamps,  Prev: Age Ranges,  Up: Time
 
-2.4.2 Comparing Timestamps
+2.5.2 Comparing Timestamps
 --------------------------
 
  -- Test: -newerXY reference
@@ -929,7 +1017,7 @@ of the current year.  One uses '-newermt':
 
 File: find.info,  Node: Size,  Next: Type,  Prev: Time,  Up: Finding Files
 
-2.5 Size
+2.6 Size
 ========
 
  -- Test: -size n[bckwMG]
@@ -983,7 +1071,7 @@ File: find.info,  Node: Size,  Next: Type,  Prev: Time,  Up: Finding Files
 
 File: find.info,  Node: Type,  Next: Owner,  Prev: Size,  Up: Finding Files
 
-2.6 Type
+2.7 Type
 ========
 
  -- Test: -type c
@@ -1041,7 +1129,7 @@ File: find.info,  Node: Type,  Next: Owner,  Prev: Size,  Up: Finding Files
 
 File: find.info,  Node: Owner,  Next: Mode Bits,  Prev: Type,  Up: Finding Files
 
-2.7 Owner
+2.8 Owner
 =========
 
  -- Test: -user uname
@@ -1065,7 +1153,7 @@ File: find.info,  Node: Owner,  Next: Mode Bits,  Prev: Type,  Up: Finding Files
 
 File: find.info,  Node: Mode Bits,  Next: Contents,  Prev: Owner,  Up: Finding Files
 
-2.8 File Mode Bits
+2.9 File Mode Bits
 ==================
 
 *Note File Permissions::, for information on how file mode bits are
@@ -1197,8 +1285,8 @@ on the basis of the result of that test.
 
 File: find.info,  Node: Contents,  Next: Directories,  Prev: Mode Bits,  Up: Finding Files
 
-2.9 Contents
-============
+2.10 Contents
+=============
 
 To search for files based on their contents, you can use the 'grep'
 program.  For example, to find out which C source files in the current
@@ -1227,7 +1315,7 @@ pattern, see the manual page for 'grep'.
 
 File: find.info,  Node: Directories,  Next: Filesystems,  Prev: Contents,  Up: Finding Files
 
-2.10 Directories
+2.11 Directories
 ================
 
 Here is how to control which directories 'find' searches, and how it
@@ -1367,7 +1455,7 @@ slice of a directory tree.
 
 File: find.info,  Node: Filesystems,  Next: Combining Primaries With Operators,  Prev: Directories,  Up: Finding Files
 
-2.11 Filesystems
+2.12 Filesystems
 ================
 
 A "filesystem" is a section of a disk, either on the local host or
@@ -1400,7 +1488,7 @@ not descend directories that are on undesirable filesystem types:
 
 File: find.info,  Node: Combining Primaries With Operators,  Prev: Filesystems,  Up: Finding Files
 
-2.12 Combining Primaries With Operators
+2.13 Combining Primaries With Operators
 =======================================
 
 Operators build a complex expression from tests and actions.  The
@@ -1803,18 +1891,30 @@ on the current locale, but it typically looks like
 '%a'
      File's last access time in the format returned by the C 'ctime'
      function.
+
 '%AK'
      File's last access time in the format specified by K (*note Time
      Formats::).
+
+'%BK'
+     File's birth time, i.e., its creation time, in the format specified
+     by K (*note Time Formats::).
+
+     This directive produces an empty string if the underlying operating
+     system or filesystem does not support birth times.
+
 '%c'
      File's last status change time in the format returned by the C
      'ctime' function.
+
 '%CK'
      File's last status change time in the format specified by K (*note
      Time Formats::).
+
 '%t'
      File's last modification time in the format returned by the C
      'ctime' function.
+
 '%TK'
      File's last modification time in the format specified by K (*note
      Time Formats::).
@@ -1854,8 +1954,8 @@ File: find.info,  Node: Time Formats,  Next: Formatting Flags,  Prev: Format Dir
 3.2.3 Time Formats
 ------------------
 
-Below is an incomplete list of formats for the directives '%A', '%C',
-and '%T', which print the file's timestamps.  Please refer to the
+Below is an incomplete list of formats for the directives '%A', '%B',
+'%C', and '%T', which print the file's timestamps.  Please refer to the
 documentation of 'strftime' for the full list.  Some of these formats
 might not be available on all systems, due to differences in the
 implementation of the C 'strftime' function.
@@ -1963,7 +2063,7 @@ components.
 '+'
      Date and time, separated by '+', for example
      '2004-04-28+22:22:05.0000000000'.  The time is given in the current
-     timezone (which may be affected by setting the TZ environment
+     timezone (which may be affected by setting the 'TZ' environment
      variable).  This is a GNU extension.  The seconds field includes a
      fractional part.
 
@@ -2024,11 +2124,11 @@ Here is how to run a command on one file at a time.
 
           find . -name '*.h' -execdir diff -u '{}' /tmp/master ';'
 
-   If you use '-execdir', you must ensure that the '$PATH' variable
+   If you use '-execdir', you must ensure that the 'PATH' variable
 contains only absolute directory names.  Having an empty element in
-'$PATH' or explicitly including '.' (or any other non-absolute name) is
+'PATH' or explicitly including '.' (or any other non-absolute name) is
 insecure.  GNU find will refuse to run if you use '-execdir' and it
-thinks your '$PATH' setting is insecure.  For example:
+thinks your 'PATH' setting is insecure.  For example:
 
 '/bin:/usr/bin:'
      Insecure; empty path element (at the end)
@@ -2563,6 +2663,9 @@ primary '-ok' instead of '-exec':
      the user does not agree to run the command, just return false.
      Otherwise, run it, with standard input redirected from '/dev/null'.
 
+     This action may not be specified together with the '-files0-from'
+     option.
+
      The response to the prompt is matched against a pair of regular
      expressions to determine if it is a yes or no response.  These
      regular expressions are obtained from the system ('nl_langinfo'
@@ -2585,6 +2688,9 @@ primary '-ok' instead of '-exec':
      file.  If the command is run, its standard input is redirected from
      '/dev/null'.
 
+     This action may not be specified together with the '-files0-from'
+     option.
+
    When processing multiple files with a single command, to query the
 user you give 'xargs' the following option.  When using this option, you
 might find it useful to control the number of files processed per
@@ -2604,21 +2710,35 @@ File: find.info,  Node: Delete Files,  Next: Adding Tests,  Prev: Run Commands, 
 
  -- Action: -delete
      Delete files or directories; true if removal succeeded.  If the
-     removal failed, an error message is issued.
+     removal failed, an error message is issued and 'find''s exit status
+     will be nonzero (when it eventually exits).
+
+          Warning: Don't forget that 'find' evaluates the command line
+          as an expression, so putting '-delete' first will make 'find'
+          try to delete everything below the starting points you
+          specified.
 
      The use of the '-delete' action on the command line automatically
-     turns on the '-depth' option (*note find Expressions::).  This can
-     be surprising if you were previously just testing with '-print', so
-     it is usually best to remember to use '-depth' explicitly.
+     turns on the '-depth' option.  As in turn '-depth' makes '-prune'
+     ineffective, the '-delete' action cannot usefully be combined with
+     '-prune'.
 
-     If '-delete' fails, 'find''s exit status will be nonzero (when it
-     eventually exits).
+     Often, the user might want to test a 'find' command line with
+     '-print' prior to adding '-delete' for the actual removal run.  To
+     avoid surprising results, it is usually best to remember to use
+     '-depth' explicitly during those earlier test runs.
+
+     See *note Cleaning Up:: for a deeper discussion about good use
+     cases of the '-delete' action and those with surprising results.
+
+     The '-delete' action will fail to remove a directory unless it is
+     empty.
 
      Together with the '-ignore_readdir_race' option, 'find' will ignore
      errors of the '-delete' action in the case the file has disappeared
      since the parent directory was read: it will not output an error
-     diagnostic, and the return code of the '-delete' action will be
-     true.
+     diagnostic, not change the exit code to nonzero, and the return
+     code of the '-delete' action will be true.
 
 
 File: find.info,  Node: Adding Tests,  Prev: Delete Files,  Up: Actions
@@ -4456,7 +4576,7 @@ File: find.info,  Node: xargs options,  Next: Conflicting xargs options,  Up: In
      terminal while 'xargs' reads from a different stream, e.g.  from a
      pipe.  This is useful if you want 'xargs' to run an interactive
      application.
-          grep -lz PATTERN * | xargs -0o vi
+          grep -lZ PATTERN * | xargs -0o -n1 vi
 
 '--interactive'
 '-p'
@@ -4501,10 +4621,11 @@ File: find.info,  Node: xargs options,  Next: Conflicting xargs options,  Up: In
      information on dynamically controlling parallelism.
 
 '--process-slot-var=ENVIRONMENT-VARIABLE-NAME'
-     Set the environment variable ENVIRONMENT-VARIABLE-NAME to a unique
-     value in each running child process.  Each value is a decimal
-     integer.  Values are reused once child processes exit.  This can be
-     used in a rudimentary load distribution scheme, for example.
+     Set the environment variable 'environment-variable-name' to a
+     unique value in each running child process.  Each value is a
+     decimal integer.  Values are reused once child processes exit.
+     This can be used in a rudimentary load distribution scheme, for
+     example.
 
 
 File: find.info,  Node: Conflicting xargs options,  Next: Invoking the shell from xargs,  Prev: xargs options,  Up: Invoking xargs
@@ -5385,7 +5506,7 @@ File: find.info,  Node: Environment Variables,  Prev: Regular Expressions,  Up: 
 
 'PATH'
      Affects the directories which are searched to find the executables
-     invoked by '-exec', '-execdir' '-ok' and '-okdir'.  If the PATH
+     invoked by '-exec', '-execdir' '-ok' and '-okdir'.  If the 'PATH'
      environment variable includes the current directory (by explicitly
      including '.' or by having an empty element), and the find command
      line includes '-execdir' or '-okdir', 'find' will refuse to run.
@@ -6097,7 +6218,7 @@ depend on how many updated files there are.
 It is possible to use the '-printf' action to abandon the use of 'test'
 entirely:
 
-     newest=$(find subdir -newer timestamp -printf "%A%p\n" |
+     newest=$(find subdir -newer timestamp -printf "%A@:%p\n" |
                 sort -n |
                 tail -n1 |
                 cut -d: -f2- )
@@ -6586,7 +6707,7 @@ the basename of the file to be processed is passed to the invoked
 command, with a './' prepended (giving './passwd' in our example).
 
    The '-execdir' action refuses to do anything if the current directory
-is included in the $PATH environment variable.  This is necessary
+is included in the 'PATH' environment variable.  This is necessary
 because '-execdir' runs programs in the same directory in which it finds
 files - in general, such a directory might be writable by untrusted
 users.  For similar reasons, '-execdir' does not allow '{}' to appear in
@@ -6922,7 +7043,7 @@ File: find.info,  Node: Error Messages From locate,  Next: Error Messages From u
      This should not happen.  Re-run 'updatedb'.  If that works, but
      'locate' still produces this error, run 'locate --version' and
      'updatedb --version'.  These should produce the same output.  If
-     not, you are using a mixed toolset; check your '$PATH' environment
+     not, you are using a mixed toolset; check your 'PATH' environment
      variable and your shell aliases (if you have any).  If both
      programs claim to be GNU versions, this is a bug; all versions of
      these programs should interoperate without problem.  Ask for help

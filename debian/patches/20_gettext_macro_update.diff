@@ -1,0 +1,20 @@
+Description: Update gettext macros in configure.ac.
+ Fixes FTBFS on musl-any-any.
+Author: Helmut Grohne <helmut@subdivi.de>
+Bug-Debian: https://bugs.debian.org/1009874
+Origin: vendor
+Forwarded: https://savannah.gnu.org/patch/index.php?10203
+Last-Update: 2022-04-19
+
+--- findutils-4.9.0.orig/configure.ac
++++ findutils-4.9.0/configure.ac
+@@ -278,7 +278,8 @@ jy_AC_ATTRIBUTE_NORETURN
+ 
+ dnl internationalization macros
+ AM_GNU_GETTEXT([external])
+-AM_GNU_GETTEXT_VERSION([0.19.3])
++AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.8])
++AM_GNU_GETTEXT_VERSION([0.19.6])
+ 
+ dnl regextype.c and regexprops.c are designed to be usable outside findutils,
+ dnl but findutils doesn't want to support all the regex types in gnulib,

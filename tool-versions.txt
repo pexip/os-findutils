@@ -1,5 +1,5 @@
-automake (GNU automake) 1.16.2
-Copyright (C) 2020 Free Software Foundation, Inc.
+automake (GNU automake) 1.16.5
+Copyright (C) 2021 Free Software Foundation, Inc.
 License GPLv2+: GNU GPL version 2 or later <https://gnu.org/licenses/gpl-2.0.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
@@ -16,8 +16,8 @@ There is NO WARRANTY, to the extent permitted by law.
 
 Written by David J. MacKenzie and Akim Demaille.
 
-gcc (SUSE Linux) 10.2.1 20201202 [revision e563687cf9d3d1278f45aaebd03e0f66531076c9]
-Copyright (C) 2020 Free Software Foundation, Inc.
+gcc (SUSE Linux) 11.2.1 20220103 [revision d4a1d3c4b377f1d4acb34fe1b55b5088a3f293f6]
+Copyright (C) 2021 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -37,7 +37,7 @@ This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 Written by Ulrich Drepper.
 
-DejaGnu version	1.6.2
+DejaGnu version	1.6.3
 Expect version	5.45.4
 Tcl version	8.6
 
