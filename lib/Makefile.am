@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in.
 
-## Copyright (C) 1996-2022 Free Software Foundation, Inc.
+## Copyright (C) 1996-2024 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -58,8 +58,7 @@ libfind_a_SOURCES = \
 	splitstring.h \
 	bugreports.c \
 	bugreports.h \
-	system.h \
-	die.h
+	system.h
 
 EXTRA_DIST = unused-result.h check-regexprops.sh
 SUFFIXES =

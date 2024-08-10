@@ -2,7 +2,7 @@
 /* regextype.c -- Decode the name of a regular expression syntax into am
                   option name.
 
-   Copyright (C) 2005-2022 Free Software Foundation, Inc.
+   Copyright (C) 2005-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 
 /* findutils headers */
 #include "system.h"
-#include "die.h"
 
 
 struct tagRegexTypeMap
@@ -94,10 +93,10 @@ get_regex_type (const char *s)
       p += sprintf (p, "%s", quote (regex_map[i].name));
     }
 
-  die (EXIT_FAILURE, 0,
-       _("Unknown regular expression type %s; valid types are %s."),
-       quote (s),
-       buf);
+  error (EXIT_FAILURE, 0,
+         _("Unknown regular expression type %s; valid types are %s."),
+         quote (s),
+         buf);
   /*NOTREACHED*/
   return -1;
 }

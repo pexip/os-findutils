@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2022 Free Software Foundation, Inc.
+# Copyright (C) 2002-2024 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,8 @@
 
 
 # Specification in the form of a command-line invocation:
-# gnulib-tool --import --local-dir=gnulib-local \
+# gnulib-tool --import \
+#  --local-dir=gnulib-local \
 #  --lib=libgnulib \
 #  --source-base=gl/lib \
 #  --m4-base=gl/m4 \
@@ -157,7 +158,7 @@
 #  xstrtol \
 #  xstrtol-error \
 #  xstrtoumax \
-#  year2038 \
+#  year2038-recommended \
 #  yesno
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
@@ -282,7 +283,7 @@ gl_MODULES([
   xstrtol
   xstrtol-error
   xstrtoumax
-  year2038
+  year2038-recommended
   yesno
 ])
 gl_AVOID([])

@@ -1,5 +1,5 @@
 /* Test of malloc function.
-   Copyright (C) 2010-2022 Free Software Foundation, Inc.
+   Copyright (C) 2010-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 #include "macros.h"
 
 int
-main (int argc, char **argv)
+main (int argc, _GL_UNUSED char **argv)
 {
   /* Check that malloc (0) is not a NULL pointer.  */
   void *volatile p = malloc (0);
@@ -41,5 +41,5 @@ main (int argc, char **argv)
       ASSERT (errno == ENOMEM);
     }
 
-  return 0;
+  return test_exit_status;
 }

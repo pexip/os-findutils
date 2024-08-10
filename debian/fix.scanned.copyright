@@ -8,3 +8,8 @@
 #
 ! Files:.foreach_match(.*)  License short_name=~"s/GFDL-1/GFDL-NIV-1/"
 ! Files:.foreach_match(.*)  License short_name=~"s/FSFULLR and\/or GPL and\/or LGPL/FSFULLR/"
+
+# Work around licensecheck not handling wrapped copyright statements
+! Files:.foreach_match(.*) Copyright=~"s/, Free Software Foundation,$/, Free Software Foundation, Inc./"
+! Files:.foreach_match(.*) Copyright=~"s/, Free Software$/, Free Software Foundation, Inc./"
+! Files:.foreach_match(.*) Copyright=~"s/, Free$/, Free Software Foundation, Inc./"

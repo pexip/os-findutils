@@ -1,7 +1,7 @@
 #!/bin/sh
 # Verify that 'xargs -t' quotes the command properly when needed.
 
-# Copyright (C) 2019-2022 Free Software Foundation, Inc.
+# Copyright (C) 2019-2024 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,12 +28,15 @@ printf "%s\n" \
   || framework_failure_
 
 # Run xargs with -t for verious commands which require quoting.
+# (Use NL because dash as /bin/sh does not know $'\n' syntax.)
+nl='
+'
 printf '%s\0' \
   000 \
   '10 0' \
   '20"0' \
   "30'0" \
-  40$'\n'0 \
+  "40${nl}0" \
   | xargs -0t '-I{}' './my command' 'hel lo' '{}' world > out 2> err \
   || fail=1
 

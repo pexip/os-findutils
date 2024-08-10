@@ -252,7 +252,7 @@ system calls.  The
 .B find
 program tries to minimise such calls.
 .IP tree
-Show the expression tree in its original and optimised form.
+Show the expression tree in its original and optimized form.
 .IP all
 Enable all of the other debug options (but
 .BR help ).
@@ -298,7 +298,7 @@ which is not known (that is, present in `/etc/mtab') at the time
 starts, that predicate is equivalent to
 .BR \-false .
 .IP 3
-At this optimisation level, the full cost-based query optimiser is
+At this optimisation level, the full cost-based query optimizer is
 enabled.  The order of tests is modified so that cheap (i.e.\& fast)
 tests are performed first and more expensive ones are performed later,
 if necessary.  Within each cost band, predicates are evaluated earlier
@@ -309,13 +309,13 @@ predicates which are likely to succeed are evaluated earlier, and for
 predicates which are likely to fail are evaluated earlier.
 .RE
 .IP
-The cost-based optimiser has a fixed idea of how likely any given test
+The cost-based optimizer has a fixed idea of how likely any given test
 is to succeed.  In some cases the probability takes account of the
 specific nature of the test (for example,
 .B \-type\ f
 is assumed to be more likely to succeed than
 .BR "\-type\ c" ).
-The cost-based optimiser is currently being evaluated.
+The cost-based optimizer is currently being evaluated.
 If it does not actually improve the performance of
 .BR find ,
 it will be removed again.  Conversely, optimisations that prove to be
@@ -325,6 +325,19 @@ level 1) will not be changed in the 4.3.x release series.  The
 findutils test suite runs all the tests on
 .B find
 at each optimisation level and ensures that the result is the same.
+
+The re-ordering of operations performed by the cost-based optimizer
+can result in user-visible behaviour change.  For example, the
+.B \-readable
+and
+.B \-empty
+predicates are sensitive to re-ordering.  If they are run in the order
+.BR "\-empty \-readable" ,
+an error message will be issued for unreadable directories.  If they
+are run in the order
+.B \-readable \-empty
+no error message will be issued. This is the reason why such operation
+re-ordering is not performed at the default optimisation level.
 .
 .SH EXPRESSION
 The part of the command line after the list of starting points is the
@@ -466,8 +479,11 @@ expression types are known, use
 The Texinfo documentation (see
 .B SEE
 .BR ALSO )
-explains the meaning of and
-differences between the various types of regular expression.
+explains the meaning of and differences between the various types of
+regular expression.  If you do not use this option, find behaves
+as if the regular expression type
+.B emacs
+had been specified.
 
 .IP "\-warn, \-nowarn"
 Turn warning messages on or off.  These warnings apply only to the
@@ -490,7 +506,7 @@ is also used, it is not specified which, if any, warnings will be active.
 .SS GLOBAL OPTIONS
 Global options always return true.
 Global options take effect even for tests which occur earlier on the
-command line.  To prevent confusion, global options should specified
+command line.  To prevent confusion, global options should be specified
 on the command-line after the list of start points, just before the
 first test, positional option or action.
 If you specify a global option in some other place,
@@ -705,7 +721,9 @@ it points to is always used.
 File was last accessed less than, more than or exactly
 .IR n *24
 hours ago.
-When find figures out how many 24-hour periods ago the file
+When
+.B find
+figures out how many 24-hour periods ago the file
 was last accessed, any fractional part is ignored, so to match
 .BR "\-atime\ +1" ,
 a file has to have been accessed at least
@@ -848,20 +866,23 @@ modification times.
 Base of file name (the path with the leading directories removed)
 matches shell pattern
 .IR pattern .
-Because the leading directories are removed,
-the file names considered for a match with
-.B \-name
-will never include a slash, so `\-name a/b' will never match anything
-(you probably need to use
+Because the leading directories of the file names are removed, the
+.I pattern
+should not include a slash, because `\-name a/b' will never match anything
+(and you probably want to use
 .B \-path
 instead).
-A warning is issued if you try to do this,
-unless the environment variable
+An exception to this is when using only a slash as \fIpattern\fR (`-name /'),
+because that is a valid string for matching the root directory "/" (because the
+base name of "/" is "/").
+A warning is issued if you try to pass a pattern containing a - but not
+consisting solely of one - slash, unless the environment variable
 .B POSIXLY_CORRECT
-is set.
-The metacharacters (`*', `?',
-and `[]') match a `.\&' at the start of the base name (this is a change
-in findutils-4.2.2; see section STANDARDS CONFORMANCE below).  To ignore a
+is set or the option
+.B \-nowarn
+is used.
+
+To ignore a
 directory and the files under it, use
 .B \-prune
 rather than checking every file in the tree;
@@ -1029,8 +1050,8 @@ you can use the regular expression `.*bar.\&' or `.*b.*3',
 but not `f.*r3'.
 The regular expressions understood by
 .B find
-are by default Emacs Regular Expressions (except that `.' matches
-newline), but this can be changed with the
+are by default Emacs Regular Expressions, but this can be changed with
+the
 .B \-regextype
 option.
 
@@ -1156,11 +1177,17 @@ link to a file of type
 if the
 .B \-L
 option has been given, true
-if \fIc\fR is `l'.  In other words, for symbolic links,
+if \fIc\fR is `l'.
+In other words, for symbolic links,
 .B \-xtype
 checks the type of the file that
 .B \-type
 does not check.
+If a symbolic link is broken (because the thing it points to does not
+exist or the link points to itself) then
+.B \-xtype
+will behave the same as
+.BR \-type .
 .IP "\-context \fIpattern\fR"
 (SELinux only) Security context of the file matches glob
 .IR pattern .
@@ -1196,7 +1223,9 @@ ineffective, the
 action cannot usefully be combined with
 .BR \-prune .
 
-Often, the user might want to test a find command line with
+Often, the user might want to test a
+.B find
+command line with
 .B \-print
 prior to adding
 .B \-delete
@@ -2035,8 +2064,10 @@ The
 .B find
 utility shall detect infinite loops; that is, entering a
 previously visited directory that is an ancestor of the last file
-encountered.  When it detects an infinite loop, find shall write a
-diagnostic message to standard error and shall either recover its
+encountered.
+When it detects an infinite loop,
+.B find
+shall write a diagnostic message to standard error and shall either recover its
 position in the hierarchy or terminate.
 .P
 GNU
@@ -2044,7 +2075,7 @@ GNU
 complies with these requirements.  The link count of
 directories which contain entries which are hard links to an ancestor
 will often be lower than they otherwise should be.  This can mean that
-GNU find will sometimes optimise away the visiting of a subdirectory
+GNU find will sometimes optimize away the visiting of a subdirectory
 which is actually a link to an ancestor.  Since
 .B find
 does not actually enter such a subdirectory, it is allowed to avoid
@@ -2603,6 +2634,27 @@ or
 may not have been performed.
 .
 .SH "HISTORY"
+
+A
+.B find
+program appeared in Version 5 Unix as part of the
+Programmer's Workbench project and was written by Dick Haight.  Doug
+McIlroy's
+.I A Research UNIX Reader: Annotated Excerpts from the Programmer’s Manual, 1971-1986
+provides some additional details; you can read it on-line at
+<https://www.cs.dartmouth.edu/~doug/reader.pdf>.
+
+GNU
+.B find
+was originally written by Eric Decker, with
+enhancements by David MacKenzie, Jay Plett, and Tim Wood.  The idea
+for
+.B find -print0
+and
+.B xargs -0
+came from Dan Bernstein.
+.
+.SH "COMPATIBILITY"
 As of findutils-4.2.2, shell metacharacters (`*', `?' or `[]' for
 example) used in filename patterns match a leading `.', because
 IEEE POSIX interpretation 126 requires this.
@@ -2747,7 +2799,7 @@ mailing list:
 .RE
 .
 .SH COPYRIGHT
-Copyright \(co 1990-2022 Free Software Foundation, Inc.
+Copyright \(co 1990\(en2024 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
 .br
 This is free software: you are free to change and redistribute it.

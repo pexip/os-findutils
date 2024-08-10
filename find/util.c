@@ -1,5 +1,5 @@
 /* util.c -- functions for initializing new tree elements, and other things.
-   Copyright (C) 1990-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include <sys/utsname.h>
 
 /* gnulib headers. */
-#include "error.h"
 #include "fdleak.h"
 #include "progname.h"
 #include "quotearg.h"
@@ -40,7 +39,6 @@
 
 /* find headers. */
 #include "defs.h"
-#include "die.h"
 #include "dircallback.h"
 #include "bugreports.h"
 #include "system.h"
@@ -183,7 +181,7 @@ Positional options (always true):\n\
   HTL (_("\n\
 Normal options (always true, specified before other expressions):\n\
       -depth -files0-from FILE -maxdepth LEVELS -mindepth LEVELS\n\
-       -mount -noleaf -xdev -ignore_readdir_race -noignore_readdir_race\n"));
+      -mount -noleaf -xdev -ignore_readdir_race -noignore_readdir_race\n"));
   HTL (_("\n\
 Tests (N can be +N or -N or N):\n\
       -amin N -anewer FILE -atime N -cmin N -cnewer FILE -context CONTEXT\n\
@@ -397,9 +395,14 @@ do_complete_pending_execdirs (struct predicate *p)
 
   do_complete_pending_execdirs (p->pred_left);
 
-  if (pred_is (p, pred_execdir) || pred_is(p, pred_okdir))
+  /* We only want to do work here if there is a dir-local pending
+   * exec.  This is because the completion of work for -exec ... {} +
+   * happens when the program exits, not when we leave a directory.
+   */
+  if (pred_is(p, pred_okdir) || pred_is(p, pred_execdir))
     {
       /* It's an exec-family predicate.  p->args.exec_val is valid. */
+      assert(predicate_uses_exec(p));
       if (p->args.exec_vec.multiple)
 	{
 	  struct exec_val *execp = &p->args.exec_vec;
@@ -428,8 +431,6 @@ complete_pending_execdirs (void)
     }
 }
 
-
-
 /* Examine the predicate list for instances of -exec which have been
  * terminated with '+' (build argument list) rather than ';' (singles
  * only).  If there are any, run them (this will have no effect if
@@ -440,14 +441,12 @@ complete_pending_execs (struct predicate *p)
 {
   if (NULL == p)
     return;
-
   complete_pending_execs (p->pred_left);
 
   /* It's an exec-family predicate then p->args.exec_val is valid
    * and we can check it.
    */
-  /* XXX: what about pred_ok() ? */
-  if (pred_is (p, pred_exec) && p->args.exec_vec.multiple)
+  if (predicate_uses_exec (p) && p->args.exec_vec.multiple)
     {
       struct exec_val *execp = &p->args.exec_vec;
 
@@ -471,10 +470,10 @@ record_initial_cwd (void)
   initial_wd = xmalloc (sizeof (*initial_wd));
   if (0 != save_cwd (initial_wd))
     {
-      die (EXIT_FAILURE, errno,
-	   _("Failed to save initial working directory%s%s"),
-	   (initial_wd->desc < 0 && initial_wd->name) ? ": " : "",
-	   (initial_wd->desc < 0 && initial_wd->name) ? initial_wd->name : "");
+      error (EXIT_FAILURE, errno,
+	     _("Failed to save initial working directory%s%s"),
+	     (initial_wd->desc < 0 && initial_wd->name) ? ": " : "",
+	     (initial_wd->desc < 0 && initial_wd->name) ? initial_wd->name : "");
     }
 }
 
@@ -852,8 +851,8 @@ process_optimisation_option (const char *arg)
 {
   if (0 == arg[0])
     {
-      die (EXIT_FAILURE, 0,
-	   _("The -O option must be immediately followed by a decimal integer"));
+      error (EXIT_FAILURE, 0,
+	     _("The -O option must be immediately followed by a decimal integer"));
     }
   else
     {
@@ -862,8 +861,8 @@ process_optimisation_option (const char *arg)
 
       if (!isdigit ( (unsigned char) arg[0] ))
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Please specify a decimal number immediately after -O"));
+	  error (EXIT_FAILURE, 0,
+	         _("Please specify a decimal number immediately after -O"));
 	}
       else
 	{
@@ -873,29 +872,29 @@ process_optimisation_option (const char *arg)
 	  opt_level = strtoul (arg, &end, 10);
 	  if ( (0==opt_level) && (end==arg) )
 	    {
-	      die (EXIT_FAILURE, 0,
-		   _("Please specify a decimal number immediately after -O"));
+	      error (EXIT_FAILURE, 0,
+		     _("Please specify a decimal number immediately after -O"));
 	    }
 	  else if (*end)
 	    {
 	      /* unwanted trailing characters. */
-	      die (EXIT_FAILURE, 0, _("Invalid optimisation level %s"), arg);
+	      error (EXIT_FAILURE, 0, _("Invalid optimisation level %s"), arg);
 	    }
 	  else if ( (ULONG_MAX==opt_level) && errno)
 	    {
-	      die (EXIT_FAILURE, errno,
-		   _("Invalid optimisation level %s"), arg);
+	      error (EXIT_FAILURE, errno,
+		     _("Invalid optimisation level %s"), arg);
 	    }
 	  else if (opt_level > USHRT_MAX)
 	    {
 	      /* tricky to test, as on some platforms USHORT_MAX and ULONG_MAX
 	       * can have the same value, though this is unusual.
 	       */
-	      die (EXIT_FAILURE, 0,
-		   _("Optimisation level %lu is too high.  "
-		     "If you want to find files very quickly, "
-		     "consider using GNU locate."),
-		   opt_level);
+	      error (EXIT_FAILURE, 0,
+		     _("Optimisation level %lu is too high.  "
+		       "If you want to find files very quickly, "
+		       "consider using GNU locate."),
+		     opt_level);
 	    }
 	  else
 	    {
@@ -1036,14 +1035,14 @@ set_option_defaults (struct options *p)
     p->output_block_size = 1024;
 
   p->debug_options = 0uL;
-  p->optimisation_level = 2;
+  p->optimisation_level = 1;
 
   if (getenv ("FIND_BLOCK_SIZE"))
     {
-      die (EXIT_FAILURE, 0,
-	   _("The environment variable FIND_BLOCK_SIZE is not supported, "
-	     "the only thing that affects the block size is the "
-	     "POSIXLY_CORRECT environment variable"));
+      error (EXIT_FAILURE, 0,
+	     _("The environment variable FIND_BLOCK_SIZE is not supported, "
+	       "the only thing that affects the block size is the "
+	       "POSIXLY_CORRECT environment variable"));
     }
 
 #if LEAF_OPTIMISATION

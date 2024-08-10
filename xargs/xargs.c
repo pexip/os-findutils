@@ -1,5 +1,5 @@
 /* xargs -- build and execute command lines from standard input
-   Copyright (C) 1990-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -53,7 +53,6 @@
 
 /* gnulib headers. */
 #include "closein.h"
-#include "error.h"
 #include "fcntl--.h"
 #include "progname.h"
 #include "quotearg.h"
@@ -63,13 +62,16 @@
 
 /* find headers. */
 #include "buildcmd.h"
-#include "die.h"
 #include "bugreports.h"
 #include "fdleak.h"
 #include "findutils-version.h"
 #include "gcc-function-attributes.h"
 #include "system.h"
 
+/* GCC 13 misunderstands the dup2 trickery in this file.  */
+#if 13 <= __GNUC__
+# pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
+#endif
 
 #ifndef LONG_MAX
 # define LONG_MAX (~(1 << (sizeof (long) * 8 - 1)))
@@ -101,8 +103,7 @@ static struct buildcmd_control bc_ctl;
 static int nullwarning_given = 0;
 
 
-/* If nonzero, when this string is read on stdin it is treated as
-   end of file.
+/* If nonzero, when this string is read on stdin, then it is treated as EOF.
    IEEE Std 1003.1, 2004 Edition allows this to be NULL.
    In findutils releases up to and including 4.2.8, this was "_".
 */
@@ -250,9 +251,9 @@ get_char_oct_or_hex_escape (const char *s)
   else
     {
       p = NULL;			/* Silence compiler warning. */
-      die (EXIT_FAILURE, 0,
-	   _("Invalid escape sequence %s in input delimiter specification."),
-	   s);
+      error (EXIT_FAILURE, 0,
+             _("Invalid escape sequence %s in input delimiter specification."),
+             s);
     }
   errno = 0;
   endp = NULL;
@@ -268,27 +269,27 @@ get_char_oct_or_hex_escape (const char *s)
     {
       if (16 == base)
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Invalid escape sequence %s in input delimiter specification; "
-		 "character values must not exceed %lx."),
-	       s, (unsigned long)UCHAR_MAX);
+	  error (EXIT_FAILURE, 0,
+		 _("Invalid escape sequence %s in input delimiter specification; "
+		   "character values must not exceed %lx."),
+		 s, (unsigned long)UCHAR_MAX);
 	}
       else
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Invalid escape sequence %s in input delimiter specification; "
-		 "character values must not exceed %lo."),
-	       s, (unsigned long)UCHAR_MAX);
+	  error (EXIT_FAILURE, 0,
+		 _("Invalid escape sequence %s in input delimiter specification; "
+		   "character values must not exceed %lo."),
+		 s, (unsigned long)UCHAR_MAX);
 	}
     }
 
   /* check for trailing garbage */
   if (0 != *endp)
     {
-      die (EXIT_FAILURE, 0,
-	   _("Invalid escape sequence %s in input delimiter specification; "
-	     "trailing characters %s not recognised."),
-	   s, endp);
+      error (EXIT_FAILURE, 0,
+             _("Invalid escape sequence %s in input delimiter specification; "
+               "trailing characters %s not recognised."),
+             s, endp);
     }
 
   return (char) val;
@@ -331,11 +332,11 @@ get_input_delimiter (const char *s)
 	}
       else
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Invalid input delimiter specification %s: the delimiter must "
-		 "be either a single character or an escape sequence starting "
-		 "with \\."),
-	       s);
+	  error (EXIT_FAILURE, 0,
+		 _("Invalid input delimiter specification %s: the delimiter must "
+		   "be either a single character or an escape sequence starting "
+		   "with \\."),
+		 s);
 	  /*NOTREACHED*/
 	  return 0;
 	}
@@ -351,7 +352,7 @@ noop (void)
 static void
 fail_due_to_env_size (void)
 {
-  die (EXIT_FAILURE, 0, _("environment is too large for exec"));
+  error (EXIT_FAILURE, 0, _("environment is too large for exec"));
 }
 
 static size_t
@@ -407,7 +408,7 @@ main (int argc, char **argv)
   void (*act_on_init_result)(void) = noop;
   enum BC_INIT_STATUS bcstatus;
   enum { XARGS_POSIX_HEADROOM = 2048u };
-  struct sigaction sigact;
+  bool catch_usr_signals = false;
 
   /* We #define __STDC_LIMIT_MACROS above for its side effect on
    * <limits.h>, but we use it here to avoid getting what would
@@ -431,7 +432,7 @@ main (int argc, char **argv)
 
   if (atexit (close_stdin) || atexit (wait_for_proc_all))
     {
-      die (EXIT_FAILURE, errno, _("The atexit library function failed"));
+      error (EXIT_FAILURE, errno, _("The atexit library function failed"));
     }
 
   /* xargs is required by POSIX to allow 2048 bytes of headroom
@@ -670,6 +671,12 @@ main (int argc, char **argv)
 	case 'P':
 	  /* Allow only up to MAX_PROC_MAX child processes. */
 	  proc_max = parse_num (optarg, 'P', 0L, MAX_PROC_MAX, 1);
+#if defined SIGUSR1 && defined SIGUSR2
+	  catch_usr_signals = true;
+#else
+	  error (0, 0, _("SIGUSR1 and SIGUSR2 are not both defined, so the -P option does nothing."));
+	  proc_max = 1;
+#endif
 	  break;
 
         case 'a':
@@ -683,9 +690,9 @@ main (int argc, char **argv)
 	case PROCESS_SLOT_VAR:
 	  if (strchr (optarg, '='))
 	    {
-	      die (EXIT_FAILURE, 0,
-		   _("option --%s may not be set to a value which includes `='"),
-		   longopts[option_index].name);
+	      error (EXIT_FAILURE, 0,
+		     _("option --%s may not be set to a value which includes `='"),
+		     longopts[option_index].name);
 	    }
 	  slot_var_name = optarg;
 	  if (0 != unsetenv (slot_var_name))
@@ -695,9 +702,9 @@ main (int argc, char **argv)
 		 have the same value for this variable; see
 		 set_slot_var.
 	      */
-	      die (EXIT_FAILURE, errno,
-		   _("failed to unset environment variable %s"),
-		   slot_var_name);
+	      error (EXIT_FAILURE, errno,
+		     _("failed to unset environment variable %s"),
+		     slot_var_name);
 	    }
 	  break;
 
@@ -722,25 +729,29 @@ main (int argc, char **argv)
   act_on_init_result ();
   assert (BC_INIT_OK == bcstatus);
 
+  if (catch_usr_signals)
+    {
 #ifdef SIGUSR1
 # ifdef SIGUSR2
-  /* Accept signals to increase or decrease the number of running
-     child processes.  Do this as early as possible after setting
-     proc_max.  */
-  sigact.sa_handler = increment_proc_max;
-  sigemptyset(&sigact.sa_mask);
-  sigact.sa_flags = 0;
-  if (0 != sigaction (SIGUSR1, &sigact, (struct sigaction *)NULL))
-	  error (0, errno, _("Cannot set SIGUSR1 signal handler"));
+      struct sigaction sigact;
 
-  sigact.sa_handler = decrement_proc_max;
-  sigemptyset(&sigact.sa_mask);
-  sigact.sa_flags = 0;
-  if (0 != sigaction (SIGUSR2, &sigact, (struct sigaction *)NULL))
-	  error (0, errno, _("Cannot set SIGUSR2 signal handler"));
+      /* Accept signals to increase or decrease the number of running
+	 child processes.  Do this as early as possible after setting
+	 proc_max.  */
+      sigact.sa_handler = increment_proc_max;
+      sigemptyset(&sigact.sa_mask);
+      sigact.sa_flags = SA_RESTART;
+      if (0 != sigaction (SIGUSR1, &sigact, (struct sigaction *)NULL))
+	error (0, errno, _("Cannot set SIGUSR1 signal handler"));
+
+      sigact.sa_handler = decrement_proc_max;
+      sigemptyset(&sigact.sa_mask);
+      sigact.sa_flags = SA_RESTART;
+      if (0 != sigaction (SIGUSR2, &sigact, (struct sigaction *)NULL))
+	error (0, errno, _("Cannot set SIGUSR2 signal handler"));
 # endif /* SIGUSR2 */
 #endif /* SIGUSR1 */
-
+    }
 
   if (0 == strcmp (input_file, "-"))
     {
@@ -752,9 +763,9 @@ main (int argc, char **argv)
       input_stream = fopen_cloexec_for_read_only (input_file);
       if (NULL == input_stream)
 	{
-	  die (EXIT_FAILURE, errno,
-	       _("Cannot open input file %s"),
-	       quotearg_n_style (0, locale_quoting_style, input_file));
+	  error (EXIT_FAILURE, errno,
+	         _("Cannot open input file %s"),
+	         quotearg_n_style (0, locale_quoting_style, input_file));
 	}
     }
 
@@ -919,6 +930,8 @@ read_line (void)
 
       if (c == EOF)
 	{
+	  if (EINTR == errno)
+	    continue;
 	  /* COMPAT: SYSV seems to ignore stuff on a line that
 	     ends without a \n; we don't.  */
 	  eof = true;
@@ -929,10 +942,10 @@ read_line (void)
 	  if (state == QUOTE)
 	    {
 	      exec_if_possible ();
-	      die (EXIT_FAILURE, 0,
-		   _("unmatched %s quote; by default quotes are special to "
-		     "xargs unless you use the -0 option"),
-		   quotc == '"' ? _("double") : _("single"));
+	      error (EXIT_FAILURE, 0,
+		     _("unmatched %s quote; by default quotes are special to "
+		       "xargs unless you use the -0 option"),
+		     quotc == '"' ? _("double") : _("single"));
 	    }
 	  if (first && EOF_STR (linebuf))
 	    return -1;
@@ -1024,10 +1037,10 @@ read_line (void)
 	  if (c == '\n')
 	    {
 	      exec_if_possible ();
-	      die (EXIT_FAILURE, 0,
-		   _("unmatched %s quote; by default quotes are special to "
-		     "xargs unless you use the -0 option"),
-		   quotc == '"' ? _("double") : _("single"));
+	      error (EXIT_FAILURE, 0,
+		     _("unmatched %s quote; by default quotes are special to "
+		       "xargs unless you use the -0 option"),
+		     quotc == '"' ? _("double") : _("single"));
 	    }
 	  if (c == quotc)
 	    {
@@ -1056,7 +1069,7 @@ read_line (void)
       if (p >= endbuf)
         {
 	  exec_if_possible ();
-	  die (EXIT_FAILURE, 0, _("argument line too long"));
+	  error (EXIT_FAILURE, 0, _("argument line too long"));
 	}
       *p++ = c;
 #else
@@ -1094,6 +1107,8 @@ read_string (void)
       int c = getc (input_stream);
       if (c == EOF)
 	{
+	  if (EINTR == errno)
+	    continue;
 	  eof = true;
 	  if (p == linebuf)
 	    return -1;
@@ -1121,7 +1136,7 @@ read_string (void)
       if (p >= endbuf)
         {
 	  exec_if_possible ();
-	  die (EXIT_FAILURE, 0, _("argument line too long"));
+	  error (EXIT_FAILURE, 0, _("argument line too long"));
 	}
       *p++ = c;
     }
@@ -1143,7 +1158,7 @@ print_args (bool ask)
 	           (i == 0 ? "" : " "),
 	           quotearg_n_style (0, shell_escape_quoting_style,
 		                     bc_state.cmd_argv[i])) < 0)
-	die (EXIT_FAILURE, errno, _("Failed to write to stderr"));
+	error (EXIT_FAILURE, errno, _("Failed to write to stderr"));
     }
 
   if (ask)
@@ -1155,18 +1170,18 @@ print_args (bool ask)
 	{
 	  tty_stream = fopen_cloexec_for_read_only ("/dev/tty");
 	  if (!tty_stream)
-	    die (EXIT_FAILURE, errno,
-		 _("failed to open /dev/tty for reading"));
+	    error (EXIT_FAILURE, errno,
+		   _("failed to open /dev/tty for reading"));
 	}
       fputs ("?...", stderr);
       if (fflush (stderr) != 0)
-	die (EXIT_FAILURE, errno, _("Failed to write to stderr"));
+	error (EXIT_FAILURE, errno, _("Failed to write to stderr"));
 
       c = savec = getc (tty_stream);
       while (c != EOF && c != '\n')
 	c = getc (tty_stream);
       if (EOF == c)
-	die (EXIT_FAILURE, errno, _("Failed to read from stdin"));
+	error (EXIT_FAILURE, errno, _("Failed to read from stdin"));
       if (savec == 'y' || savec == 'Y')
 	return true;
     }
@@ -1243,8 +1258,8 @@ prep_child_for_exec (void)
 	   */
 	  if (open_tty)
 	    {
-	      die (EXIT_FAILURE, errno, "%s",
-		   quotearg_n_style (0, locale_quoting_style, inputfile));
+	      error (EXIT_FAILURE, errno, "%s",
+		     quotearg_n_style (0, locale_quoting_style, inputfile));
 	    }
 	  else
 	    {
@@ -1255,8 +1270,8 @@ prep_child_for_exec (void)
       if (STDIN_FILENO < fd)
 	{
 	  if (dup2(fd, STDIN_FILENO) != 0)
-	    die (EXIT_FAILURE, errno,
-	         _("failed to redirect standard input of the child process"));
+	    error (EXIT_FAILURE, errno,
+	           _("failed to redirect standard input of the child process"));
 	  close(fd);
 	}
     }
@@ -1308,7 +1323,7 @@ xargs_do_exec (struct buildcmd_control *ctl, void *usercontext, int argc, char *
       wait_for_proc (false, 0u);
 
       if (pipe (fd))
-	die (EXIT_FAILURE, errno, _("could not create pipe before fork"));
+	error (EXIT_FAILURE, errno, _("could not create pipe before fork"));
       fcntl (fd[1], F_SETFD, FD_CLOEXEC);
 
       /* If we run out of processes, wait for a child to return and
@@ -1319,7 +1334,7 @@ xargs_do_exec (struct buildcmd_control *ctl, void *usercontext, int argc, char *
       switch (child)
 	{
 	case -1:
-	  die (EXIT_FAILURE, errno, _("cannot fork"));
+	  error (EXIT_FAILURE, errno, _("cannot fork"));
 
 	case 0:		/* Child.  */
 	  {
@@ -1431,9 +1446,9 @@ xargs_do_exec (struct buildcmd_control *ctl, void *usercontext, int argc, char *
 	  }
 	default:
 	  {
-	    die (EXIT_FAILURE, errno,
-		 _("read returned unexpected value %"PRIuMAX"; "
-		   "this is probably a bug, please report it"), r);
+	    error (EXIT_FAILURE, errno,
+		   _("read returned unexpected value %"PRIuMAX"; "
+		     "this is probably a bug, please report it"), r);
 	  }
 	} /* switch on bytes read */
       close (fd[0]);
@@ -1493,6 +1508,7 @@ static void
 wait_for_proc (bool all, unsigned int minreap)
 {
   unsigned int reaped = 0;
+  int deferred_exit_status = 0;
 
   while (procs_executing)
     {
@@ -1524,8 +1540,8 @@ wait_for_proc (bool all, unsigned int minreap)
 	  while ((pid = waitpid (-1, &status, wflags)) == (pid_t) -1)
 	    {
 	      if (errno != EINTR)
-		die (EXIT_FAILURE, errno,
-		     _("error waiting for child process"));
+		error (EXIT_FAILURE, errno,
+		       _("error waiting for child process"));
 
 	      if (stop_waiting && !all)
 		{
@@ -1575,17 +1591,44 @@ wait_for_proc (bool all, unsigned int minreap)
       procs_executing--;
       reaped++;
 
+#define set_deferred_exit_status(n) \
+      do \
+      { \
+	if (deferred_exit_status < n)  \
+	  { \
+	    deferred_exit_status = n; \
+	  } \
+      } while (0)
+
       if (WEXITSTATUS (status) == CHILD_EXIT_PLEASE_STOP_IMMEDIATELY)
-	error (XARGS_EXIT_CLIENT_EXIT_255, 0,
-	       _("%s: exited with status 255; aborting"), bc_state.cmd_argv[0]);
+	{
+	  error (0, 0, _("%s: exited with status 255; aborting"), bc_state.cmd_argv[0]);
+	  set_deferred_exit_status(XARGS_EXIT_CLIENT_EXIT_255);
+	}
       if (WIFSTOPPED (status))
-	error (XARGS_EXIT_CLIENT_FATAL_SIG, 0,
-	       _("%s: stopped by signal %d"), bc_state.cmd_argv[0], WSTOPSIG (status));
+	{
+	  error (0, 0, _("%s: stopped by signal %d"), bc_state.cmd_argv[0], WSTOPSIG (status));
+	  set_deferred_exit_status(XARGS_EXIT_CLIENT_FATAL_SIG);
+	}
       if (WIFSIGNALED (status))
-	error (XARGS_EXIT_CLIENT_FATAL_SIG, 0,
-	       _("%s: terminated by signal %d"), bc_state.cmd_argv[0], WTERMSIG (status));
+	{
+	  error (0, 0,
+		 _("%s: terminated by signal %d"), bc_state.cmd_argv[0], WTERMSIG (status));
+	  set_deferred_exit_status(XARGS_EXIT_CLIENT_FATAL_SIG);
+	}
       if (WEXITSTATUS (status) != 0)
-	child_error = XARGS_EXIT_CLIENT_EXIT_NONZERO;
+	{
+	  child_error = XARGS_EXIT_CLIENT_EXIT_NONZERO;
+	}
+      if (deferred_exit_status && !all)
+	{
+	  break;
+	}
+    }
+  if (deferred_exit_status)
+    {
+      child_error = deferred_exit_status > child_error ? deferred_exit_status : child_error;
+      exit (child_error);
     }
 }
 

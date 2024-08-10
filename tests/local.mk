@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in -*-Makefile-*-.
 
-## Copyright (C) 2007-2022 Free Software Foundation, Inc.
+## Copyright (C) 2007-2024 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -20,12 +20,14 @@ built_programs = find xargs frcode locate updatedb
 # Indirections required so that we'll still be able to know the
 # complete list of our tests even if the user overrides TESTS
 # from the command line (as permitted by the test harness API).
+# The check 'sc_tests_list_consistency' also uses 'all_tests'.
+all_tests = $(sh_tests) $(binary_tests)
 TESTS = $(all_tests)
 root_tests = $(all_root_tests)
 
-EXTRA_DIST += $(all_tests)
+EXTRA_DIST += $(sh_tests)
 
-TEST_EXTENSIONS = .sh
+TEST_EXTENSIONS = .sh .c
 
 SH_LOG_COMPILER = $(SHELL)
 
@@ -82,6 +84,9 @@ EXTRA_DIST += \
 all_root_tests = \
   tests/find/type_list.sh
 
+check_PROGRAMS = $(binary_tests)
+binary_tests = \
+	tests/xargs/test-sigusr
 
 ALL_RECURSIVE_TARGETS += check-root
 .PHONY: check-root
@@ -104,12 +109,13 @@ check-root:
 # they share time with tests that burn CPU, not with others that sleep.
 # Put head-elide-tail early, because it's long-running.
 
-all_tests = \
+sh_tests = \
   tests/misc/help-version.sh \
   tests/find/depth-unreadable-dir.sh \
   tests/find/inode-zero.sh \
   tests/find/many-dir-entries-vs-OOM.sh \
   tests/find/name-lbracket-literal.sh \
+  tests/find/name-slash.sh \
   tests/find/printf_escapechars.sh \
   tests/find/printf_escape_c.sh \
   tests/find/printf_inode.sh \
@@ -119,8 +125,12 @@ all_tests = \
   tests/find/refuse-noop.sh \
   tests/find/debug-missing-arg.sh \
   tests/find/used.sh \
+  tests/find/newer.sh \
+  tests/find/opt-numeric-arg.sh \
+  tests/find/user-group-max.sh \
   tests/xargs/conflicting_opts.sh \
   tests/xargs/verbose-quote.sh \
+  tests/find/arg-nan.sh \
   $(all_root_tests)
 
 $(TEST_LOGS): $(PROGRAMS)

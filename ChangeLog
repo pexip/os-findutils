@@ -1,3 +1,981 @@
+2024-06-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	version 4.10.0
+	* NEWS: Record release date.
+
+2024-06-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: add more file related to test-sigusr to tests/.gitignore
+	* tests/.gitignore (/xargs/.dirstamp): Add entry.
+	(/xargs/test-sigusr.o): Likewise.
+
+2024-06-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: re-introduce all_tests needed by syntax-check
+	The recent commit removed the variable 'all_tests' which is used by
+	sc_tests_list_consistency in cfg.mk.
+
+	* tests/local.mk (all_tests): Re-introduce and ...
+	(TESTS): ... use it here.
+
+2024-06-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: improve ERE in sc_tests_list_consistency
+	The ERE used lacks the grouping of the extensions and therefore would
+	also match files where the first two patterns are not at the end of
+	the line:
+	  grep -E '\.sh|\.c$'
+
+	* cfg.mk (sc_tests_list_consistency): Add grouping (...) around the
+	sub-patterns.  While at it, also remove the redundant escaping, i.e.,
+	\$$ -> $$ to be consistent with the rest of this file.
+
+2024-05-30  James Youngman  <james@youngman.org>
+
+	tests: don't distribute the tests/xargs/test-sigusr binary.
+	There is no NEWS item for this change since this test was introduced
+	since the previous release.
+
+2024-05-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	NEWS: fix translation list.
+	s/Brazilian, Portuguese/Brazilian Portuguese/.
+
+2024-05-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	NEWS: further improve wording for the imminent release.
+
+2024-05-27  James Youngman  <james@youngman.org>
+
+	NEWS: list the updated translations.
+
+2024-05-27  James Youngman  <james@youngman.org>
+
+	NEWS: mention recent bug-fixes.
+
+2024-05-27  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest'; there have been 219 commits on gnulib
+	since the last update.
+
+	* gnulib: Update to latest.
+	* bootstrap-funclib.sh: Likewise.
+
+2024-05-27  James Youngman  <james@youngman.org>
+
+	Standardize on "optimize" rather than "optimise".
+	While this is often described as a UK/US spelling difference, the
+	"-ise" spelling is described as a variant by the Oxford English
+	Dictionary.  Therefore we prefer the "-ize" spelling.
+
+	* doc/find.texi: standardize on optimize.
+	* find/find.1: Likewise.
+	* find/parser.c: Likewise.
+	* find/pred.c: Likewise.
+	* find/tree.c: Likewise.
+	* NEWS: Likewise (except for historical entries).
+
+2024-05-27  James Youngman  <james@youngman.org>
+
+	find: by default, disable the cost-based optimiser.
+	The cost-based optimiser re-orders predicates based on their expected
+	cost.  This re-ordering (as currently implemented) results in
+	user-visible changes to the order of operations.  An optimiser should
+	not do that.  For example, "-empty -readable" and "-readable -empty"
+	don't actually have the same effect since "-empty" fails on an
+	unreadable directory.  This fixes savannah bug #58427 (unless the user
+	specifies -O2).
+
+	* find/util.c(set_option_defaults): set default optimisation level to
+	1 instead of 2.
+	* find/tree.c(build_expression_tree): call do_arm_swaps (i.e. apply
+	cost-based optimisations) only at optimisation level 2 and above.
+	* find/find.1(-O): explain this change.
+	* doc/find.texi(Optimisation Options): explain this change.
+	* NEWS: mention this change.
+
+2024-05-26  James Youngman  <james@youngman.org>
+
+	Fix sv bug #51926: -xtype l fails on symlinks that have a loop
+	* find/pred.c (pred_xtype): if lstat fails with ELOOP, -xtype should
+	behave in the same way as -type.
+	(err_signals_broken_link): new function, true for ENOENT and ELOOP.
+	* doc/find.texi: document the fact that the "infinite loop" case is
+	handled like the "symbolic link target does not exist" case.
+	* find/find.1: Likewise.
+
+2024-05-26  James Youngman  <james@youngman.org>
+
+	maint: turn on Automake option subdir-objects.
+	Enabling subdir-objects fixes Savannah bug #65794.
+
+	* Makefile.am(AUTOMAKE_OPTIONS): enable subdir-objects.
+
+2024-05-26  James Youngman  <james@youngman.org>
+
+	[check] make fail message of tests/misc/help-version.sh explicit.
+	This improved message is intended to help diagnose Savannah bug #65796.
+
+	* tests/misc/help-version.sh: when the --version ouptut of some
+	findutils program doesn't match the value of the VERSION environment
+	variable during "make check", issue a more detailed error message.
+
+2024-05-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: avoid various syntax-check failures wrt/ test-sigusr
+	The syntax-check complains:
+	  $ make syntax-check -k
+	  ...
+	  maint.mk: the above files do not call bindtextdomain
+	  make: *** [maint.mk:869: sc_bindtextdomain] Error 1
+	  ...
+	  maint.mk: the above files do not include <config.h>
+	  make: *** [maint.mk:509: sc_require_config_h] Error 1
+	  ...
+	  maint.mk: use EXIT_* values rather than magic number
+	  make: *** [maint.mk:411: sc_prohibit_magic_number_exit] Error 1
+	  ...
+	  maint.mk: found unmarked diagnostic(s)
+	  make: *** [maint.mk:916: sc_unmarked_diagnostics] Error 1
+	  ...
+	  make: *** [cfg.mk:111: sc_tests_list_consistency] Error 1
+	  ...
+	  maint.mk: Please make test executable: tests/xargs/test-sigusr.c
+	  make: *** [cfg.mk:124: sc_tests_executable] Error 1
+
+	* cfg.mk (exclude_file_name_regexp--sc_bindtextdomain): Add test-sigusr.
+	(exclude_file_name_regexp--sc_unmarked_diagnostics): Define with the
+	pattern of the test-sigusr source file.
+	(sc_tests_list_consistency): Strip off ".c" suffix.
+	(sc_tests_executable): Exempt C source from this rule.
+	* tests/local.mk (TEST_EXTENSIONS): Add .c sources, needed also for
+	sc_tests_list_consistency to work.
+	* tests/xargs/test-sigusr.c (#include <config.h>): Add to avoid
+	sc_require_config_h failure.
+	(verify_signal_ignored): Call exit with EXIT_FAILURE instead of 1 to
+	avoid sc_prohibit_magic_number_exit failure.
+	(verify_signal_is_fatal): Likewise.
+	(verify_signal_is_nonfatal_with_p): Likewise.
+	* tests/.gitignore (/xargs/test-sigusr): While at it, add an entry
+	for the built test program here.
+
+2024-05-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs: avoid sc_useless_cpp_parens failure
+	$ make syntax-check
+	...
+	xargs/xargs.c:674:#if !(defined(SIGUSR1) && defined(SIGUSR2))
+	maint.mk: found useless parentheses in cpp directive
+	make: *** [maint.mk:924: sc_useless_cpp_parens] Error 1
+
+	* xargs/xargs.c (main): Simplify -P #if conditional to avoid the
+	above syntax-check failure.
+
+2024-05-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid gnulib sc_prefer_angle_bracket_headers failure
+	The following syntax-check rule fails:
+
+	  $ make syntax-check
+	  ...
+	  maint.mk: Use #include <hdr.h>, not #include "hdr.h" for the above
+	  make: *** [maint.mk:619: sc_prefer_angle_bracket_headers] Error 1
+
+	The rule suggests using '#include <header.h>' instead of
+	'#include "header.h"' for headers that override system headers.
+	See gnulib documentation, section "Style of #include statements".
+
+	* find/parser.c (#include "fnmatch.h": Change from "..." to <...> style.
+	* find/pred.c (#include "fnmatch.h"): Likewise.
+	* find/tree.c (#include "fnmatch.h"): Likewise.
+	* lib/system.h (#include "error.h"): Likewise.
+	* locate/locate.c (#include "fnmatch.h"): Likewise.
+	* tests/xargs/test-sigusr.c (#include "error.h"): Likewise.
+
+2024-05-20  Bernhard Voelker  <bernhard.voelker@camline.com>
+
+	build: avoid spurious failures due to lack of EGREP definition
+	Similar to Jim Meyering's commit in coreutils:
+	http://git.savannah.gnu.org/cgit/coreutils.git/commit/?id=d73ca62c4fa3
+
+	* configure.ac: Use AC_PROG_EGREP, since many doc and test rules
+	use $EGREP.
+	* cfg.mk (sc_tests_list_consistency): Use grep -E, not $(EGREP) here.
+
+2024-05-19  James Youngman  <james@youngman.org>
+
+	[find] avoid undefined behaviour in consider_arm_swap.
+	This fixes Savannah bug #63605.
+
+	* find/tree.c: avoid invalid struct member access in consider_arm_swap
+
+2024-05-19  James Youngman  <james@youngman.org>
+
+	[xargs] restart stdin reads interruipted by SIGUSR1/SIGUSR2.
+	While we do use the gnulib safe_read function, we read input from
+	stdin using stdio, not direct Unix syscalls, so safe_read is not
+	involved.
+
+	* xargs/xargs.c: If a stdin read fails with EINTR, do it again.  Use
+	SA_RESTART when setting up signal handlers.  This fixes Savannah
+	bug #64442.
+
+2024-05-19  James Youngman  <james@youngman.org>
+
+	[doc] Mention the changes to xargs -P
+	* doc/find.texi: explain how xargs -P affects the handling of the
+	SIGUSR1 and SIGUSR2 signals.
+	* xargs/xargs.1: Likewise.
+
+2024-05-19  James Youngman  <james@youngman.org>
+
+	[xargs] POSIX requires SIGUSR1/2 to be fatal if not blocked.
+	If the user uses -P we're not using only POSIX options, so in that
+	case it is OK to handle SIGUSR1/2.  Otherwise (without -P) don't
+	handle these signals, meaning that they could cause xargs to
+	terminate.
+
+	* xargs/xargs.c: set signal handlers for SIGUSR1 and SIGUSR2 only if
+	the -P option was used.  Warn if SIGUSR1 or SIGUSR2 is not defined.
+	* tests/xargs/test-sigusr: a new test for this.
+	* tests/local.mk: build and run the new test.
+	* NEWS: mention these changes.
+
+2024-05-18  James Youngman  <james@youngman.org>
+
+	xargs: Wait for all children even if one exited with 255.
+	* xargs/xargs.c: fix Savannah bug #64451 (xargs -P exits before all
+	children have exited if one exits with status 255).
+	* xargs/xargs.1 (BUGS): mention this bug and the corrected behaviour.
+	* doc/find.texi: Likewise.
+	* NEWS: mention this bugfix.
+
+2024-05-18  James Youngman  <james@youngman.org>
+
+	[doc] add missing "-" to "-regextype".
+
+2024-05-17  James Youngman  <james@youngman.org>
+
+	[doc] -regextype is also a positional option.
+
+2024-05-17  James Youngman  <james@youngman.org>
+
+	[doc] Explain how locate's and find's default matching differ.
+	Example: The output of "locate foo" would include /home/james/foo/bar
+	while the output of "find /home -name foo" would not.
+
+2024-05-17  James Youngman  <james@youngman.org>
+
+	[doc] Explain that find defaults to GNU Emacs regexes.
+	This fixes Savannah bug #65297.
+
+2024-05-17  James Youngman  <james@youngman.org>
+
+	[doc] Use @var{name}, not NAME or @var{NAME} in "Hard Links".
+	The @var{name} renders as NAME in Info, to this inconsistency is hard
+	to spot there.  The inconsistency is easier to spot in the typeset
+	output (e.g. PDF, Postscript).
+
+	Our solution is to use @var{name} even inside @samp, since that
+	works (and is intended to, according to the documentation).
+
+	This fixes Savannah bug #65305.
+
+2024-05-13  James Youngman  <james@youngman.org>
+
+	Simplify use of predicate->args.exec_vec slightly.
+	We introduce a function which tells us whether that union member is
+	valid.
+
+2024-05-13  James Youngman  <james@youngman.org>
+
+	Rename is_fts_enabled() to is_fts_cwdfd_enabled().
+	This simplifies the caller.  FTS is always enabled.  Remove some
+	now-unused variables.
+
+2024-05-13  James Youngman  <james@youngman.org>
+
+	Remove unused predicate field literal_control_chars.
+
+2024-05-13  James Youngman  <james@youngman.org>
+
+	Fix typo in comment.
+
+2024-05-13  James Youngman  <james@youngman.org>
+
+	Correct download URLs.
+	Also some minor corrections:
+
+	- Remove --with-afs, this configure option no longer exists.
+	- -exec ... {} + is implemented now.
+
+2024-04-20  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest'; there have been 518 commits on gnulib
+	since the last update, including the update of the copyright year numbers.
+
+	* gnulib: Update to latest.
+	* bootstrap: Likewise.
+	* bootstrap-funclib.sh: Likewise.
+	* tests/init.sh: Likewise.
+
+2024-04-15  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: doc: warn about consistency of node menu entries
+	* doc/Makefile.am (AM_MAKEINFOFLAGS): Add configuration variable
+	CHECK_NORMAL_MENU_STRUCTURE=1 to warn about inconsistent menu structure
+	again: makeinfo >=6.8 would not do this anymore.
+
+2024-02-28  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: use upper-case 'B' as birthtime for -newerXY consistently
+	* doc/find.texi (deffn Test -newerXY reference): Change lower-case
+	'b' to upper-case 'B' as only the latter is recognized in the code.
+	* NEWS (Documentation Changes): Document the fix.
+
+	Documentation bug introduced with commit f361af57cdb3 in 2007.
+	Fixes https://savannah.gnu.org/bugs/?65378
+
+2024-01-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update copyright year number ranges
+	Run 'make update-copyright'.
+
+	* lib/regexprops.c (copying): Update the year number manually.
+	* tests/sample-test: Adjust to use the single most recent year.
+	* All other files: Update copyright years via the above make run.
+
+2024-01-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc/find.texi: avoid 'update-copyright' changing code sample output
+	* doc/find.texi (@node O_NOFOLLOW): Add a grep filter to 'find --version'
+	to only get the wanted "Features" line, thus avoiding to have a regular
+	Copyright line in the texi file.  Previously, that place always had to
+	be reverted after 'make update-copyright'.
+
+2024-01-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest'; there have been 219 commits on gnulib
+	since the last update, including the update of the copyright year numbers.
+
+	* gnulib: Update to latest.
+	* autogen.sh: Auto-update.
+	* autopull.sh: Likewise.
+	* bootstrap: Likewise.
+	* bootstrap-funclib.sh: Likewise.
+	* tests/init.sh: Likewise.
+
+2024-01-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: adjust make target 'gnulib-sync' wrt/ autogen and autopull
+	Since gnulib update in findutils commit f293f5da80f9, there are more
+	files the make target 'gnulib-sync' alias 'update-gnulib-to-latest'
+	needs to copy.
+
+	* Makefile.am (gnulib-sync): Use 'fdl.texi' from gnulib now as it is
+	identical to 'fdl-1.3.texi'.
+	Copy autogen.sh, autopull.sh, bootstrap-funclib.sh and bootstrap from
+	the 'gnulib/top' directory.
+
+2023-12-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: allow -user,-group to accept larger integers beyond INT_MAX
+	The number parsing of integer arguments of the -user and -group option
+	was limited to INT_MAX, although the data types uid_t and gid_t are
+	larger on many systems, including x86_64 GNU/Linux.
+
+	* find/parser.c (UID_T_MAX, GID_T_MAX): Define.
+	(parse_group): Use xstrtoumax directly instead of safe_atoi, and check
+	the returned number vs. GID_T_MAX.  Simplify error handling.
+	While at it, fix the est_success_rate guessing.
+	(parse_user): Use xstrtoumax directly instead of safe_atoi, and check
+	the returned number vs. UID_T_MAX.
+	* find/getlimits.c: Add helper utility to determine platform-local
+	limits for uid_t and gid_t, based on 'getlimits' of GNU coreutils,
+	written by Padraig Brady.
+	* find/Makefile.am (noinst_PROGRAMS): Make 'getlimits' as such.
+	* cfg.mk (exclude_file_name_regexp--sc_bindtextdomain): Add getlimits.c.
+	* find/.gitignore (/getlimits): Add entry.
+	* tests/find/user-group-max.sh: Add test.
+	* tests/local.mk (all_tests): Reference it.
+	* NEWS (Bug Fixes): Mention the fix.
+
+	Reported by Jocelyn Le Sage in
+	https://savannah.gnu.org/bugs/?64900
+
+2023-11-11  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find.1: fix syntax error
+	Build failed with:
+	  $ build-aux/man-lint.sh find find.1
+	  lint check on manpage find.1: FAILED:
+	  troff:find/find.1:2048: warning: macro 'find' not defined \
+	  (possibly missing space after 'fi')
+
+	* find/find.1: Fix highlighting.
+	Bug introduced in recent commit 9a6b5821e680.
+
+2023-11-10  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	updatedb.1: fix typo
+	* locate/updatedb.1: s/LOCATGE02/LOCATE02/
+
+	Bug introduced in commit v4.6.0-44-g89ec0211.
+	Fixes https://savannah.gnu.org/bugs/?64876
+
+2023-10-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find.1: highlight the find(1) tool in more places.
+	When the word 'find' stands for the tool, hightlight it.
+
+	* find/find.1: Do the above in more cases.
+
+2023-10-14  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs.1: narrow down deprecation on the -i option
+	The long option --replace it not deprecated, only the short form.
+
+	* xargs/xargs.1: Clarify the above better by explicitly mentioning
+	the short -i form.
+
+2023-10-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix description of xargs options -i, --replace
+	The description of the --replace/-i options of xargs in the Reference
+	chapter said that the replace-str would only be allowed to be omitted
+	for -i while this holds also true for the long option --replace.
+
+	A similar description of the same options in Interspersing File Names
+	was missing the '[]' to mark the REPLACE-STR as optional for -i.
+
+	* doc/find.texi (xargs options): Document that omitting the REPLACE-STR
+	is allowed for --replace, too.  Further align the description with
+	that in ...
+	(Interspersing File Names): ... here.  Mark the replace-str as optional
+	for -i by surrounding with '[]'.
+
+2023-10-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: use option --replace instead of deprecated -i in xargs example
+	* doc/find.texi (subsection Coping with odd filenames too):
+	Change the deprecated -i option to --replace.
+	* NEWS (Documentation Changes): Document the change.
+
+2023-10-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: use option -L instead of deprecated -l in xargs examples
+	* doc/find.texi: Change the deprecated -l option to -L 1 in various
+	xargs(1) examples.
+	* NEWS (Documentation Changes): Document the change.
+
+	Reported by Sebastian Carlos in
+	Fixes https://savannah.gnu.org/bugs/?64480
+
+2023-09-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: go back to using 'error'
+	Now that Gnulib's 'error' module does proper static checking
+	for not returning, we need no longer use the 'die' macro.
+	This makes code easier to read for people that are used to 'error'.
+
+	* cfg.mk (sc_die_EXIT_FAILURE): Remove.
+	* src/die.h: Remove.  All includes removed.  All calls to 'die'
+	changed back to calls to 'error'.
+	* lib/Makefile.am (libfind_a_SOURCES): Remove 'die.h'.
+	* src/system.h: Include error.h.  Stop including error.h elsewhere.
+	* find/ftsfind.c (process_all_startpoints): Avoid extra '\n' in error
+	diagnostics wrt/ -files0-from.  Also avoid redundant "%s" formats.
+	* find/parser.c (parse_perm, parse_regex):
+	* lib/buildcmd.c (bc_push_arg):
+	Wrap calls to 'error' in block when under an if-condition and either
+	the if-condition or the 'error' invocation is spanning over more
+	than one line.
+	* find/tree.c (get_pred_cost): Make error message translatable - found
+	by sc_unmarked_diagnostics.
+
+2023-09-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: diagnose NaN arguments better
+	The predicates -used, -amin, -cmin, -mmin, -atime, -ctime, and -mtime
+	dumped core via an assertion when passing a not-a-number argument.
+
+	* find/parser.c (isnan): Add define.
+	(get_relative_timestamp): Diagnose when the return value of xstrtod
+	is not-a-number.  Mention the missing parsers in the description of
+	the function.
+	* tests/find/arg-nan.sh: Add test.
+	* tests/local.mk (all_tests): Reference it.
+	* NEWS (Improvements): Mention the improvement.
+
+	Reported by Jaehan Yoon in
+	https://savannah.gnu.org/bugs/?64717
+
+2023-09-25  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: reference COPYING from README
+	* README: Reference COPYING as per the GNU coding standards,
+	and enforced by a new syntax-check from gnulib.
+
+2023-09-25  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	There have been 522 commits on gnulib since the last update.
+
+	* bootstrap: Auto-update.
+	* bootstrap-funclib.sh: Likewise.
+	* gnulib: Update to latest.
+
+2023-09-25  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: run groff(1) when lint-ing man pages
+	Newer troff(1) complains about the TE macro:
+	  find/find.1:908: warning: tbl preprocessor failed, or it or soelim \
+	    was not run; table(s) likely not rendered (TE macro called with  \
+	    TW register undefined)
+
+	* build-aux/man-lint.sh: Change from troff(1) to groff(1).
+
+2023-09-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs.1: further editing improvements
+	* xargs/xargs.1: Start new sentences on a new line.
+	Use '\~' as unbreakable space in "2048 bytes".
+
+2023-09-23  Bjarni Ingi Gislason  <bjarniig@simnet.is>
+
+	xargs.1: some remarks and editing fixes in the man page
+	  Not in the patch.
+
+	Output from "mandoc -T lint xargs.1":
+
+	mandoc: xargs.1:1:2: WARNING: missing date, using "": TH
+
+	#######
+
+	Change '-' (\-) to '\(en' (en-dash) for a numeric range.
+	GNU gnulib has recently (2023-06-18) updated its
+	"build_aux/update-copyright" to recognize "\(en" in man pages.
+
+	xargs.1:393:if any invocation of the command exited with status 1-125
+	xargs.1:518:Copyright \(co 1990-2023 Free Software Foundation, Inc.
+
+	#####
+
+	Change (or include a "FIXME" paragraph about) misused SI (metric)
+	numeric prefixes (or names) to the binary ones, like Ki (kibi), Mi
+	(mebi), Gi (gibi), or Ti (tebi), if indicated.
+	If the metric prefixes are correct, add the definitions or an
+	explanation to avoid misunderstanding.
+
+	254:more than 128KiB, 128Kib is used as the default value; otherwise, the
+	255:default value is the maximum.  1KiB is 1024 bytes.
+
+	#####
+
+	Reduce space between words.
+
+	51:prevents such problems.   When using this option you will need to
+	94:command.   Multibyte characters are not supported.
+	466:internally.   This means that there is an upper limit on the length
+	492:a line which is longer than it can handle.   This is not an ideal
+
+	#####
+
+	Change -- in x--y to \(em (em-dash), or, if an
+	option, to \-\-
+
+	268:.BR --no-run-if-empty )
+
+	#####
+
+	Change - to \- if it shall be printed as a minus sign.
+
+	xargs.1:393:if any invocation of the command exited with status 1-125
+	xargs.1:518:Copyright \(co 1990-2023 Free Software Foundation, Inc.
+
+	#####
+
+	Change a HYPHEN-MINUS (code 0x55, 2D) to a minus (\-), if in front of a
+	name for an option.
+
+	234:.BR -t .
+	248:.BI -s " max-chars\fR, \fI" \-\-max\-chars "=\fImax-chars\fR"
+
+	#####
+
+	Wrong distance between sentences.
+
+	  Separate the sentences and subordinate clauses; each begins on a new
+	line.  See man-pages(7) ("Conventions for source file layout") and
+	"info groff" ("Input Conventions").
+
+	  The best procedure is to always start a new sentence on a new line,
+	at least, if you are typing on a computer.
+
+	Remember coding: Only one command ("sentence") on each (logical) line.
+
+	E-mail: Easier to quote exactly the relevant lines.
+
+	Generally: Easier to edit the sentence.
+
+	Patches: Less unaffected text.
+
+	  The amount of space between sentences in the output can then be
+	controlled with the ".ss" request.
+
+	51:prevents such problems.   When using this option you will need to
+	94:command.   Multibyte characters are not supported.
+	316:are mutually exclusive. If some of them are specified at the same
+	466:internally.   This means that there is an upper limit on the length
+	492:a line which is longer than it can handle.   This is not an ideal
+
+	#####
+
+	Do not use more than two space characters between sentences or (better)
+	only a new line character.
+
+	51:prevents such problems.   When using this option you will need to
+	94:command.   Multibyte characters are not supported.
+	466:internally.   This means that there is an upper limit on the length
+	492:a line which is longer than it can handle.   This is not an ideal
+
+	#####
+
+	  Not in the patch.
+
+	Output from "test-nroff -man -b -ww -z":
+
+	[ "test-groff" is a developmental version of "groff" ]
+
+	Input file is ./xargs.1
+
+	Output from test-groff -b -mandoc -dAD=l -rF0 -rHY=0 -t -w w -z :
+	an.tmac:/tmp/chk_manuals.temp.ZC2PK6:1: style: .TH missing third argument;\
+	  suggest document modification date in ISO 8601 format (YYYY-MM-DD)
+	an.tmac:/tmp/chk_manuals.temp.ZC2PK6:1: style: .TH missing fourth argument;\
+	  suggest package/project name and version (e.g., "groff 1.23.0")
+
+	####
+
+	* xargs/xargs.1: Change as described above.
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: prefer canonical Savannah URL for the gnulib submodule
+	This avoids the following warning from 'git fetch':
+	  warning: redirecting to https://git.savannah.gnu.org/git/gnulib.git/
+
+	* .gitmodules (url): s/sv/savannah/
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix extra escaping of a minus '-' character in xargs.1
+	* xargs/xargs.1 (--show-limits): Remove redundant backslash character,
+	introduced when adding the description of that option in commit
+	956992ff71b3 in 2005.
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: document double dash "--" option delimiter for xargs
+	* doc/find.texi (node xargs options): Add description of the "--"
+	option delimiter.
+	* xargs/xargs.1 (OPTIONS): Likewise.
+	* NEWS (Documentation Changes): Document the change.
+
+	Suggested by Dan Jacobson <jidanni@jidanni.org> in
+	<https://lists.gnu.org/r/bug-findutils/2023-04/msg00009.html>
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: fix FP in xargs test when /bin/sh is dash
+	Dash as /bin/sh apparently does not know $'\n' syntax.
+
+	* tests/xargs/verbose-quote.sh: Define NL variable for newline character;
+	change from $'\n' syntax to the above variable when generating input
+	for xargs.
+
+	Fixes https://sv.gnu.org/bugs/?63934
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: add 'bugs, reporting' to primary index
+	* doc/find.texi: Do the above.
+
+	Suggested by Dan Jacobson in:
+	<https://lists.gnu.org/r/bug-findutils/2023-04/msg00013.html>
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: require support for post-2038 timestamps
+	* bootstrap.conf (gnulib_modules): Replace year2038 with
+	year2038-recommended.
+	* NEWS (Changes to the build process): Mention the change.
+
+2023-05-23  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	There have been 626 commits on gnulib since the last update.
+
+	* bootstrap: Auto-update.
+	* bootstrap-funclib.sh: Likewise.
+	* gnulib: Update to latest.
+	* tests/init.sh: Likewise.
+
+2023-05-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: change find enty point to "Finding Files"
+	The previous entry point for 'info find' was "Invoking find" which
+	is not that enlightening for the user.   Change to the better choice.
+
+	* doc/find.texi (@direntry): Change target for 'find' to the
+	chapter "Finding Files".
+
+	Discussed at:
+	<https://lists.gnu.org/r/bug-findutils/2023-04/msg00006.html>
+
+2023-05-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	build: update gnulib prerequisite tools
+	* bootstrap.conf (buildreq): Add autopoint, m4, makeinfo, texi2pdf,
+	wget and xz.
+
+2023-05-22  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	xargs: pacify GCC 13
+	* xargs/xargs.c: Ignore -Wanalyzer-fd-leak.
+
+2023-03-18  James Youngman  <james@youngman.org>
+
+	doc: describe history of find, xargs and locate.
+
+2023-02-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: use "end-of-file" with hyphenation consistently
+	* cfg.mk (sc_prohibit_unhyphenated_eof): Add syntax-check rule.
+	* doc/find.texi: Change "end of file" to "end-of-file" in several places.
+	* xargs/xargs.1: Likewise.
+	* xargs/xargs.c (eof_str): Change comment to adhere to the new rule.
+
+2023-02-13  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: improve description about when xargs stops processing
+	* doc/find.texi (Multiple Files): Clarify better that xargs will stop when
+	reading the EOF marker string specified with the --eof option, or when a
+	launched command exists with status 255.  Switch the two termination
+	conditions to reflect the behavior.
+
+	Fixes RT #1912852.
+
+2023-01-05  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: fix error diagnostics of options with mandatory, numeric arguments
+	The error diagnostic for wrong invocations with option that require
+	numeric arguments (-inum, -links, -gid, -uid) was wrong and not helpful:
+	  $ find -gid
+	  find: invalid argument `-gid' to `-gid'
+
+	* find/parser.c (parse_gid): Remove changing back of the ARG_PTR in
+	the error case; thus simplify.
+	(parse_inum,parse_links,parse_uid): Likewise.
+	(get_num): While at it, mention -gid and -uid in the comment as well.
+	(insert_num): Also improve the error diagnostic in the case the user
+	has provided a non-numeric argument.  Previously, it was just "invalid
+	argument".
+	* tests/find/opt-numeric-arg.sh: Add test.
+	* tests/local.mk: Reference it.
+	* NEWS (Bug Fixes): Mention the fix.
+
+	Reported by Andreas Schwab <schwab@linux-m68k.org> in
+	<https://lists.gnu.org/r/bug-findutils/2023-01/msg00001.html>
+
+2023-01-02  ribbon  <ppp15477@yahoo.co.jp>  (tiny change)
+
+	doc: minor formatting fixes in xargs.1
+	* xargs/xargs.1 (--max-args): Reset the bold formatting earlier
+	in two places.
+
+	Fixes https://sv.gnu.org/bugs/?62325
+
+2023-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update copyright year number ranges
+	Run 'make update-copyright'.
+
+	* lib/regexprops.c (copying): Update the year number manually.
+	* tests/sample-test: Adjust to use the single most recent year.
+	* All other files: Update copyright years via the above make run.
+
+2023-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: update gnulib to latest
+	Run 'make update-gnulib-to-latest', mainly to update the copyright
+	year numbers with:
+
+	  > maint: run 'make update-copyright'
+
+	This also pulls in the splitting of bootstrap into autopull.sh,
+	autogen.sh and bootstrap.
+
+	* autogen.sh: Add file.
+	* autopull.sh: Likewise.
+	* bootstrap-funclib.sh: Likewise.
+	* bootstrap: Auto-update.
+	* gnulib: Update to latest.
+	* tests/init.sh: Sync from 'gnulib/tests/init.sh'.
+
+2023-01-01  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: avoid unportable 'grep -q'
+	The upcoming gnulib update comes with the new syntax-check named
+	'sc_unportable_grep_q':
+
+	  maint.mk: unportable 'grep -q', use >/dev/null instead
+	  make: *** [maint.mk:1377: sc_unportable_grep_q] Error 1
+
+	Fix offending places.
+
+	* cfg.mk (sc_prohibit_test_calls_print_ver_with_irrelevant_argument):
+	Replace unportable '-q' by redirecting grep output to /dev/null.
+	* doc/find.texi (node Adding Tests): Likewise.
+	* init.cfg (find_emits_warnings_): Likewise.
+
+2022-11-16  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: generate manuals with `makeinfo --no-split`
+	* doc/Makefile.am (AM_MAKEINFOFLAGS): Add for --no-split option.
+	(find_mono.html): Remove --no-split from makeinfo invocation.
+	* NEWS (Documentation Changes): Document the change.
+	* doc/.gitignore (/find.info-1,/find.info-2): Remove entries.
+
+	Suggested by Antonio Diaz Diaz <antonio@gnu.org> in
+	https://lists.gnu.org/r/bug-findutils/2022-11/msg00001.html
+
+2022-11-16  Antonio Diaz Diaz  <antonio@gnu.org>  (tiny change)
+
+	doc: fix typo in maintainer manual
+	* doc/find-maint.texi (chapter Security): s/p[art/part/
+
+2022-11-16  Antonio Diaz Diaz  <antonio@gnu.org>  (tiny change)
+
+	doc: remove redundant @deffnx for option -files0-from from manual
+	* doc/find.texi (section Starting points): Remove @deffnx; the @deffn
+	above it is sufficient.
+
+2022-10-11  John A. Leuenhagen  <john@zlima12.com>  (tiny change)
+
+	doc: fix grammar issue in find man page
+	* find/find.1 (GLOBAL OPTIONS): Add "be" between "should" and
+	"specified".
+
+2022-08-09  Shuiqing Zhou  <zhoushuiqing321@outlook.com>  (tiny change)
+	    Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	tests: add tests for the 'find -newer' family
+	* tests/find/newer.sh: Add to improve test coverage.
+	* tests/local.mk (all_tests): Reference the test.
+
+2022-04-25  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: remove obsolete AC_HEADER_STDC macro
+	Avoid the following warning:
+	  configure.ac:208: warning: The macro `AC_HEADER_STDC' is obsolete.
+
+	* configure.ac (AC_HEADER_STDC): Remove, and ...
+	(AC_CHECK_INCLUDES_DEFAULT): ... add this instead.
+
+2022-04-25  Helmut Grohne  <helmut@subdivi.de>  (tiny change)
+
+	build: bump gettext version to 0.19.8
+	findutils failed to build from source on musl-libc, because it failed
+	to detect gettext availability.  Newer gettext fixes this:
+
+	  Version 0.19.8 - June 2016
+	  [...]
+	  - The AM_GNU_GETTEXT Autoconf macro can now detect musl-libc's
+	    gettext as a compatible implementation.
+
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Update from 0.19.3 to 0.19.8.
+	(AM_GNU_GETTEXT_REQUIRE_VERSION): Add to make autopoint pull the latest
+	available version instead of the exact specified version.
+	* NEWS: Mention the change.
+
+	Reported via Andreas Metzler <ametzler@bebt.de> at:
+	  https://sv.gnu.org/patch/?10203
+
+	Fixes: https://bugs.debian.org/1009874
+
+2022-04-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	doc: fix formatting typo in Texinfo manual
+	* doc/find.texi (LC_COLLATE): Change man-style `\-name' to @samp{-name}.
+
+2022-04-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: fix code smell
+	Detected by `make findutils-check-smells` (ironically for itself):
+	  error: ./Makefile.am:88: Spaces at start of makefile line
+
+	* Makefile.am (findutils-check-smells): Fix tab indentation of the
+	recipe, and re-indent for better reading.
+
+2022-04-24  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: omit warning diagnostic for -name '/'
+	Although usually a pattern containing a directory separator does not match
+	anything, a pattern solely consisting of one '/' still does (and has to)
+	for the root directory "/".
+
+	* find/parser.c (check_name_arg): Omit the warning in the case the
+	given pattern equals "/".
+	find/find.1 (-name): Clarify better that the pattern "/" is valid to
+	match the "/" directory.
+	* init.cfg (find_emits_warnings_): Add utility function.
+	* tests/find/name-slash.sh: Add test.
+	* tests/local.mk (all_tests): Reference it.
+	* MEWS (Bug Fixes): Mention the fix.
+
+	Fixes https://savannah.gnu.org/bugs/?62227
+
+2022-03-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: simplify check_name_arg in parser.c
+	* find/parser.c (check_name_arg): Change to void; remove return statement.
+	(parse_iname): Adjust caller.
+	(parse_name): Likewise.
+
+2022-03-30  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: port to Ubuntu 20.04 cross-compiling for OpenWRT 21.02
+	In the above build environment, HAVE_ENDPWENT seems to be defined to 0
+	instead of being #undef'ed.  Hence the build fails:
+
+	  parser.c: In function 'parse_user':
+	  parser.c:75:20: error: expected expression before ')' token
+	     75 | # define endpwent ()
+	        |                    ^
+	  parser.c:2463:7: note: in expansion of macro 'endpwent'
+	   2463 |       endpwent ();
+	        |       ^~~~~~~~
+
+	* find/parser.c (HAVE_ENDGRENT,HAVE_ENDPWENT): Change from #ifndef to
+	"#if !", and define the replacement code to "(void) 0".
+
+	Fixes https://github.com/openwrt/packages/issues/17912
+
+2022-02-04  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	find: fix indentation of --help output
+	* find/util.c (usage): Remove excess leading blank in the -mount line
+	of the "Normal options" block.
+
+2022-02-02  Bernhard Voelker  <mail@bernhard-voelker.de>
+
+	maint: post-release administrativa
+	* NEWS: Add new dummy release header.
+
 2022-02-02  Bernhard Voelker  <mail@bernhard-voelker.de>
 
 	NEWS: update before release

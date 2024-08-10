@@ -1,5 +1,5 @@
 /* parser.c -- convert the command line args into an expression tree.
-   Copyright (C) 1990-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -32,9 +32,8 @@
 
 
 /* gnulib headers. */
-#include "error.h"
-#include "fnmatch.h"
-#include "fts_.h"
+#include <fnmatch.h>
+#include "intprops.h"
 #include "modechange.h"
 #include "mountlist.h"
 #include "parse-datetime.h"
@@ -52,7 +51,7 @@
 
 /* At the moment, we include this after gnulib headers, since it uses
    some of the same names for function attribute macros as gnulib does,
-   since I plan to make gcc-sttrigbutes a gnulib module.  However, for
+   since I plan to make gcc-attributes a gnulib module.  However, for
    now, I haven't made the wholesale edits to gnulib that this would
    require.   Including this file last simply minimises the number of
    compiler warnings about macro redefinition (in gnulib headers).
@@ -62,17 +61,29 @@
 /* find headers. */
 #include "buildcmd.h"
 #include "defs.h"
-#include "die.h"
 #include "fdleak.h"
 #include "findutils-version.h"
 #include "system.h"
 
-
-#ifndef HAVE_ENDGRENT
-# define endgrent ()
+#if ! HAVE_ENDGRENT
+# define endgrent() ((void) 0)
 #endif
-#ifndef HAVE_ENDPWENT
-# define endpwent ()
+
+#if ! HAVE_ENDPWENT
+# define endpwent() ((void) 0)
+#endif
+
+#ifndef UID_T_MAX
+# define UID_T_MAX TYPE_MAXIMUM (uid_t)
+#endif
+
+#ifndef GID_T_MAX
+# define GID_T_MAX TYPE_MAXIMUM (gid_t)
+#endif
+
+/* Roll our own isnan rather than using <math.h>.  */
+#ifndef isnan
+# define isnan(x) ((x) != (x))
 #endif
 
 static bool parse_accesscheck   (const struct parser_table*, char *argv[], int *arg_ptr);
@@ -145,9 +156,6 @@ static bool parse_warn          (const struct parser_table*, char *argv[], int *
 static bool parse_xtype         (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_quit          (const struct parser_table*, char *argv[], int *arg_ptr);
 static bool parse_context       (const struct parser_table*, char *argv[], int *arg_ptr);
-#if 0
-static bool parse_show_control_chars (const struct parser_table*, char *argv[], int *arg_ptr);
-#endif
 
 static bool parse_help (const struct parser_table* entry, char **argv, int *arg_ptr)
   _GL_ATTRIBUTE_NORETURN;
@@ -293,9 +301,6 @@ static struct parser_table const parse_table[] =
   PARSE_TEST       ("regex",                 regex),	     /* GNU */
   PARSE_POSOPT     ("regextype",             regextype),     /* GNU */
   PARSE_TEST       ("samefile",              samefile),	     /* GNU */
-#if 0
-  PARSE_OPTION     ("show-control-chars",    show_control_chars), /* GNU, 4.3.0+ */
-#endif
   PARSE_TEST       ("size",                  size), /* POSIX */
   PARSE_TEST       ("type",                  type), /* POSIX */
   PARSE_TEST       ("uid",                   uid),	     /* GNU */
@@ -312,8 +317,8 @@ static struct parser_table const parse_table[] =
   PARSE(ARG_UNIMPLEMENTED,      "cpio",                  cpio),	/* Unix */
 #endif
   /* gnulib's stdbool.h might have made true and false into macros,
-   * so we can't leave named 'true' and 'false' tokens, so we have
-   * to expeant the relevant entries longhand.
+   * so we can't leave naked 'true' and 'false' tokens, so we have
+   * to expand the relevant entries longhand.
    */
   {ARG_TEST, "false",                 parse_false,   pred_false}, /* GNU */
   {ARG_TEST, "true",                  parse_true,    pred_true }, /* GNU */
@@ -447,11 +452,11 @@ check_option_combinations (const struct predicate *p)
       if (!options.explicit_depth)
 	{
 	  /* This fixes Savannah bug #20865. */
-	  die (EXIT_FAILURE, 0,
-	       _("The -delete action automatically turns on -depth, "
-		 "but -prune does nothing when -depth is in effect.  "
-		 "If you want to carry on anyway, just explicitly use "
-		 "the -depth option."));
+	  error (EXIT_FAILURE, 0,
+		 _("The -delete action automatically turns on -depth, "
+		   "but -prune does nothing when -depth is in effect.  "
+		   "If you want to carry on anyway, just explicitly use "
+		   "the -depth option."));
 	}
     }
 }
@@ -1127,11 +1132,7 @@ parse_gid (const struct parser_table* entry, char **argv, int *arg_ptr)
       p->est_success_rate = (p->args.numinfo.l_val < 100) ? 0.99 : 0.2;
       return true;
     }
-  else
-    {
-      --*arg_ptr;		/* don't consume the invalid argument. */
-      return false;
-    }
+  return false;
 }
 
 
@@ -1139,61 +1140,33 @@ static bool
 parse_group (const struct parser_table* entry, char **argv, int *arg_ptr)
 {
   const char *groupname;
-  const int saved_argc = *arg_ptr;
 
   if (collect_arg (argv, arg_ptr, &groupname))
     {
-      gid_t gid;
       struct predicate *our_pred;
+      gid_t gid;
       struct group *cur_gr = getgrnam (groupname);
       endgrent ();
-      if (cur_gr)
+      if (cur_gr != NULL)
 	{
 	  gid = cur_gr->gr_gid;
 	}
       else
 	{
-	  const int gid_len = strspn (groupname, "0123456789");
-	  if (gid_len)
+	  uintmax_t num;
+	  if ((xstrtoumax (groupname, NULL, 10, &num, "") != LONGINT_OK)
+                || (GID_T_MAX < num))
 	    {
-	      if (groupname[gid_len] == 0)
-		{
-		  gid = safe_atoi (groupname, options.err_quoting_style);
-		}
-	      else
-		{
-		  /* XXX: no test in test suite for this */
-		  die (EXIT_FAILURE, 0,
-		       _("%s is not the name of an existing group and"
-			 " it does not look like a numeric group ID "
-			 "because it has the unexpected suffix %s"),
-		       quotearg_n_style (0, options.err_quoting_style, groupname),
-		       quotearg_n_style (1, options.err_quoting_style, groupname+gid_len));
-		  *arg_ptr = saved_argc; /* don't consume the invalid argument. */
-		  return false;
-		}
+	      error (EXIT_FAILURE, 0,
+		     _("invalid group name or GID argument to -group: %s"),
+		     quotearg_n_style (0, options.err_quoting_style,
+				       groupname));
 	    }
-	  else
-	    {
-	      if (*groupname)
-		{
-		  /* XXX: no test in test suite for this */
-		  die (EXIT_FAILURE, 0,
-		       _("%s is not the name of an existing group"),
-		       quotearg_n_style (0, options.err_quoting_style, groupname));
-		}
-	      else
-		{
-		  die (EXIT_FAILURE, 0,
-		       _("argument to -group is empty, but should be a group name"));
-		}
-	      *arg_ptr = saved_argc; /* don't consume the invalid argument. */
-	      return false;
-	    }
+	  gid = num;
 	}
       our_pred = insert_primary (entry, groupname);
       our_pred->args.gid = gid;
-      our_pred->est_success_rate = (our_pred->args.numinfo.l_val < 100) ? 0.99 : 0.2;
+      our_pred->est_success_rate = (our_pred->args.gid < 100) ? 0.99 : 0.2;
       return true;
     }
   return false;
@@ -1257,8 +1230,8 @@ fnmatch_sanitycheck (void)
 	  || 0 == fnmatch ("Foo", "foo", 0)
 	  || 0 != fnmatch ("Foo", "foo", FNM_CASEFOLD))
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("sanity check of the fnmatch() library function failed."));
+	  error (EXIT_FAILURE, 0,
+		 _("sanity check of the fnmatch() library function failed."));
 	  return false;
 	}
       checked = true;
@@ -1267,21 +1240,20 @@ fnmatch_sanitycheck (void)
 }
 
 
-static bool
+static void
 check_name_arg (const char *pred, const char *alt, const char *arg)
 {
-  if (should_issue_warnings () && strchr (arg, '/'))
+  if (should_issue_warnings () && strchr (arg, '/') && (0 != strcmp ("/", arg)))
     {
       error (0, 0,
 	     _("warning: %s matches against basenames only, "
-	       "but the given pattern contains a directory separator (%s), "
-	       "thus the expression will evaluate to false all the time.  "
-	       "Did you mean %s?"),
-	    safely_quote_err_filename (0, pred),
-	    safely_quote_err_filename (1, "/"),
-	    safely_quote_err_filename (2, alt));
+		"but the given pattern contains a directory separator (%s), "
+		"thus the expression will evaluate to false all the time.  "
+		"Did you mean %s?"),
+	     safely_quote_err_filename (0, pred),
+	     safely_quote_err_filename (1, "/"),
+	     safely_quote_err_filename (2, alt));
     }
-  return true;			/* allow it anyway */
 }
 
 
@@ -1293,14 +1265,14 @@ parse_iname (const struct parser_table* entry, char **argv, int *arg_ptr)
   fnmatch_sanitycheck ();
   if (collect_arg (argv, arg_ptr, &name))
     {
-      if (check_name_arg ("-iname", "-iwholename", name))
-	{
-	  struct predicate *our_pred = insert_primary (entry, name);
-	  our_pred->need_stat = our_pred->need_type = false;
-	  our_pred->args.str = name;
-	  our_pred->est_success_rate = estimate_pattern_match_rate (name, 0);
-	  return true;
-	}
+      struct predicate *our_pred;
+      check_name_arg ("-iname", "-iwholename", name);
+
+      our_pred = insert_primary (entry, name);
+      our_pred->need_stat = our_pred->need_type = false;
+      our_pred->args.str = name;
+      our_pred->est_success_rate = estimate_pattern_match_rate (name, 0);
+      return true;
     }
   return false;
 }
@@ -1320,11 +1292,7 @@ parse_inum (const struct parser_table* entry, char **argv, int *arg_ptr)
       p->need_type = false;
       return true;
     }
-  else
-    {
-      --*arg_ptr;		/* don't consume the invalid argument. */
-      return false;
-    }
+  return false;
 }
 
 static bool
@@ -1347,11 +1315,7 @@ parse_links (const struct parser_table* entry, char **argv, int *arg_ptr)
 	p->est_success_rate = 1e-3;
       return true;
     }
-  else
-    {
-      --*arg_ptr;		/* don't consume the invalid argument. */
-      return false;
-    }
+  return false;
 }
 
 static bool
@@ -1395,10 +1359,10 @@ insert_depthspec (const struct parser_table* entry, char **argv, int *arg_ptr,
 	      return parse_noop (entry, argv, arg_ptr);
 	    }
 	}
-      die (EXIT_FAILURE, 0,
-	   _("Expected a positive decimal integer argument to %s, but got %s"),
-	   predicate,
-	   quotearg_n_style (0, options.err_quoting_style, depthstr));
+      error (EXIT_FAILURE, 0,
+	     _("Expected a positive decimal integer argument to %s, but got %s"),
+	     predicate,
+	     quotearg_n_style (0, options.err_quoting_style, depthstr));
       /* NOTREACHED */
       return false;
     }
@@ -1475,23 +1439,17 @@ static bool
 parse_name (const struct parser_table* entry, char **argv, int *arg_ptr)
 {
   const char *name;
-  const int saved_argc = *arg_ptr;
-
+  fnmatch_sanitycheck ();
   if (collect_arg (argv, arg_ptr, &name))
     {
-      fnmatch_sanitycheck ();
-      if (check_name_arg ("-name", "-wholename", name))
-	{
-	  struct predicate *our_pred = insert_primary (entry, name);
-	  our_pred->need_stat = our_pred->need_type = false;
-	  our_pred->args.str = name;
-	  our_pred->est_success_rate = estimate_pattern_match_rate (name, 0);
-	  return true;
-	}
-      else
-	{
-	  *arg_ptr = saved_argc; /* don't consume the invalid argument. */
-	}
+      struct predicate *our_pred;
+      check_name_arg ("-name", "-wholename", name);
+
+      our_pred = insert_primary (entry, name);
+      our_pred->need_stat = our_pred->need_type = false;
+      our_pred->args.str = name;
+      our_pred->est_success_rate = estimate_pattern_match_rate (name, 0);
+      return true;
     }
   return false;
 }
@@ -1582,8 +1540,8 @@ parse_newerXY (const struct parser_table* entry, char **argv, int *arg_ptr)
 	   */
 	  if (argv[1+*arg_ptr] == NULL)
 	    {
-	      die (EXIT_FAILURE, 0, _("The %s test needs an argument"),
-		   quotearg_n_style (0, options.err_quoting_style, argv[*arg_ptr]));
+	      error (EXIT_FAILURE, 0, _("The %s test needs an argument"),
+		     quotearg_n_style (0, options.err_quoting_style, argv[*arg_ptr]));
 	    }
 	  else
 	    {
@@ -1618,9 +1576,9 @@ parse_newerXY (const struct parser_table* entry, char **argv, int *arg_ptr)
 				   argv[*arg_ptr],
 				   &options.start_time))
 		{
-		  die (EXIT_FAILURE, 0,
-		       _("I cannot figure out how to interpret %s as a date or time"),
-		       quotearg_n_style (0, options.err_quoting_style, argv[*arg_ptr]));
+		  error (EXIT_FAILURE, 0,
+			 _("I cannot figure out how to interpret %s as a date or time"),
+			 quotearg_n_style (0, options.err_quoting_style, argv[*arg_ptr]));
 		}
 	    }
 	  else
@@ -1635,9 +1593,9 @@ parse_newerXY (const struct parser_table* entry, char **argv, int *arg_ptr)
 	      if (!get_stat_Ytime (&stat_newer, y, &our_pred->args.reftime.ts))
 		{
 		  /* We cannot extract a timestamp from the struct stat. */
-		  die (EXIT_FAILURE, 0,
-		       _("Cannot obtain birth time of file %s"),
-		       safely_quote_err_filename (0, argv[*arg_ptr]));
+		  error (EXIT_FAILURE, 0,
+			 _("Cannot obtain birth time of file %s"),
+			 safely_quote_err_filename (0, argv[*arg_ptr]));
 		}
 	    }
 	  our_pred->args.reftime.kind = COMP_GT;
@@ -1875,8 +1833,10 @@ parse_perm (const struct parser_table* entry, char **argv, int *arg_ptr)
      and it would be confusing if 'find' continued to support it.  */
   if (NULL == change
       || (perm_expr[0] == '+' && '0' <= perm_expr[1] && perm_expr[1] < '8'))
-    die (EXIT_FAILURE, 0, _("invalid mode %s"),
-	 quotearg_n_style (0, options.err_quoting_style, perm_expr));
+    {
+      error (EXIT_FAILURE, 0, _("invalid mode %s"),
+	     quotearg_n_style (0, options.err_quoting_style, perm_expr));
+    }
   perm_val[0] = mode_adjust (0, false, 0, change, NULL);
   perm_val[1] = mode_adjust (0, true, 0, change, NULL);
   free (change);
@@ -2065,9 +2025,11 @@ insert_regex (char **argv,
 
       error_message = re_compile_pattern (rx, strlen (rx), re);
       if (error_message)
-        die (EXIT_FAILURE, 0,
-	     _("failed to compile regular expression '%s': %s"),
-	     rx, error_message);
+        {
+           error (EXIT_FAILURE, 0,
+                 _("failed to compile regular expression '%s': %s"),
+                 rx, error_message);
+        }
       our_pred->est_success_rate = estimate_pattern_match_rate (rx, 1);
       return true;
     }
@@ -2086,7 +2048,7 @@ parse_size (const struct parser_table* entry, char **argv, int *arg_ptr)
   int blksize = 512;
   int len;
 
-  /* XXX: cannot (yet) convert to ue collect_arg() as this
+  /* XXX: cannot (yet) convert to use collect_arg() as this
    * function modifies the args in-place.
    */
   if ((argv == NULL) || (argv[*arg_ptr] == NULL))
@@ -2095,7 +2057,7 @@ parse_size (const struct parser_table* entry, char **argv, int *arg_ptr)
 
   len = strlen (arg);
   if (len == 0)
-    die (EXIT_FAILURE, 0, _("invalid null argument to -size"));
+    error (EXIT_FAILURE, 0, _("invalid null argument to -size"));
 
   suffix = arg[len - 1];
   switch (suffix)
@@ -2144,8 +2106,8 @@ parse_size (const struct parser_table* entry, char **argv, int *arg_ptr)
       break;
 
     default:
-      die (EXIT_FAILURE, 0,
-	   _("invalid -size type `%c'"), argv[*arg_ptr][len - 1]);
+      error (EXIT_FAILURE, 0,
+	     _("invalid -size type `%c'"), argv[*arg_ptr][len - 1]);
     }
   /* TODO: accept fractional mebibytes etc. ? */
   if (!get_num (arg, &num, &c_type))
@@ -2154,9 +2116,9 @@ parse_size (const struct parser_table* entry, char **argv, int *arg_ptr)
       tail[0] = suffix;
       tail[1] = 0;
 
-      die (EXIT_FAILURE, 0,
-	   _("Invalid argument `%s%s' to -size"),
-	   arg, tail);
+      error (EXIT_FAILURE, 0,
+	     _("Invalid argument `%s%s' to -size"),
+	     arg, tail);
       return false;
     }
   our_pred = insert_primary (entry, arg);
@@ -2321,54 +2283,11 @@ parse_samefile (const struct parser_table* entry, char **argv, int *arg_ptr)
   our_pred->args.samefileid.fd  = fd;
   our_pred->need_type = false;
   /* smarter way: compare type and inode number first. */
-  /* TODO: maybe optimise this away by being optimistic */
+  /* TODO: maybe optimize this away by being optimistic */
   our_pred->need_stat = true;
   our_pred->est_success_rate = 0.01f;
   return true;
 }
-
-#if 0
-/* This function is commented out partly because support for it is
- * uneven.
- */
-static bool
-parse_show_control_chars (const struct parser_table* entry,
-			  char **argv,
-			  int *arg_ptr)
-{
-  const char *arg;
-  const char *errmsg = _("The -show-control-chars option takes "
-			 "a single argument which "
-			 "must be 'literal' or 'safe'");
-
-  if ((argv == NULL) || (argv[*arg_ptr] == NULL))
-    {
-      die (EXIT_FAILURE, errno, "%s", errmsg);
-      return false;
-    }
-  else
-    {
-      arg = argv[*arg_ptr];
-
-      if (0 == strcmp ("literal", arg))
-	{
-	  options.literal_control_chars = true;
-	}
-      else if (0 == strcmp ("safe", arg))
-	{
-	  options.literal_control_chars = false;
-	}
-      else
-	{
-	  die (EXIT_FAILURE, errno, "%s", errmsg);
-	  return false;
-	}
-      (*arg_ptr)++;		/* consume the argument. */
-      return true;
-    }
-}
-#endif
-
 
 static bool
 parse_true (const struct parser_table* entry, char **argv, int *arg_ptr)
@@ -2422,11 +2341,7 @@ parse_uid (const struct parser_table* entry, char **argv, int *arg_ptr)
       p->est_success_rate = (p->args.numinfo.l_val < 100) ? 0.99 : 0.2;
       return true;
     }
-  else
-    {
-      --*arg_ptr;		/* don't consume the invalid argument. */
-      return false;
-    }
+  return false;
 }
 
 static bool
@@ -2450,8 +2365,8 @@ parse_used (const struct parser_table* entry, char **argv, int *arg_ptr)
 	}
       else
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Invalid argument %s to -used"), offset_str);
+	  error (EXIT_FAILURE, 0,
+	         _("Invalid argument %s to -used"), offset_str);
 	  /*NOTREACHED*/
 	  return false;
 	}
@@ -2479,31 +2394,16 @@ parse_user (const struct parser_table* entry, char **argv, int *arg_ptr)
 	}
       else
 	{
-	  const size_t uid_len = strspn (username, "0123456789");
-	  if (uid_len && (username[uid_len]==0))
+	  uintmax_t num;
+	  if ((xstrtoumax (username, NULL, 10, &num, "") != LONGINT_OK)
+                || (UID_T_MAX < num))
 	    {
-	      uid = safe_atoi (username, options.err_quoting_style);
+	      error (EXIT_FAILURE, 0,
+		     _("invalid user name or UID argument to -user: %s"),
+		     quotearg_n_style (0, options.err_quoting_style,
+				       username));
 	    }
-	  else
-	    {
-	      /* This is a fatal error (if we just return false, the caller
-	       * will say "invalid argument `username' to -user", which is
-	       * not as helpful). */
-	      if (username[0])
-		{
-		  die (EXIT_FAILURE, 0,
-		       _("%s is not the name of a known user"),
-		       quotearg_n_style (0, options.err_quoting_style,
-					 username));
-		}
-	      else
-		{
-		  die (EXIT_FAILURE, 0,
-		       _("The argument to -user should not be empty"));
-		}
-	      /*NOTREACHED*/
-	      return false;
-	    }
+	  uid = num;
 	}
       our_pred = insert_primary (entry, username);
       our_pred->args.uid = uid;
@@ -2516,59 +2416,41 @@ parse_user (const struct parser_table* entry, char **argv, int *arg_ptr)
 static bool
 parse_version (const struct parser_table* entry, char **argv, int *arg_ptr)
 {
-  bool has_features = false;
-  int flags;
-
+  (void) entry;
   (void) argv;
   (void) arg_ptr;
-  (void) entry;
 
   display_findutils_version ("find");
   printf (_("Features enabled: "));
 
 #if CACHE_IDS
   printf ("CACHE_IDS(ignored) ");
-  has_features = true;
 #endif
 #if defined HAVE_STRUCT_DIRENT_D_TYPE
   printf ("D_TYPE ");
-  has_features = true;
 #endif
 #if defined O_NOFOLLOW
   printf ("O_NOFOLLOW(%s) ",
 	  (options.open_nofollow_available ? "enabled" : "disabled"));
-  has_features = true;
 #endif
 #if defined LEAF_OPTIMISATION
   printf ("LEAF_OPTIMISATION ");
-  has_features = true;
 #endif
   if (0 < is_selinux_enabled ())
     {
       printf ("SELINUX ");
-      has_features = true;
     }
 
-  flags = 0;
-  if (is_fts_enabled (&flags))
+  if (is_fts_cwdfd_enabled ())
     {
-      printf ("FTS(");
-      has_features = true;
-
-      if (flags & FTS_CWDFD)
-	printf ("FTS_CWDFD");
-      printf (") ");
+      printf ("FTS(FTS_CWDFD) ");
+    }
+  else
+    {
+      printf ("FTS() ");
     }
 
   printf ("CBO(level=%d) ", (int)(options.optimisation_level));
-  has_features = true;
-
-  if (!has_features)
-    {
-      /* For the moment, leave this as English in case someone wants
-	 to parse these strings. */
-      printf ("none");
-    }
   printf ("\n");
 
   exit (EXIT_SUCCESS);
@@ -2584,8 +2466,8 @@ parse_context (const struct parser_table* entry, char **argv, int *arg_ptr)
 
   if (is_selinux_enabled () <= 0)
     {
-      die (EXIT_FAILURE, 0,
-	   _("invalid predicate -context: SELinux is not enabled."));
+      error (EXIT_FAILURE, 0,
+	     _("invalid predicate -context: SELinux is not enabled."));
       return false;
     }
   our_pred = insert_primary (entry, NULL);
@@ -2648,9 +2530,9 @@ insert_type (char **argv, int *arg_ptr,
 
   if (!*typeletter)
     {
-      die (EXIT_FAILURE, 0,
-	   _("Arguments to %s should contain at least one letter"),
-	   pred_string);
+      error (EXIT_FAILURE, 0,
+	     _("Arguments to %s should contain at least one letter"),
+	     pred_string);
       /*NOTREACHED*/
       return false;
     }
@@ -2713,10 +2595,10 @@ insert_type (char **argv, int *arg_ptr,
 	rate = 0.0311f;
 #else
 	type_cell = 0;
-	die (EXIT_FAILURE, 0,
-	     _("%s %c is not supported because symbolic links "
-	       "are not supported on the platform find was compiled on."),
-	     pred_string, (*typeletter));
+	error (EXIT_FAILURE, 0,
+	       _("%s %c is not supported because symbolic links "
+	         "are not supported on the platform find was compiled on."),
+	       pred_string, (*typeletter));
 #endif
 	break;
       case 'p':			/* pipe */
@@ -2725,10 +2607,10 @@ insert_type (char **argv, int *arg_ptr,
 	rate = 7.554e-6f;
 #else
 	type_cell = 0;
-	die (EXIT_FAILURE, 0,
-	     _("%s %c is not supported because FIFOs "
-	       "are not supported on the platform find was compiled on."),
-	     pred_string, (*typeletter));
+	error (EXIT_FAILURE, 0,
+	       _("%s %c is not supported because FIFOs "
+	         "are not supported on the platform find was compiled on."),
+	       pred_string, (*typeletter));
 #endif
 	break;
       case 's':			/* socket */
@@ -2737,10 +2619,10 @@ insert_type (char **argv, int *arg_ptr,
 	rate = 1.59e-5f;
 #else
 	type_cell = 0;
-	die (EXIT_FAILURE, 0,
-	     _("%s %c is not supported because named sockets "
-	       "are not supported on the platform find was compiled on."),
-	     pred_string, (*typeletter));
+	error (EXIT_FAILURE, 0,
+	       _("%s %c is not supported because named sockets "
+	         "are not supported on the platform find was compiled on."),
+	       pred_string, (*typeletter));
 #endif
 	break;
       case 'D':			/* Solaris door */
@@ -2753,25 +2635,25 @@ insert_type (char **argv, int *arg_ptr,
 	rate = 1.0e-5f;
 #else
 	type_cell = 0;
-	die (EXIT_FAILURE, 0,
-	     _("%s %c is not supported because Solaris doors "
-	       "are not supported on the platform find was compiled on."),
-	     pred_string, (*typeletter));
+	error (EXIT_FAILURE, 0,
+	       _("%s %c is not supported because Solaris doors "
+	         "are not supported on the platform find was compiled on."),
+	       pred_string, (*typeletter));
 #endif
 	break;
       default:			/* None of the above ... nuke 'em. */
 	type_cell = 0;
-	die (EXIT_FAILURE, 0,
-	     _("Unknown argument to %s: %c"), pred_string, (*typeletter));
+	error (EXIT_FAILURE, 0,
+	       _("Unknown argument to %s: %c"), pred_string, (*typeletter));
 	/*NOTREACHED*/
 	return false;
       }
 
       if (our_pred->args.types[type_cell])
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Duplicate file type '%c' in the argument list to %s."),
-	       (*typeletter), pred_string);
+	  error (EXIT_FAILURE, 0,
+	         _("Duplicate file type '%c' in the argument list to %s."),
+	         (*typeletter), pred_string);
 	}
 
       our_pred->est_success_rate += rate;
@@ -2785,19 +2667,19 @@ insert_type (char **argv, int *arg_ptr,
 	{
 	  if (*typeletter != ',')
 	    {
-	      die (EXIT_FAILURE, 0,
-		   _("Must separate multiple arguments to %s using: ','"),
-		   pred_string);
+	      error (EXIT_FAILURE, 0,
+		     _("Must separate multiple arguments to %s using: ','"),
+		     pred_string);
 	      /*NOTREACHED*/
 	      return false;
 	    }
 	  typeletter++;
 	  if (!*typeletter)
 	    {
-	      die (EXIT_FAILURE, 0,
-		   _("Last file type in list argument to %s "
-		     "is missing, i.e., list is ending on: ','"),
-		   pred_string);
+	      error (EXIT_FAILURE, 0,
+		     _("Last file type in list argument to %s "
+		       "is missing, i.e., list is ending on: ','"),
+		     pred_string);
 	      /*NOTREACHED*/
 	      return false;
 	    }
@@ -2853,25 +2735,25 @@ check_path_safety (const char *action)
       if (0 == len || (1 == len && path[pos] == '.'))
 	{
 	  /* empty field signifies . */
-	  die (EXIT_FAILURE, 0,
-	       _("The current directory is included in the PATH "
-		 "environment variable, which is insecure in "
-		 "combination with the %s action of find.  "
-		 "Please remove the current directory from your "
-		 "$PATH (that is, remove \".\", doubled colons, "
-		 "or leading or trailing colons)"),
-	       action);
+	  error (EXIT_FAILURE, 0,
+		 _("The current directory is included in the PATH "
+		   "environment variable, which is insecure in "
+		   "combination with the %s action of find.  "
+		   "Please remove the current directory from your "
+		   "$PATH (that is, remove \".\", doubled colons, "
+		   "or leading or trailing colons)"),
+		 action);
 	}
       else if (path[pos] != '/')
 	{
 	  char *relpath = strndup (&path[pos], len);
-	  die (EXIT_FAILURE, 0,
-	       _("The relative path %s is included in the PATH "
-		 "environment variable, which is insecure in "
-		 "combination with the %s action of find.  "
-		 "Please remove that entry from $PATH"),
-	       safely_quote_err_filename (0, relpath ? relpath : &path[pos]),
-	       action);
+	  error (EXIT_FAILURE, 0,
+	         _("The relative path %s is included in the PATH "
+		   "environment variable, which is insecure in "
+		   "combination with the %s action of find.  "
+		   "Please remove that entry from $PATH"),
+		 safely_quote_err_filename (0, relpath ? relpath : &path[pos]),
+		 action);
 	  /*NOTREACHED*/
 	  free (relpath);
 	}
@@ -2905,6 +2787,7 @@ insert_exec_ok (const char *action,
   our_pred->side_effects = our_pred->no_default_print = true;
   our_pred->need_type = our_pred->need_stat = false;
 
+  assert(predicate_uses_exec (our_pred));
   execp = &our_pred->args.exec_vec;
   execp->wd_for_exec = NULL;
 
@@ -2976,10 +2859,10 @@ insert_exec_ok (const char *action,
 	       * allowed.  We can specify this as those options are
 	       * not defined by POSIX.
 	       */
-	      die (EXIT_FAILURE, 0,
-		   _("You may not use {} within the utility name for "
-		     "-execdir and -okdir, because this is a potential "
-		     "security problem."));
+	      error (EXIT_FAILURE, 0,
+		     _("You may not use {} within the utility name for "
+		       "-execdir and -okdir, because this is a potential "
+		       "security problem."));
 	    }
 	}
     }
@@ -3002,9 +2885,9 @@ insert_exec_ok (const char *action,
 
       if (brace_count > 1)
 	{
-	  die (EXIT_FAILURE, 0,
-	       _("Only one instance of {} is supported with -exec%s ... +"),
-	       suffix);
+	  error (EXIT_FAILURE, 0,
+	         _("Only one instance of {} is supported with -exec%s ... +"),
+	         suffix);
 	}
       else if (strlen (brace_arg) != 2u)
 	{
@@ -3012,11 +2895,11 @@ insert_exec_ok (const char *action,
 	  char buf[MsgBufSize];
 	  const size_t needed = snprintf (buf, MsgBufSize, "-exec%s ... {} +", suffix);
 	  assert (needed <= MsgBufSize);  /* If this assertion fails, correct the value of MsgBufSize. */
-	  die (EXIT_FAILURE, 0,
-	       _("In %s the %s must appear by itself, but you specified %s"),
-	       quotearg_n_style (0, options.err_quoting_style, buf),
-	       quotearg_n_style (1, options.err_quoting_style, "{}"),
-	       quotearg_n_style (2, options.err_quoting_style, brace_arg));
+	  error (EXIT_FAILURE, 0,
+	         _("In %s the %s must appear by itself, but you specified %s"),
+	         quotearg_n_style (0, options.err_quoting_style, buf),
+	         quotearg_n_style (1, options.err_quoting_style, "{}"),
+	         quotearg_n_style (2, options.err_quoting_style, brace_arg));
 	}
     }
 
@@ -3032,7 +2915,7 @@ insert_exec_ok (const char *action,
     {
     case BC_INIT_ENV_TOO_BIG:
     case BC_INIT_CANNOT_ACCOMODATE_HEADROOM:
-      die (EXIT_FAILURE, 0, _("The environment is too large for exec()."));
+      error (EXIT_FAILURE, 0, _("The environment is too large for exec()."));
       break;
     case BC_INIT_OK:
       /* Good news.  Carry on. */
@@ -3113,7 +2996,7 @@ insert_exec_ok (const char *action,
    Issue OVERFLOWMESSAGE if overflow occurs.
    Return true if all okay, false if input error.
 
-   Used by -atime, -ctime and -mtime (parsers) to
+   Used by -amin, -cmin, -mmin, -used, -atime, -ctime and -mtime (parsers) to
    get the appropriate information for a time predicate processor. */
 
 static bool
@@ -3140,6 +3023,12 @@ get_relative_timestamp (const char *str,
       /* Convert the ASCII number into floating-point. */
       if (xstrtod (str, NULL, &offset, strtod))
 	{
+	  if (isnan (offset))
+	    {
+	      error (EXIT_FAILURE, 0, _("invalid not-a-number argument: `%s'"),
+		     str);
+	    }
+
 	  /* Separate the floating point number the user specified
 	   * (which is a number of days, or minutes, etc) into an
 	   * integral number of seconds (SECONDS) and a fraction (NANOSEC).
@@ -3158,7 +3047,7 @@ get_relative_timestamp (const char *str,
 	  if ((origin.tv_sec < result->ts.tv_sec) != (seconds < 0))
 	    {
 	      /* an overflow has occurred. */
-	      die (EXIT_FAILURE, 0, overflowmessage, str);
+	      error (EXIT_FAILURE, 0, overflowmessage, str);
 	    }
 
 	  result->ts.tv_nsec = origin.tv_nsec - nanosec;
@@ -3224,8 +3113,8 @@ parse_time (const struct parser_table* entry, char *argv[], int *arg_ptr)
 	  origin.tv_sec += (DAYSECS-1);
 	  if (expected != (uintmax_t)origin.tv_sec)
 	    {
-	      die (EXIT_FAILURE, 0,
-		   _("arithmetic overflow when trying to calculate the end of today"));
+	      error (EXIT_FAILURE, 0,
+		     _("arithmetic overflow when trying to calculate the end of today"));
 	    }
 	}
     }
@@ -3341,7 +3230,7 @@ get_num (const char *str,
    A new predicate node is assigned, along with an argument node
    obtained with malloc.
 
-   Used by -inum and -links parsers. */
+   Used by -inum, -uid, -gid and -links parsers. */
 
 static struct predicate *
 insert_num (char **argv, int *arg_ptr, const struct parser_table *entry)
@@ -3370,6 +3259,16 @@ insert_num (char **argv, int *arg_ptr, const struct parser_table *entry)
 	    fprintf (stderr, "%"PRIuMAX"\n", our_pred->args.numinfo.l_val);
 	  }
 	return our_pred;
+      }
+    else
+      {
+	const char *predicate = argv[(*arg_ptr)-2];
+	error (EXIT_FAILURE, 0,
+	       _("non-numeric argument to %s: %s"),
+	       predicate,
+	       quotearg_n_style (0, options.err_quoting_style, numstr));
+	/*NOTREACHED*/
+	return NULL;
       }
   }
   return NULL;

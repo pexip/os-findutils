@@ -1,5 +1,5 @@
 /* Test of <sys/types.h> substitute.
-   Copyright (C) 2011-2022 Free Software Foundation, Inc.
+   Copyright (C) 2011-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ size_t t2;
 ssize_t t3;
 off_t t4;
 mode_t t5;
+off64_t t6;
 
 int
 main (void)
