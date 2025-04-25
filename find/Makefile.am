@@ -1,4 +1,4 @@
-## Copyright (C) 1996-2022 Free Software Foundation, Inc.
+## Copyright (C) 1996-2024 Free Software Foundation, Inc.
 
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ LDADD = libfindtools.a ../lib/libfind.a ../gl/lib/libgnulib.a $(LIBINTL) $(LIB_C
 # $(MODF_LIBM)                  modf
 
 SUBDIRS = . testsuite
+
+noinst_PROGRAMS = getlimits
 
 dist-hook: findutils-check-manpages
 

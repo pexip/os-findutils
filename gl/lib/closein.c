@@ -1,6 +1,6 @@
 /* Close standard input, rewinding seekable stdin if necessary.
 
-   Copyright (C) 2007, 2009-2022 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@
 #include "closein.h"
 
 #include <errno.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -29,7 +28,7 @@
 
 #include "close-stream.h"
 #include "closeout.h"
-#include "error.h"
+#include <error.h>
 #include "exitfail.h"
 #include "freadahead.h"
 #include "quotearg.h"

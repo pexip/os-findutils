@@ -1,7 +1,7 @@
 # -*- autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-# Copyright (C) 1996-2022 Free Software Foundation, Inc.
+# Copyright (C) 1996-2024 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -89,6 +89,7 @@ fi
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_EGREP
 
 dnl for gnulib
 gl_EARLY
@@ -205,7 +206,8 @@ AC_CHECK_LIB([m],[fabs],[FINDLIBS="-lm $FINDLIBS"]
 AC_SUBST([FINDLIBS])
 
 dnl Checks for header files.
-AC_HEADER_STDC
+AC_CHECK_INCLUDES_DEFAULT
+
 AC_CHECK_HEADERS(sys/param.h mntent.h sys/mnttab.h sys/mntio.h sys/mkdev.h)
 dnl fdleak.c needs sys/resource.h because it calls getrlimit(2).
 AC_CHECK_FUNCS(getrlimit)
@@ -276,9 +278,12 @@ AC_CHECK_MEMBER(struct dirent.d_type,,,[
 
 jy_AC_ATTRIBUTE_NORETURN
 
-dnl internationalization macros
+dnl Internationalization macros.
+dnl AM_GNU_GETTEXT_REQUIRE_VERSION makes autopoint pull the latest available
+dnl version instead of the exact specified version.
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.3])
+AM_GNU_GETTEXT_VERSION([0.19.8])
+AM_GNU_GETTEXT_REQUIRE_VERSION([0.19.8])
 
 dnl regextype.c and regexprops.c are designed to be usable outside findutils,
 dnl but findutils doesn't want to support all the regex types in gnulib,

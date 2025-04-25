@@ -1,5 +1,5 @@
 /* listfile.c -- display a long listing of a file
-   Copyright (C) 1991-2022 Free Software Foundation, Inc.
+   Copyright (C) 1991-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,6 @@
 
 /* gnulib headers. */
 #include "areadlink.h"
-#include "error.h"
 #include "filemode.h"
 #include "human.h"
 #include "mbswidth.h"
@@ -43,7 +42,6 @@
 
 /* find headers. */
 #include "system.h"
-#include "die.h"
 #include "listfile.h"
 
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
@@ -451,7 +449,7 @@ list_file (const char *name,
     }
   if (!output_good)
     {
-      die (EXIT_FAILURE, errno, _("Failed to write output (at stage %d)"), failed_at);
+      error (EXIT_FAILURE, errno, _("Failed to write output (at stage %d)"), failed_at);
     }
 }
 

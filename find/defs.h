@@ -1,5 +1,5 @@
 /* defs.h -- data types and declarations.
-   Copyright (C) 1990-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -294,9 +294,6 @@ struct predicate
   /* est_success_rate is a number between 0.0 and 1.0 */
   float est_success_rate;
 
-  /* True if this predicate should display control characters literally */
-  bool literal_control_chars;
-
   /* True if this predicate didn't originate from the user. */
   bool artificial;
 
@@ -339,7 +336,7 @@ struct predicate
 };
 
 /* ftsfind.c */
-bool is_fts_enabled(int *ftsoptions);
+bool is_fts_cwdfd_enabled(void);
 
 /* find library function declarations.  */
 
@@ -475,7 +472,8 @@ void print_tree (FILE*, struct predicate *node, int indent);
 void print_list (FILE*, struct predicate *node);
 void print_optlist (FILE *fp, const struct predicate *node);
 void show_success_rates(const struct predicate *node);
-
+bool predicate_uses_exec(const struct predicate*);
+# define pred_is(node, fn) ( ((node)->pred_func) == (fn) )
 
 /* tree.c */
 bool matches_start_point(const char * glob, bool foldcase);
@@ -514,9 +512,6 @@ void set_option_defaults (struct options *p);
 # else
 bool apply_predicate(const char *pathname, struct stat *stat_buf, struct predicate *p);
 # endif
-
-# define pred_is(node, fn) ( ((node)->pred_func) == (fn) )
-
 
 /* util.c. */
 bool following_links (void);

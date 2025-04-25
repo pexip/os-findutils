@@ -1,5 +1,5 @@
 /* Test that directory streams leave standard fds alone.
-   Copyright (C) 2009-2022 Free Software Foundation, Inc.
+   Copyright (C) 2009-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -90,5 +90,5 @@ main (void)
   ASSERT (close (dfd) == 0);
 #endif
 
-  return 0;
+  return test_exit_status;
 }

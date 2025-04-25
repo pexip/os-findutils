@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Free Software Foundation, Inc.
+ * Copyright (C) 2008-2024 Free Software Foundation, Inc.
  * Written by Eric Blake and Bruno Haible
  *
  * This program is free software: you can redistribute it and/or modify
@@ -133,5 +133,5 @@ main (void)
 
   free (input);
 
-  return 0;
+  return test_exit_status;
 }

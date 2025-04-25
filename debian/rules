@@ -6,11 +6,20 @@ export DEB_BUILD_MAINT_OPTIONS := hardening=+all
 export RUN_VERY_EXPENSIVE_TESTS := yes
 export RUN_EXPENSIVE_TESTS := yes
 
+ifneq ($(filter nodoc,$(DEB_BUILD_PROFILES)),)
+MAKEINFO = true
+export MAKEINFO
+endif
+
+ifeq ($(DEB_HOST_ARCH),hurd-i386)
+  Y2038 = --disable-year2038
+endif
+
 override_dh_auto_configure:
 	dh_auto_configure --verbose -- \
 		--localstatedir=/var/cache/locate \
-		--enable-d_type-optimisation
-
+		--enable-d_type-optimisation \
+		$(Y2038)
 
 override_dh_auto_clean:
 	[ ! -f Makefile ] || dh_auto_clean --verbose

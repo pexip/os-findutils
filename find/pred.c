@@ -1,5 +1,5 @@
 /* pred.c -- execute the expression tree.
-   Copyright (C) 1990-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,16 +37,14 @@
 /* gnulib headers. */
 #include "areadlink.h"
 #include "dirname.h"
-#include "error.h"
 #include "fcntl--.h"
-#include "fnmatch.h"
+#include <fnmatch.h>
 #include "stat-size.h"
 #include "stat-time.h"
 #include "yesno.h"
 
 /* find headers. */
 #include "defs.h"
-#include "die.h"
 #include "dircallback.h"
 #include "listfile.h"
 #include "printquoted.h"
@@ -378,7 +376,7 @@ pred_fls (const char *pathname, struct stat *stat_buf, struct predicate *pred_pt
   list_file (pathname, state.cwd_dir_fd, state.rel_pathname, stat_buf,
 	     options.start_time.tv_sec,
 	     options.output_block_size,
-	     pred_ptr->literal_control_chars, stream);
+	     options.literal_control_chars, stream);
   return true;
 }
 
@@ -470,7 +468,7 @@ pred_name_common (const char *pathname, const char *str, int flags)
 {
   bool b;
   /* We used to use last_component() here, but that would not allow us to modify the
-   * input string, which is const.   We could optimise by duplicating the string only
+   * input string, which is const.   We could optimize by duplicating the string only
    * if we need to modify it, and I'll do that if there is a measurable
    * performance difference on a machine built after 1990...
    */
@@ -697,11 +695,21 @@ is_ok (const char *program, const char *arg)
   /* XXX: printing UNTRUSTED data here. */
   if (fprintf (stderr, _("< %s ... %s > ? "), program, arg) < 0)
     {
-      die (EXIT_FAILURE, errno, _("Failed to write prompt for -ok"));
+      error (EXIT_FAILURE, errno, _("Failed to write prompt for -ok"));
     }
   fflush (stderr);
   return yesno ();
 }
+
+bool
+predicate_uses_exec(const struct predicate* p)
+{
+  return pred_is(p, pred_exec)
+    || pred_is(p, pred_execdir)
+    || pred_is(p, pred_ok)
+    || pred_is(p, pred_okdir);
+}
+
 
 bool
 pred_ok (const char *pathname, struct stat *stat_buf, struct predicate *pred_ptr)
@@ -1120,30 +1128,47 @@ pred_user (const char *pathname, struct stat *stat_buf, struct predicate *pred_p
     return (false);
 }
 
+static bool
+err_signals_broken_link(int errno_value)
+{
+  switch (errno_value)
+    {
+    case ELOOP:
+    case ENOENT:
+      /* EMLINK doesn't indicate a loop, that's what ELOOP is for. */
+      return true;
+    default:
+      return false;
+    }
+}
+
+
 bool
 pred_xtype (const char *pathname, struct stat *stat_buf, struct predicate *pred_ptr)
 {
   struct stat sbuf;		/* local copy, not stat_buf because we're using a different stat method */
   int (*ystat) (const char*, struct stat *p);
 
+
   /* If we would normally stat the link itself, stat the target instead.
    * If we would normally follow the link, stat the link itself instead.
    */
-  if (following_links ())
-    ystat = optionp_stat;
-  else
+  const bool ystat_follows_links = !following_links();
+  if (ystat_follows_links)
     ystat = optionl_stat;
+  else
+    ystat = optionp_stat;
 
   set_stat_placeholders (&sbuf);
   if ((*ystat) (state.rel_pathname, &sbuf) != 0)
     {
-      if (following_links () && errno == ENOENT)
+      if (ystat_follows_links && err_signals_broken_link (errno))
 	{
 	  /* If we failed to follow the symlink,
 	   * fall back on looking at the symlink itself.
 	   */
 	  /* Mimic behavior of ls -lL. */
-	  return (pred_type (pathname, stat_buf, pred_ptr));
+	  return pred_type (pathname, stat_buf, pred_ptr);
 	}
       else
 	{
@@ -1155,7 +1180,7 @@ pred_xtype (const char *pathname, struct stat *stat_buf, struct predicate *pred_
   /* Now that we have our stat() information, query it in the same
    * way that -type does.
    */
-  return (pred_type (pathname, &sbuf, pred_ptr));
+  return pred_type (pathname, &sbuf, pred_ptr);
 }
 
 

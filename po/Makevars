@@ -1,4 +1,8 @@
 # Makefile variables for PO directory in any package using GNU gettext.
+#
+# Copyright (C) 2003-2019 Free Software Foundation, Inc.
+# This file is free software; the Free Software Foundation gives
+# unlimited permission to use, copy, distribute, and modify it.
 
 # Usually the message domain is the same as the package name.
 DOMAIN = $(PACKAGE)
@@ -9,7 +13,7 @@ top_builddir = ..
 
 # These options get passed to xgettext.
 XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ \
-          \
+            \
  --flag=_:1:pass-c-format\
  --flag=N_:1:pass-c-format\
  --flag=error:3:c-format --flag=error_at_line:5:c-format\

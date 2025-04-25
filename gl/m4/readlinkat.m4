@@ -1,10 +1,11 @@
-# serial 6
-# See if we need to provide readlinkat replacement.
-
-dnl Copyright (C) 2009-2022 Free Software Foundation, Inc.
+# readlinkat.m4
+# serial 8
+dnl Copyright (C) 2009-2024 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
+
+# See if we need to provide readlinkat replacement.
 
 # Written by Eric Blake.
 
@@ -12,10 +13,13 @@ AC_DEFUN([gl_FUNC_READLINKAT],
 [
   AC_REQUIRE([gl_UNISTD_H_DEFAULTS])
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
-  AC_CHECK_FUNCS_ONCE([readlinkat])
+  gl_CHECK_FUNCS_ANDROID([readlinkat], [[#include <unistd.h>]])
   AC_REQUIRE([gl_FUNC_READLINK])
   if test $ac_cv_func_readlinkat = no; then
     HAVE_READLINKAT=0
+    case "$gl_cv_onwards_func_readlinkat" in
+      future*) REPLACE_READLINKAT=1 ;;
+    esac
   else
     AC_CACHE_CHECK([whether readlinkat signature is correct],
       [gl_cv_decl_readlinkat_works],

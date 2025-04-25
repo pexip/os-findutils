@@ -1,6 +1,6 @@
 /* Implement the most essential subset of POSIX 1003.1-2008 pthread.h.
 
-   Copyright (C) 2009-2022 Free Software Foundation, Inc.
+   Copyright (C) 2009-2024 Free Software Foundation, Inc.
 
    This file is free software: you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License as
@@ -50,6 +50,12 @@
 
 #ifndef _@GUARD_PREFIX@_PTHREAD_H_
 #define _@GUARD_PREFIX@_PTHREAD_H_
+
+/* This file uses _Noreturn, _GL_ATTRIBUTE_PURE, GNULIB_POSIXCHECK,
+   HAVE_RAW_DECL_*.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
 
 #define __need_system_stdlib_h
 #include <stdlib.h>
@@ -409,7 +415,26 @@ typedef pthread_mutex_t pthread_spinlock_t;
 # define PTHREAD_PROCESS_PRIVATE 0
 # define PTHREAD_PROCESS_SHARED 1
 #else
-# if !@HAVE_PTHREAD_SPINLOCK_T@
+# if @HAVE_PTHREAD_SPINLOCK_T@
+/* <pthread.h> exists and defines pthread_spinlock_t.  */
+#  if !@HAVE_PTHREAD_SPIN_INIT@ || @REPLACE_PTHREAD_SPIN_INIT@
+/* If the 'pthread-spin' module is in use, it defines all the pthread_spin*
+   functions.  Prepare for it by overriding pthread_spinlock_t if that might
+   be needed.  */
+#   if !(((__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 7) \
+           || __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 1)) \
+          || (((__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1)) \
+               && !defined __ANDROID__) \
+              || __clang_major__ >= 3)) \
+         && !defined __ibmxl__)
+/* We can't use GCC built-ins.  Approximate spinlocks with mutexes.  */
+#    if !GNULIB_defined_pthread_spin_types
+#     define pthread_spinlock_t pthread_mutex_t
+#     define GNULIB_defined_pthread_spin_types 1
+#    endif
+#   endif
+#  endif
+# else
 /* Approximate spinlocks with mutexes.  */
 #  if !GNULIB_defined_pthread_spin_types
 typedef pthread_mutex_t pthread_spinlock_t;
@@ -1965,6 +1990,35 @@ _GL_CXXALIASWARN (pthread_spin_destroy);
 _GL_WARN_ON_USE (pthread_spin_destroy, "pthread_spin_destroy is not portable - "
                  "use gnulib module pthread-spin for portability");
 # endif
+#endif
+
+
+#if defined __cplusplus && defined GNULIB_NAMESPACE && !@HAVE_PTHREAD_H@ && defined __MINGW32__
+/* Provide the symbols required by mingw's <bits/gthr-default.h>.  */
+using GNULIB_NAMESPACE::pthread_create;
+using GNULIB_NAMESPACE::pthread_self;
+using GNULIB_NAMESPACE::pthread_equal;
+using GNULIB_NAMESPACE::pthread_detach;
+using GNULIB_NAMESPACE::pthread_join;
+using GNULIB_NAMESPACE::pthread_once;
+using GNULIB_NAMESPACE::pthread_mutex_init;
+using GNULIB_NAMESPACE::pthread_mutexattr_init;
+using GNULIB_NAMESPACE::pthread_mutexattr_settype;
+using GNULIB_NAMESPACE::pthread_mutexattr_destroy;
+using GNULIB_NAMESPACE::pthread_mutex_lock;
+using GNULIB_NAMESPACE::pthread_mutex_trylock;
+using GNULIB_NAMESPACE::pthread_mutex_timedlock;
+using GNULIB_NAMESPACE::pthread_mutex_unlock;
+using GNULIB_NAMESPACE::pthread_mutex_destroy;
+using GNULIB_NAMESPACE::pthread_cond_wait;
+using GNULIB_NAMESPACE::pthread_cond_timedwait;
+using GNULIB_NAMESPACE::pthread_cond_signal;
+using GNULIB_NAMESPACE::pthread_cond_broadcast;
+using GNULIB_NAMESPACE::pthread_cond_destroy;
+using GNULIB_NAMESPACE::pthread_key_create;
+using GNULIB_NAMESPACE::pthread_setspecific;
+using GNULIB_NAMESPACE::pthread_getspecific;
+using GNULIB_NAMESPACE::pthread_key_delete;
 #endif
 
 

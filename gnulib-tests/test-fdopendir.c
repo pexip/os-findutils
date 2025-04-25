@@ -1,5 +1,5 @@
 /* Test opening a directory stream from a file descriptor.
-   Copyright (C) 2009-2022 Free Software Foundation, Inc.
+   Copyright (C) 2009-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ SIGNATURE_CHECK (fdopendir, DIR *, (int));
 #include "macros.h"
 
 int
-main (_GL_UNUSED int argc, char *argv[])
+main ()
 {
   DIR *d;
   int fd;
@@ -76,5 +76,5 @@ main (_GL_UNUSED int argc, char *argv[])
   ASSERT (dup2 (fd, fd) == -1);
   ASSERT (errno == EBADF);
 
-  return 0;
+  return test_exit_status;
 }

@@ -1,5 +1,5 @@
 /* Test of <unistd.h> substitute.
-   Copyright (C) 2007, 2009-2022 Free Software Foundation, Inc.
+   Copyright (C) 2007, 2009-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -20,11 +20,9 @@
 
 #include <unistd.h>
 
-#include "verify.h"
-
 /* Check that NULL can be passed through varargs as a pointer type,
    per POSIX 2008.  */
-verify (sizeof NULL == sizeof (void *));
+static_assert (sizeof NULL == sizeof (void *));
 
 /* Check that the various SEEK_* macros are defined.  */
 int sk[] = { SEEK_CUR, SEEK_END, SEEK_SET };
@@ -48,6 +46,7 @@ pid_t t6;
 useconds_t t7;
 intptr_t t8;
 #endif
+off64_t t9;
 
 int
 main (void)

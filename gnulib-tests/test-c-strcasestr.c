@@ -1,5 +1,5 @@
 /* Test of case-insensitive searching in a string.
-   Copyright (C) 2007-2022 Free Software Foundation, Inc.
+   Copyright (C) 2007-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -238,6 +238,14 @@ main ()
     free (haystack);
   }
 
+  /* Test case from Yves Bastide.
+     <https://www.openwall.com/lists/musl/2014/04/18/2>  */
+  {
+    const char input[] = "playing PLAY play PLAY always";
+    const char *result = c_strcasestr (input, "play PLAY play");
+    ASSERT (result == input + 8);
+  }
+
   /* Test long needles.  */
   {
     size_t m = 1024;
@@ -260,5 +268,5 @@ main ()
     free (haystack);
   }
 
-  return 0;
+  return test_exit_status;
 }

@@ -7,17 +7,17 @@ There is NO WARRANTY, to the extent permitted by law.
 Written by Tom Tromey <tromey@redhat.com>
        and Alexandre Duret-Lutz <adl@gnu.org>.
 
-autoconf (GNU Autoconf) 2.69
-Copyright (C) 2012 Free Software Foundation, Inc.
+autoconf (GNU Autoconf) 2.72
+Copyright (C) 2023 Free Software Foundation, Inc.
 License GPLv3+/Autoconf: GNU GPL version 3 or later
-<http://gnu.org/licenses/gpl.html>, <http://gnu.org/licenses/exceptions.html>
+<https://gnu.org/licenses/gpl.html>, <https://gnu.org/licenses/exceptions.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
 Written by David J. MacKenzie and Akim Demaille.
 
-gcc (SUSE Linux) 11.2.1 20220103 [revision d4a1d3c4b377f1d4acb34fe1b55b5088a3f293f6]
-Copyright (C) 2021 Free Software Foundation, Inc.
+gcc (SUSE Linux) 13.3.0
+Copyright (C) 2023 Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
@@ -30,8 +30,8 @@ There is NO WARRANTY, to the extent permitted by law.
 
 Written by Rene' Seindal.
 
-gettext (GNU gettext-runtime) 0.21
-Copyright (C) 1995-2020 Free Software Foundation, Inc.
+gettext (GNU gettext-runtime) 0.22.5
+Copyright (C) 1995-2023 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
@@ -41,9 +41,9 @@ DejaGnu version	1.6.3
 Expect version	5.45.4
 Tcl version	8.6
 
-texi2any (GNU texinfo) 6.7
+texi2any (GNU texinfo) 7.0.3
 
-Copyright (C) 2017 Free Software Foundation, Inc.
+Copyright (C) 2023 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.

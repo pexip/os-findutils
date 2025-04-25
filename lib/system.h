@@ -1,6 +1,6 @@
 /* system.h -- system-dependent definitions for findutils
 
-   Copyright (C) 2017-2022 Free Software Foundation, Inc.
+   Copyright (C) 2017-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 # define SYSTEM_H
 
 # include <locale.h>
+# include <error.h>
 
 /* Take care of NLS matters.  */
 

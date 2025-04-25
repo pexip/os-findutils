@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (C) 2007-2022 Free Software Foundation, Inc.
+# Copyright (C) 2007-2024 Free Software Foundation, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ for manpage
 do
   what="lint check on manpage $manpage"
   echo -n "$what: "
-  messages="$( troff -t -man ${srcdir}/${manpage} 2>&1 >/dev/null )"
+  messages="$( groff -t -man ${srcdir}/${manpage} 2>&1 >/dev/null )"
   if test -z "$messages" ; then
       echo "passed"
   else
