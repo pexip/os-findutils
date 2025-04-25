@@ -20,7 +20,7 @@
 
 @dircategory Individual utilities
 @direntry
-* find: (find)Invoking find.                    Finding and acting on files.
+* find: (find)Finding Files.                    Finding and acting on files.
 * locate: (find)Invoking locate.                Finding files in a database.
 * updatedb: (find)Invoking updatedb.            Building the locate database.
 * xargs: (find)Invoking xargs.                  Operating on many files.
@@ -30,7 +30,7 @@
 This manual documents version @value{VERSION} of the GNU utilities for finding
 files that match certain criteria and performing various operations on them.
 
-Copyright @copyright{} 1994--2022 Free Software Foundation, Inc.
+Copyright @copyright{} 1994--2024 Free Software Foundation, Inc.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -77,6 +77,7 @@ A copy of the license is included in the section entitled
 * Worked Examples::             Examples demonstrating more complex points.
 * Security Considerations::     Security issues relating to findutils.
 * Error Messages::              Explanations of some messages you might see.
+* History::                     History of find, xargs and locate.
 * GNU Free Documentation License::  Copying and sharing this manual.
 * Primary Index::               The components of @code{find} expressions.
 @end menu
@@ -91,16 +92,13 @@ principal programs that you use to perform these tasks are
 this manual use capabilities specific to the GNU versions of those
 programs.
 
-GNU @code{find} was originally written by Eric Decker, with
-enhancements by David MacKenzie, Jay Plett, and Tim Wood.  GNU
-@code{xargs} was originally written by Mike Rendell, with enhancements
-by David MacKenzie.  GNU @code{locate} and its associated utilities
-were originally written by James Woods, with enhancements by David
-MacKenzie.  The idea for @samp{find -print0} and @samp{xargs -0} came
-from Dan Bernstein.  The current maintainer of GNU findutils (and this
-manual) is James Youngman.  Many other people have contributed bug
-fixes, small improvements, and helpful suggestions.  Thanks!
+See @ref{History} for a history of @code{find}, @code{locate} and
+@code{xargs}.  The current maintainers of GNU findutils (and this
+manual) are Bernhard Voelker and James Youngman.  Many other people
+have contributed bug fixes, small improvements, and helpful
+suggestions.  Thanks!
 
+@findex bugs, reporting
 To report a bug in GNU findutils, please use the form on the Savannah
 web site at
 @code{https://savannah.gnu.org/bugs/?group=findutils}.  Reporting bugs
@@ -338,7 +336,7 @@ expression contains an action other than @samp{-prune} or
 Options take effect immediately, rather than being evaluated for each
 file when their place in the expression is reached.  Therefore, for
 clarity, it is best to place them at the beginning of the expression.
-There are two exceptions to this; @samp{-daystart} and @samp{-follow}
+There are exceptions to this; @samp{-regextype}, @samp{-daystart} and @samp{-follow}
 have different effects depending on where in the command line they
 appear.  This can be confusing, so it's best to keep them at the
 beginning, too.
@@ -386,7 +384,6 @@ Alternatively, it is generally safe though non-portable to use the GNU option
 @samp{-files0-from} to pass arbitrary starting points to @code{find}.
 
 @deffn Option -files0-from file
-@deffnx Option -files0-from file
 
 Read the starting points from @file{file} instead of getting them on the
 command line.
@@ -571,18 +568,16 @@ $ find .  -path '*/*config'
 True if the entire file name matches regular expression @var{expr}.
 This is a match on the whole path, not a search.  For example, to
 match a file named @file{./fubar3}, you can use the regular expression
-@samp{.*bar.} or @samp{.*b.*3}, but not @samp{f.*r3}.  @xref{Regexps,
-, Syntax of Regular Expressions, emacs, The GNU Emacs Manual}, for a
-description of the syntax of regular expressions.  For @samp{-iregex},
-the match is case-insensitive.
+@samp{.*bar.} or @samp{.*b.*3}, but not @samp{f.*r3}.
+For @samp{-iregex}, the match is case-insensitive.
 
 As for @samp{-path}, the candidate file name never ends with a slash,
 so regular expressions which only match something that ends in slash
 will always fail.
 
 There are several varieties of regular expressions; by default this
-test uses POSIX basic regular expressions, but this can be changed
-with the option @samp{-regextype}.
+test uses GNU Emacs regular expressions, but this can be changed with
+the option @samp{-regextype}.
 @end deffn
 
 @deffn Option -regextype name
@@ -650,9 +645,9 @@ find @var{directories} -name @var{pattern}
 
 where @var{directories} are the directories for which the file name
 databases contain information.  The differences are that the
-@code{locate} information might be out of date, and that @code{locate}
-handles wildcards in the pattern slightly differently than @code{find}
-(@pxref{Shell Pattern Matching}).
+@code{locate} information might be out of date, and that by default
+@code{locate} matches wildcards against the whole file name (not just
+its base name) (@pxref{Shell Pattern Matching}).
 
 The file name databases contain lists of files that were on the system
 when the databases were last updated.  The system administrator can
@@ -783,7 +778,8 @@ dereference the link.  This can mean that even if you specify the
 properties of the file that the link points to (because you don't have
 sufficient permission).  In this situation, @code{find} uses the
 properties of the link itself.  This also occurs if a symbolic link
-exists but points to a file that is missing.
+exists but points to a file that is missing, or where the symbolic
+link points to itself (directly or indirectly).
 
 The options controlling the behaviour of @code{find} with respect to
 links are as follows:
@@ -870,9 +866,9 @@ find . -lname '*sysdep.c'
 
 Hard links allow more than one name to refer to the same file on a
 file system, i.e., to the same inode.  To find all the names which refer
-to the same file as @var{name}, use @samp{-samefile NAME}.
+to the same file as @var{name}, use @samp{-samefile @var{name}}.
 
-@deffn Test -samefile NAME
+@deffn Test -samefile @var{name}
 True if the file is a hard link to the same inode as @var{name}.
 This implies that @var{name} and the file reside on the same file system,
 i.e., they have the same device number.
@@ -885,7 +881,7 @@ so this can cut down on needless searching.
 If the @samp{-L} option is in effect, then dereferencing of symbolic links
 applies both to the @var{name} argument of the @samp{-samefile} primary and
 to each file examined during the traversal of the directory hierarchy.
-Therefore, @samp{find -L -samefile NAME} will find both hard links and
+Therefore, @samp{find -L -samefile @var{name}} will find both hard links and
 symbolic links pointing to the file referenced by @var{name}.
 @end deffn
 
@@ -1052,9 +1048,9 @@ For example the test @code{-newerac /tmp/foo} succeeds for all files
 which have been accessed more recently than @file{/tmp/foo} was
 changed.   Here @samp{X} is @samp{a} and @samp{Y} is @samp{c}.
 
-Not all files have a known birth time.  If @samp{Y} is @samp{b} and
+Not all files have a known birth time.  If @samp{Y} is @samp{B} and
 the birth time of @file{reference} is not available, @code{find} exits
-with an explanatory error message.  If @samp{X} is @samp{b} and we do
+with an explanatory error message.  If @samp{X} is @samp{B} and we do
 not know the birth time the file currently being considered, the test
 simply fails (that is, it behaves like @code{-false} does).
 
@@ -1211,17 +1207,20 @@ represent any letter except @samp{l}):
 
 @table @samp
 @item @samp{-P -xtype l}
-True if the symbolic link is broken
+True if the symbolic link is broken or has an infinite loop
 @item @samp{-P -xtype X}
 True if the (ultimate) target file is of type @samp{X}.
 @item @samp{-L -xtype l}
 Always true
 @item @samp{-L -xtype X}
-False unless the symbolic link is broken
+False unless the symbolic link is broken or has an infinite loop
 @end table
 
-In other words, for symbolic links, @samp{-xtype} checks the type of
-the file that @samp{-type} does not check.
+In other words, for non-broken symbolic links, @samp{-xtype} checks
+the type of the file that @samp{-type} does not check.  For broken
+symbolic links (or loops), @samp{-xtype} behaves like @samp{-type}
+does.  Symbolic links pointing to things the user has no access to are
+not considered to be broken.
 
 The @samp{-H} option also affects the behaviour of @samp{-xtype}.
 When @samp{-H} is in effect, @samp{-xtype} behaves as if @samp{-L} had
@@ -2479,11 +2478,13 @@ However, if the command needs to have its standard input be a terminal
 substitution method or use either the @samp{--arg-file} option or the
 @samp{--open-tty} option of @code{xargs}.
 
-The @code{xargs} command will process all its input, building command
-lines and executing them, unless one of the commands exits with a
-status of 255 (this will cause xargs to issue an error message and
-stop) or it reads a line contains the end of file string specified
-with the @samp{--eof} option.
+The @code{xargs} command will usually process all of its input,
+building command lines and executing them.
+The processing stops earlier and immediately if the tool reads a line containing
+the end-of-file marker string specified with the @samp{--eof} option,
+or if one of the launched commands exits with a status of 255.
+The latter will cause @code{xargs} to issue an error message and exit with
+status 124.
 
 @menu
 * Unsafe File Name Handling::
@@ -2743,18 +2744,27 @@ Run up to @var{max-procs} processes at a time; the default is 1.  If
 @var{max-procs} is 0, @code{xargs} will run as many processes as
 possible at a time.  Use the @samp{-n}, @samp{-s}, or @samp{-L} option
 with @samp{-P}; otherwise chances are that the command will be run
-only once.
+only once. If a child process exits with status 255, @code{xargs} will
+still wait for all child processes to exit (before version 4.9.0 this
+might not happen).
 @end table
 
-For example, suppose you have a directory tree of large image files
-and a @code{makeallsizes} script that takes a single file name and
-creates various sized images from it (thumbnail-sized, web-page-sized,
-printer-sized, and the original large file).  The script is doing enough
-work that it takes significant time to run, even on a single image.
-You could run:
+If @code{xargs} is run without the @samp{-P} option, it will not
+change the handling of the @code{SIGUSR1} and @code{SIGUSR2} signals.
+This means they will terminate the @code{xargs} program unless those
+signals were set to be ignored in the parent process of @code{xargs}.
+If you do not want parallel execution but you also do not want these
+signals to be fatal, you can specify @code{-P 1}.
+
+Suppose you have a directory tree of large image files and a
+@code{makeallsizes} script that takes a single file name and creates
+various sized images from it (thumbnail-sized, web-page-sized,
+printer-sized, and the original large file).  The script is doing
+enough work that it takes significant time to run, even on a single
+image.  You could run:
 
 @example
-find originals -name '*.jpg' | xargs -l makeallsizes
+find originals -name '*.jpg' | xargs -L 1 makeallsizes
 @end example
 
 This will run @code{makeallsizes @var{filename}} once for each @code{.jpg}
@@ -2763,7 +2773,7 @@ two central processors, this script will only keep one of them busy.
 Instead, you could probably finish in about half the time by running:
 
 @example
-find originals -name '*.jpg' | xargs -l -P 2 makeallsizes
+find originals -name '*.jpg' | xargs -L 1 -P 2 makeallsizes
 @end example
 
 @code{xargs} will run the first two commands in parallel, and then
@@ -2804,7 +2814,7 @@ If you send it the signal @code{SIGUSR1}, it will run one more command
 in parallel.  For example:
 
 @example
-shell$ xargs <allimages -l -P 4 makeallsizes &
+shell$ xargs <allimages -L 1 -P 4 makeallsizes &
 [4] 27643
    ... at some later point ...
 shell$ kill -USR2 27643
@@ -2856,16 +2866,20 @@ limit the command size (@pxref{Limiting Command Size}), this mode of
 operation is equivalent to @samp{find -exec} (@pxref{Single File}).
 
 @table @code
-@item --replace@r{[}=@var{replace-str}@r{]}
-@itemx -I @var{replace-str}
-@itemx -i @var{replace-str}
+@item -I @var{replace-str}
+@itemx --replace@r{[}=@var{replace-str}@r{]}
+@itemx -i@r{[}@var{replace-str}@r{]}
 Replace occurrences of @var{replace-str} in the initial arguments with
-names read from the input.  Also, unquoted blanks do not terminate
-arguments; instead, the input is split at newlines only.  For the
-@samp{-i} option, if @var{replace-str} is omitted for @samp{--replace}
-or @samp{-i}, it defaults to @samp{@{@}} (like for @samp{find -exec}).
-Implies @samp{-x} and @samp{-l 1}.  @samp{-i} is deprecated in favour
-of @samp{-I}. As an example, to sort each file in the @file{bills}
+names read from standard input.
+Also, unquoted blanks do not terminate arguments;
+instead, the input is split at newlines only.
+If @var{replace-str} is omitted (omitting it is allowed only for @samp{-i}
+and @samp{--replace}), it defaults to @samp{@{@}} (like for @samp{find -exec}).
+Implies @samp{-x} and @samp{-L 1}.
+The @samp{-i} option is deprecated in favour of the @samp{-I} option.
+@end table
+
+As an example, to sort each file in the @file{bills}
 directory, leaving the output in that file name with @file{.sorted}
 appended, you could do:
 
@@ -2879,8 +2893,6 @@ The equivalent command using @samp{find -execdir} is:
 @example
 find bills -type f -execdir sort -o '@{@}.sorted' '@{@}' ';'
 @end example
-@end table
-
 
 When you use the @samp{-I} option, each line read from the input is
 buffered internally.  This means that there is an upper limit on the
@@ -3051,7 +3063,7 @@ its argument is an unstripped binary file:
 
 @example
 #! /bin/sh
-file "$1" | grep -q "not stripped"
+file "$1" | grep "not stripped" >/dev/null
 @end example
 
 
@@ -3514,12 +3526,13 @@ Use of an unrecognised formatting directive with @samp{-fprintf}
 The @samp{-O@var{level}} option sets @code{find}'s optimisation level
 to @var{level}.  The default optimisation level is 1.
 
-At certain optimisation levels, @code{find} reorders tests to speed up
-execution while preserving the overall effect; that is, predicates
-with side effects are not reordered relative to each other.  The
-optimisations performed at each optimisation level are as follows.
+At certain optimisation levels (but not by default), @code{find}
+reorders tests to speed up execution while preserving the overall
+effect; that is, predicates with side effects are not reordered
+relative to each other.  The optimisations performed at each
+optimisation level are as follows.
 
-@table @samp
+@table @asis
 @item 0
 Currently equivalent to optimisation level 1.
 
@@ -3541,9 +3554,8 @@ type @samp{FOO} which is not known (that is, present in
 @file{/etc/mtab}) at the time @code{find} starts, that predicate is
 equivalent to @samp{-false}.
 
-
 @item 3
-At this optimisation level, the full cost-based query optimiser is
+At this optimisation level, the full cost-based query optimizer is
 enabled.  The order of tests is modified so that cheap (i.e., fast)
 tests are performed first and more expensive ones are performed later,
 if necessary.  Within each cost band, predicates are evaluated earlier
@@ -3553,6 +3565,14 @@ earlier, and for @samp{-a}, predicates which are likely to fail are
 evaluated earlier.
 @end table
 
+The re-ordering of operations performed by the cost-based optimizer
+can result in user-visible behaviour change.  For example, the
+@samp{-readable} and @samp{-empty} predicates are sensitive to
+re-ordering.  If they are run in the order @samp{-empty -readable}, an
+error message will be issued for unreadable directories.  If they are
+run in the order @samp{-readable -empty}, no error message will be
+issued. This is the reason why such operation re-ordering is not
+performed at the default optimisation level.
 
 @node Debug Options
 @subsection Debug Options
@@ -3569,7 +3589,7 @@ For a complete list of valid debug options, see the output of
 Valid debug options include:
 @table @samp
 @item tree
-Show the expression tree in its original and optimised form.
+Show the expression tree in its original and optimized form.
 @item stat
 Print messages as files are examined with the stat and lstat system
 calls.  The find program tries to minimise such calls.
@@ -3869,6 +3889,14 @@ a program died due to a fatal signal.
 @subsection xargs options
 
 @table @code
+@item --
+@findex option delimiter, --
+Delimit the option list.  Later arguments, if any, are treated as operands even
+if they begin with @samp{-}.  For example, @samp{xargs -- --help} runs the
+command @samp{--help} (found in @env{PATH}) instead of printing the usage text,
+and @samp{xargs -- --mycommand} runs the command @samp{--mycommand} instead of
+rejecting this as unrecognized option.
+
 @item --arg-file@r{=@var{inputfile}}
 @itemx -a @r{@var{inputfile}}
 Read names from the file @var{inputfile} instead of standard input.
@@ -3889,7 +3917,7 @@ file string, which is treated like any other argument.
 Input file names are terminated by the specified character @var{delim}
 instead of by whitespace, and any quotes and backslash characters are
 not considered special (every character is taken literally).  Disables
-the logical end of file marker string, which is treated like any other
+the logical end-of-file marker string, which is treated like any other
 argument.
 
 The specified delimiter may be a single character, a C-style character
@@ -3901,17 +3929,17 @@ Octal and hexadecimal escape codes are understood as for the
 @itemx --eof@r{[}=@var{eof-str}@r{]}
 @itemx -e@r{[}@var{eof-str}@r{]}
 
-Set the logical end of file marker string to @var{eof-str}.  If the
-logical end of file marker string occurs as a line of input, the rest of
+Set the logical end-of-file marker string to @var{eof-str}.  If the
+logical end-of-file marker string occurs as a line of input, the rest of
 the input is ignored.  If @var{eof-str} is omitted (@samp{-e}) or blank
-(either @samp{-e} or @samp{-E}), there is no logical end of file marker
+(either @samp{-e} or @samp{-E}), there is no logical end-of-file marker
 string.  The @samp{-e} form of this option is deprecated in favour of
 the POSIX-compliant @samp{-E} option, which you should use instead.  As
 of GNU @code{xargs} version 4.2.9, the default behaviour of @code{xargs}
-is not to have a logical end of file marker string.  The POSIX standard
+is not to have a logical end-of-file marker string.  The POSIX standard
 (IEEE Std 1003.1, 2004 Edition) allows this.
 
-The logical end of file marker string is not treated specially if the
+The logical end-of-file marker string is not treated specially if the
 @samp{-d} or the @samp{-0} options are in effect.  That is, when either
 of these options are in effect, the whole input file will be read even
 if @samp{-E} was used.
@@ -3923,12 +3951,13 @@ Print a summary of the options to @code{xargs} and exit.
 @itemx --replace@r{[}=@var{replace-str}@r{]}
 @itemx -i@r{[}@var{replace-str}@r{]}
 Replace occurrences of @var{replace-str} in the initial arguments with
-names read from standard input.  Also, unquoted blanks do not
-terminate arguments; instead, the input is split at newlines only.  If
-@var{replace-str} is omitted (omitting it is allowed only for
-@samp{-i}), it defaults to @samp{@{@}} (like for @samp{find -exec}).
-Implies @samp{-x} and @samp{-l 1}.  The @samp{-i} option is deprecated
-in favour of the @samp{-I} option.
+names read from standard input.
+Also, unquoted blanks do not terminate arguments;
+instead, the input is split at newlines only.
+If @var{replace-str} is omitted (omitting it is allowed only for @samp{-i}
+and @samp{--replace}), it defaults to @samp{@{@}} (like for @samp{find -exec}).
+Implies @samp{-x} and @samp{-L 1}.
+The @samp{-i} option is deprecated in favour of the @samp{-I} option.
 
 @item -L @var{max-lines}
 @itemx --max-lines@r{[}=@var{max-lines}@r{]}
@@ -4022,7 +4051,7 @@ reset the value of the offending option (given before) to its default value.
 Additionally, @code{xargs} will issue a warning diagnostic on @file{stderr}.
 
 @example
-$ seq 4 | xargs -l2 -n3
+$ seq 4 | xargs -L2 -n3
 xargs: warning: options --max-lines and --max-args/-n are \
   mutually exclusive, ignoring previous --max-lines value
 1 2 3
@@ -4174,7 +4203,7 @@ other internationalisation variables.
 
 @item LC_COLLATE
 The POSIX standard specifies that this variable affects the pattern
-matching to be used for the `\-name' option.  GNU find uses the
+matching to be used for the @samp{-name} option.  GNU find uses the
 GNU version of the @code{fnmatch} library function.
 
 This variable also affects the interpretation of the response to
@@ -5051,9 +5080,9 @@ use @code{make} to update the timestamps:
 @smallexample
 makefile=$(mktemp)
 find subdir \
-	\( \! -xtype l \) \
-	-newer timestamp \
-	-printf "timestamp:: %p\n\ttouch -r %p timestamp\n\n" > "$makefile"
+        \( \! -xtype l \) \
+        -newer timestamp \
+        -printf "timestamp:: %p\n\ttouch -r %p timestamp\n\n" > "$makefile"
 make -f "$makefile"
 rm   -f "$makefile"
 @end smallexample
@@ -5072,7 +5101,7 @@ works with newlines and doesn't need to sort the list of filenames.
 @smallexample
 find subdir -newer timestamp -printf "%A@@:%p\0" |
    perl -0 newest.pl |
-   xargs --no-run-if-empty --null -i \
+   xargs --no-run-if-empty --null --replace \
       find @{@} -maxdepth 0 -newer timestamp -exec touch -r @{@} timestamp \;
 @end smallexample
 
@@ -5392,20 +5421,12 @@ supported.
 You can tell if your system supports @code{O_NOFOLLOW} by running
 
 @example
-find --version
+find --version | grep Features
 @end example
 
 This will tell you the version number and which features are enabled.
 For example, if I run this on my system now, this gives:
 @example
-find (GNU findutils) 4.8.0
-Copyright (C) 2021 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later \
-<https://gnu.org/licenses/gpl.html>.
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-
-Written by Eric B. Decker, James Youngman, and Kevin Dalley.
 Features enabled: D_TYPE O_NOFOLLOW(enabled) LEAF_OPTIMISATION \
 FTS(FTS_CWDFD) CBO(level=2)
 @end example
@@ -5855,6 +5876,82 @@ The @code{updatedb} program (and the programs it invokes) do issue
 error messages, but none seem to be candidates for guidance.  If
 you are having a problem understanding one of these, ask for help on
 @email{bug-findutils@@gnu.org}.
+
+
+@node History
+@chapter History
+
+The @code{xargs} and @code{find} programs have separate origins but
+are collected together in Findutils because they are often used
+together.  While today they also share a small amount of
+implementation, this wasn't originally the case.  The @code{locate}
+program started out as a feature of @code{find} but today it is a
+separate program.
+
+@section History of @code{find}
+
+A @code{find} program appeared in Version 5 Unix as part of the
+Programmer's Workbench project and was written by Dick Haight.  Doug
+McIlroy's @cite{A Research UNIX Reader: Annotated Excerpts from the
+Programmer’s Manual, 1971-1986} provides some additional details; you
+can read it on-line at
+@url{https://www.cs.dartmouth.edu/~doug/reader.pdf}.
+
+GNU @code{find} was originally written by Eric Decker, with
+enhancements by David MacKenzie, Jay Plett, and Tim Wood.  The idea
+for @samp{find -print0} and @samp{xargs -0} came from Dan Bernstein.
+
+@section History of @code{xargs}
+
+The @code{xargs} program was invented by Herb Gellis at Bell Labs.  In
+his own words:
+
+@quotation
+Hi James, Thanks for reaching out. Yes I invented @code{xargs} way
+back before we even released UNIX to the general public when it was
+running on PDP-11 machines with little memory, and capable shell
+programs were not there yet - kind of like early IBM PC-DOS command
+lines. The name came about, first, by noticing at the time there were
+no commands beginning with @samp{x} (silly reason, I know), and then
+came up with, basically, "eXecute command with ARGumentS". This
+obviously allowed one to process files, sequentially, including
+batches of files, while the UNIX command line buffer was very tiny. I
+don't remember exactly how small but possibly only 512 bytes. The very
+first use intended was to allow compiling C programs that were broken
+into many small routines whose total name length would exceed the
+command line buffer. Hope this settles the matter! Oh, another arcane
+factoid about @code{xargs} at the beginning was that I was able to
+keep it smaller than 4k (I think that was the amount) which at the
+time was the maximum size of a file segment on PDP-11/UNIX, so that
+the program could be loaded completely on the first segment, without
+having to go back and get chains of further segments - Hence fast!
+@end quotation
+
+In 2023, GNU @code{xargs} is unfortunately much larger, around 75KiB
+when stripped.
+
+GNU @code{xargs} isn't derived from the original Bell Labs program.
+It was originally written by Mike Rendell, with enhancements by David
+MacKenzie.
+
+@section History of @code{locate}
+
+4.3-BSD introduced the @dfn{fast-find} feature, in which the command
+@code{find needle} would look for a file named @samp{needle}.  This
+took advantage of the fact that, at the time, there was no valid
+two-argument @code{find} invocation.  The implementation was much
+faster than searching the whole file system in real time, because it
+used a pre-built file name database.  This functionality is described
+in more detail in @cite{Finding Files Fast} by James Woods (Usenix
+;login, Volume 8 Issue 1, pages. 8-10, 1983).
+
+Standardisation of @code{find} led to this functionality being moved
+into the @code{locate} program in 4.4-BSD.   The command @code{find
+needle} now unambiguously means ``start searching at the file
+@code{needle} and print the names of the files you encounter''.
+
+GNU @code{locate} and its associated utilities were originally written
+by James Woods, with enhancements by David MacKenzie.
 
 @node GNU Free Documentation License
 @appendix GNU Free Documentation License

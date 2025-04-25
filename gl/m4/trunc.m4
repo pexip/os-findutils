@@ -1,5 +1,6 @@
-# trunc.m4 serial 15
-dnl Copyright (C) 2007, 2010-2022 Free Software Foundation, Inc.
+# trunc.m4
+# serial 18
+dnl Copyright (C) 2007, 2010-2024 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -26,7 +27,7 @@ AC_DEFUN([gl_FUNC_TRUNC],
          [[x = funcptr(x) + trunc(x);]])],
       [TRUNC_LIBM=])
     if test "$TRUNC_LIBM" = "?"; then
-      save_LIBS="$LIBS"
+      saved_LIBS="$LIBS"
       LIBS="$LIBS -lm"
       AC_LINK_IFELSE(
         [AC_LANG_PROGRAM(
@@ -38,7 +39,7 @@ AC_DEFUN([gl_FUNC_TRUNC],
              double x;]],
            [[x = funcptr(x) + trunc(x);]])],
         [TRUNC_LIBM="-lm"])
-      LIBS="$save_LIBS"
+      LIBS="$saved_LIBS"
     fi
     if test "$TRUNC_LIBM" = "?"; then
       TRUNC_LIBM=
@@ -49,7 +50,7 @@ AC_DEFUN([gl_FUNC_TRUNC],
         AC_CACHE_CHECK([whether trunc works according to ISO C 99 with IEC 60559],
           [gl_cv_func_trunc_ieee],
           [
-            save_LIBS="$LIBS"
+            saved_LIBS="$LIBS"
             LIBS="$LIBS $TRUNC_LIBM"
             AC_RUN_IFELSE(
               [AC_LANG_SOURCE([[
@@ -72,17 +73,17 @@ int main (int argc, char *argv[])
               [gl_cv_func_trunc_ieee=yes],
               [gl_cv_func_trunc_ieee=no],
               [case "$host_os" in
-                                # Guess yes on glibc systems.
-                 *-gnu* | gnu*) gl_cv_func_trunc_ieee="guessing yes" ;;
-                                # Guess yes on musl systems.
-                 *-musl*)       gl_cv_func_trunc_ieee="guessing yes" ;;
-                                # Guess yes on native Windows.
-                 mingw*)        gl_cv_func_trunc_ieee="guessing yes" ;;
-                                # If we don't know, obey --enable-cross-guesses.
-                 *)             gl_cv_func_trunc_ieee="$gl_cross_guess_normal" ;;
+                                     # Guess yes on glibc systems.
+                 *-gnu* | gnu*)      gl_cv_func_trunc_ieee="guessing yes" ;;
+                                     # Guess yes on musl systems.
+                 *-musl* | midipix*) gl_cv_func_trunc_ieee="guessing yes" ;;
+                                     # Guess yes on native Windows.
+                 mingw* | windows*)  gl_cv_func_trunc_ieee="guessing yes" ;;
+                                     # If we don't know, obey --enable-cross-guesses.
+                 *)                  gl_cv_func_trunc_ieee="$gl_cross_guess_normal" ;;
                esac
               ])
-            LIBS="$save_LIBS"
+            LIBS="$saved_LIBS"
           ])
         case "$gl_cv_func_trunc_ieee" in
           *yes) ;;

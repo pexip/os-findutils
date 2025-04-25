@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2008-2022 Free Software Foundation, Inc.
+ * Copyright (C) 2008-2024 Free Software Foundation, Inc.
  * Written by Eric Blake and Bruno Haible
  *
  * This program is free software: you can redistribute it and/or modify
@@ -88,5 +88,18 @@ main (void)
 
   free (input);
 
-  return 0;
+  /* Test aligned oversized reads, which are allowed on most architectures
+     but not on CHERI.  */
+  {
+    input = malloc (5);
+    memcpy (input, "abcde", 5);
+    ASSERT (RAWMEMCHR (input, 'e') == input + 4);
+    ASSERT (RAWMEMCHR (input + 1, 'e') == input + 4);
+    ASSERT (RAWMEMCHR (input + 2, 'e') == input + 4);
+    ASSERT (RAWMEMCHR (input + 3, 'e') == input + 4);
+    ASSERT (RAWMEMCHR (input + 4, 'e') == input + 4);
+    free (input);
+  }
+
+  return test_exit_status;
 }

@@ -1,6 +1,6 @@
 /* Error-checking interface to strtod-like functions.
 
-   Copyright (C) 1996, 1998, 2003-2004, 2006, 2009-2022 Free Software
+   Copyright (C) 1996, 1998, 2003-2004, 2006, 2009-2024 Free Software
    Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -19,13 +19,21 @@
 /* Written by Jim Meyering.  */
 
 #ifndef XSTRTOD_H
-# define XSTRTOD_H 1
+#define XSTRTOD_H 1
 
-# include <stdbool.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 bool xstrtod (const char *str, const char **ptr, double *result,
               double (*convert) (char const *, char **));
 bool xstrtold (const char *str, const char **ptr, long double *result,
                long double (*convert) (char const *, char **));
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* not XSTRTOD_H */

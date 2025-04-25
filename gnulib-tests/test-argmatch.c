@@ -1,5 +1,5 @@
 /* Test of exact or abbreviated match search.
-   Copyright (C) 1990, 1998-1999, 2001-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990, 1998-1999, 2001-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -185,5 +185,5 @@ main (int argc, char *argv[])
 
   argmatch_backup_usage (stdout);
 
-  return 0;
+  return test_exit_status;
 }

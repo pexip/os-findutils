@@ -1,5 +1,5 @@
 /* fstype.c -- determine type of file systems that files are on
-   Copyright (C) 1990-2022 Free Software Foundation, Inc.
+   Copyright (C) 1990-2024 Free Software Foundation, Inc.
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
@@ -54,7 +54,6 @@
 
 /* find headers. */
 #include "defs.h"
-#include "die.h"
 #include "extendbuf.h"
 #include "system.h"
 
@@ -237,7 +236,7 @@ file_system_type_uncached (const struct stat *statp, const char *path,
        * use because gnulib has abstracted all that stuff away.
        * Hence we cannot issue a specific error message here.
        */
-      die (EXIT_FAILURE, 0, _("Cannot read mounted file system list"));
+      error (EXIT_FAILURE, 0, _("Cannot read mounted file system list"));
     }
   for (type=NULL, entry=entries; entry; entry=entry->me_next)
     {

@@ -1,6 +1,6 @@
 # Make findutils.
 
-# Copyright (C) 1996-2022 Free Software Foundation, Inc.
+# Copyright (C) 1996-2024 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-AUTOMAKE_OPTIONS = gnu std-options readme-alpha
+AUTOMAKE_OPTIONS = gnu std-options subdir-objects readme-alpha
 
 AM_CFLAGS = $(WARN_CFLAGS)
 
@@ -80,17 +80,18 @@ findutils-check-testfiles:
 
 
 findutils-check-smells:
-	find  $(srcdir) \( -path $(srcdir)/autom4te.cache -o  \
-                           -path $(srcdir)/gnulib     -o  \
-                           -path $(srcdir)/gl     -o  \
-                           -path $(srcdir)/gnulib-tests -o  \
-                           -name .git             -o  \
-                           \( -type d -name CVS \)  \
-                       \) -prune -o                  \
-	\( -type f -o -type l \)  \
-	\! \( -name '*~' -o -name '*.xo' -o -name '*.xi' \) \
-	-print0 | \
-	xargs -0 python $(AUXDIR)/src-sniff.py
+	find  $(srcdir) \
+	  \( -path $(srcdir)/autom4te.cache -o  \
+	     -path $(srcdir)/gnulib -o          \
+	     -path $(srcdir)/gl -o              \
+	     -path $(srcdir)/gnulib-tests -o    \
+	     -name .git -o                      \
+	     \( -type d -name CVS \)            \
+	  \) -prune -o                          \
+	  \( -type f -o -type l \)              \
+	  \! \( -name '*~' -o -name '*.xo' -o -name '*.xi' \) \
+	  -print0 \
+	    | xargs -0 python $(AUXDIR)/src-sniff.py
 
 # Update gnulib to latest, merging some additional files we take from there
 # as well.  This only works if the working tree of both findutils and gnulib
@@ -109,10 +110,14 @@ gnulib-sync update-gnulib-to-latest:
 			&& { echo "error: tree is dirty" >&2; exit 1; } || : \
 	    && git submodule foreach git pull origin master \
 	    && cp -v gnulib/doc/COPYINGv3 COPYING \
-	    && cp -v gnulib/doc/fdl-1.3.texi doc/fdl.texi \
-	    && cp -v gnulib/build-aux/bootstrap bootstrap \
+	    && cp -v gnulib/doc/fdl.texi doc/fdl.texi \
+	    && cp -v gnulib/top/autogen.sh autogen.sh \
+	    && cp -v gnulib/top/autopull.sh autopull.sh \
+	    && cp -v gnulib/top/bootstrap bootstrap \
+	    && cp -v gnulib/top/bootstrap-funclib.sh bootstrap-funclib.sh \
 	    && cp -v gnulib/tests/init.sh tests/init.sh \
-	    && git status --short -- gnulib COPYING doc/fdl.texi bootstrap \
+	    && git status --short -- gnulib COPYING doc/fdl.texi autogen.sh \
+		 autopull.sh bootstrap bootstrap-funclib.sh tests/init.sh \
 		 tests/init.sh \
 	)
 

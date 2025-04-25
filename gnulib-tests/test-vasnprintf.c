@@ -1,5 +1,5 @@
 /* Test of vasnprintf() and asnprintf() functions.
-   Copyright (C) 2007-2022 Free Software Foundation, Inc.
+   Copyright (C) 2007-2024 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -113,9 +113,9 @@ test_asnprintf ()
 }
 
 int
-main (int argc, char *argv[])
+main ()
 {
   test_vasnprintf ();
   test_asnprintf ();
-  return 0;
+  return test_exit_status;
 }
